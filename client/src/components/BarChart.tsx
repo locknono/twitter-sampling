@@ -18,10 +18,10 @@ export default function BarChart(props: Props) {
   );
   const [min, max] = getMinMax(values);
 
-  const yScale = d3
+  const barHeightScale = d3
     .scaleLinear()
     .domain([min, max])
-    .range([height * pad, renderHeight]);
+    .range([0, renderHeight]);
   const xScale = d3
     .scaleLinear()
     .domain([0, values.length])
@@ -31,11 +31,11 @@ export default function BarChart(props: Props) {
     <rect
       key={`${e}-${i}`}
       x={xScale(i)}
-      y={height - yScale(e) - pad * height}
+      y={height - barHeightScale(e) - pad * height}
       width={width * (pad - 0.02)}
-      height={yScale(e)}
+      height={barHeightScale(e)}
       style={{ fill: "steelblue" }}
     />
   ));
-  return <svg>{rects}</svg>;
+  return <svg style={{ height, width }}>{rects}</svg>;
 }
