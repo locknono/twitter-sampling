@@ -9,6 +9,7 @@ import time
 import math
 import random
 import numpy as np
+
 maxRatio = 99999
 
 
@@ -22,11 +23,9 @@ def generateTopicProbabilityDict(probabilityForOneRow, topicProbabilityDict):
     return topicProbabilityDict
 
 
-def averageTopicProbabilityDict(topicProbabilityDict, count):
-    for item in topicProbabilityDict:
-        topicProbabilityDict[item] = topicProbabilityDict / count
-
-
+def avgTopicProbabilityDict(topicProbabilityDict, count):
+    for k in topicProbabilityDict:
+        topicProbabilityDict[k] = topicProbabilityDict[k] / count
 
 
 def getOrderedProbabilityList(topicProbabilityDict):
@@ -58,14 +57,16 @@ def saveProbablityBarChart(topicProbabilityDict, fileName):
         for rect in rects:
             height = rect.get_height()
             ax.text(rect.get_x() + rect.get_width() * offset[xpos], 1.01 * height,
-                    '{}'.format(height), ha=ha[xpos], va='bottom')
+                    '{}'.format(round(height / 100, 3)), ha=ha[xpos], va='bottom')
 
     orderedProbabilityList = getOrderedProbabilityList(topicProbabilityDict)
-
+    print(orderedProbabilityList)
+    for i in range(len(orderedProbabilityList)):
+        orderedProbabilityList[i] = round(orderedProbabilityList[i] * 100, 2)
     ind = [i for i in range(len(orderedProbabilityList))]
     width = 0.5
     fig, ax = plt.subplots()
-    rects = ax.bar(ind, orderedProbabilityList, width, yerr=range(len(orderedProbabilityList)),
+    rects = ax.bar(ind, orderedProbabilityList, width,
                    color='SkyBlue')
     autolabel(rects, "center")
     # plt.bar(range(len(orderedProbabilityList)), orderedProbabilityList)
@@ -135,6 +136,7 @@ def saveNewLDAFig(idList, diffSum):
                 line = line.replace('(', '[').replace(')', ']')
                 line = json.loads(line)
                 topicProbabilityDict = generateTopicProbabilityDict(line, topicProbabilityDict)
+        avgTopicProbabilityDict(topicProbabilityDict, len(indexList))
         saveProbablityBarChart(topicProbabilityDict, diffSum)
 
 
@@ -165,6 +167,7 @@ def iterateForBestResult(points):
                 for textID in copyActiveIDList:
                     topicProbabilityDict = generateTopicProbabilityDict(idProbabilityDict[textID],
                                                                         topicProbabilityDict)
+                avgTopicProbabilityDict(topicProbabilityDict, len(activeIDList))
                 r2 = getRatioRelationship(topicProbabilityDict)
                 ratio = compareRatioRelationshipList(r1, r2)
                 if (ratio < maxRatio):
@@ -206,6 +209,8 @@ def iterateForBestResult(points):
                 else:
                     continue
         """
+
+
 if __name__ == '__main__':
     idProbabilityDict = {}
     r1 = None  # original relationship
@@ -214,11 +219,14 @@ if __name__ == '__main__':
     with open(g.ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r',
               encoding='utf-8') as f:
         topicProbabilityDict = {}
+        count = 0
         for line in f:
+            count += 1
             line = line.strip('\n')
             line = line.replace('(', '[').replace(')', ']')
             line = json.loads(line)
             topicProbabilityDict = generateTopicProbabilityDict(line, topicProbabilityDict)
+        avgTopicProbabilityDict(topicProbabilityDict, count)
         saveProbablityBarChart(topicProbabilityDict, 'original')
         r1 = getRatioRelationship(topicProbabilityDict)
 
@@ -234,6 +242,7 @@ if __name__ == '__main__':
                 line = line.replace('(', '[').replace(')', ']')
                 line = json.loads(line)
                 topicProbabilityDict = generateTopicProbabilityDict(line, topicProbabilityDict)
+        avgTopicProbabilityDict(topicProbabilityDict, len(randomIndexList))
         saveProbablityBarChart(topicProbabilityDict, 'random')
 
     with open(g.ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r', encoding='utf-8') as f:
@@ -257,6 +266,7 @@ if __name__ == '__main__':
         topicProbabilityDict = {}
         for textID in idList:
             topicProbabilityDict = generateTopicProbabilityDict(idProbabilityDict[textID], topicProbabilityDict)
+        avgTopicProbabilityDict(topicProbabilityDict, len(idList))
         saveProbablityBarChart(topicProbabilityDict, 'afterSampling')
         r2 = getRatioRelationship(topicProbabilityDict)
         ratio = compareRatioRelationshipList(r1, r2)
