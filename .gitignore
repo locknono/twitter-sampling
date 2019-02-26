@@ -1,0 +1,17 @@
+#python IDE
+.idea/
+__pycache__/
+venv/
+
+#data
+data/
+
+#client
+node_modules/
+public/
+
+#server
+
+
+#vscode settings
+.vscode/
