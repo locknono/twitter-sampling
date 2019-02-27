@@ -9,7 +9,7 @@ import Heading from "./components/Heading";
 import Scatter from "./components/Scatter";
 import ScatterImg from "./components/ScatterImg";
 import WordCloud from "./components/WordCloud";
-
+import BarchartImg from "./components/BarchartImg";
 class App extends React.Component {
   public render() {
     return (
@@ -31,7 +31,8 @@ class App extends React.Component {
 
           <div className="barchart-div">
             <Heading title="LDA" />
-            <BarChart values={[5, 1, 2, 6, 5, 5, 9]} width={300} height={300} />
+            <BarchartImg />
+            {/* <BarChart values={[5, 1, 2, 6, 5, 5, 9]} width={300} height={300} /> */}
           </div>
         </div>
       </div>
