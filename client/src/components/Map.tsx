@@ -111,7 +111,7 @@ class Map extends React.Component<Props, Object> {
         controlLayer.addOverlay(layerGroup, "points in disks");
       });
 
-    for (let i = 0; i < 10; i++) {
+    /*  for (let i = 0; i < 10; i++) {
       fetch(`./heatmapData/heat-${i}.json`)
         .then(res => res.json())
         .then(data => {
@@ -121,8 +121,10 @@ class Map extends React.Component<Props, Object> {
           });
           heatmap.setData(data);
           controlLayer.addOverlay(heatmap, `heatmap-${i}`);
-          /* const heatLayer = (L as any).heatLayer(data, { radius: 15 });
-          controlLayer.addOverlay(heatLayer, `heatmap-${i}`); */
+
+         
+          //const heatLayer = (L as any).heatLayer(data, { radius: 15 });
+          //controlLayer.addOverlay(heatLayer, `heatmap-${i}`);
         });
     }
 
@@ -135,10 +137,9 @@ class Map extends React.Component<Props, Object> {
         });
         heatmap.setData(data);
         controlLayer.addOverlay(heatmap, `allHeatmap`);
-
-        /*  const heatLayer = (L as any).heatLayer(data, { radius: 7 });
-        controlLayer.addOverlay(heatLayer, `allHeatmap`); */
-      }); //#endregion
+        //const heatLayer = (L as any).heatLayer(data, { radius: 7 });
+        //controlLayer.addOverlay(heatLayer, `allHeatmap`);
+      }); //#endregion */
 
     fetchAndAddGroupLayer(
       "./allPoints.json",

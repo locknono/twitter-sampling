@@ -1,0 +1,58 @@
+// out: ./App.css, compress: false, sourceMap: false
+
+@leftSideWidth: 250px;
+@middileWidth: 700px;
+@rightSideWidth: 250px;
+
+@mapHeight: 500px;
+
+@height: 700px;
+
+@dataHeight: 250px;
+
+@controlPanelHeight: 250px;
+
+.panel-margin {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+}
+
+.App {
+  margin: 10px;
+  text-align: center;
+  display: flex;
+}
+
+.left-side {
+  height: @height;
+  width: @leftSideWidth;
+}
+
+.data-description-div {
+  height: @dataHeight;
+  width: @leftSideWidth;
+  .panel-margin();
+}
+
+.control-panel-div {
+  width: @leftSideWidth;
+  height: @controlPanelHeight;
+  .panel-margin();
+}
+
+.middle {
+  height: @height;
+  width: @middileWidth;
+}
+
+#map {
+  top: 0;
+  width: @middileWidth;
+  height: @mapHeight;
+}
+
+.right-side {
+  height: @height;
+  width: @rightSideWidth;
+}

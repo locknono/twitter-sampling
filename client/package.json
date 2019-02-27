@@ -10,6 +10,7 @@
     "leaflet": "^1.4.0",
     "leaflet-webgl-heatmap": "^0.2.7",
     "leaflet.heat": "^0.2.0",
+    "less": "^3.9.0",
     "react": "16.8.0",
     "react-dom": "16.8.0",
     "react-redux": "^6.0.1",
