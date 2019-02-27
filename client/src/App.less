@@ -2,7 +2,7 @@
 
 @leftSideWidth: 250px;
 @middileWidth: 700px;
-@rightSideWidth: 250px;
+@rightSideWidth: 380px;
 
 @mapHeight: 500px;
 
@@ -11,6 +11,10 @@
 @dataHeight: 250px;
 
 @controlPanelHeight: 250px;
+
+@scatterDivHeight: @rightSideWidth;
+
+@barchartdivheight: 300px;
 
 .panel-margin {
   padding-bottom: 0;
@@ -55,4 +59,11 @@
 .right-side {
   height: @height;
   width: @rightSideWidth;
+}
+
+.scatter-div {
+  height: @scatterDivHeight;
+}
+.barchart-div {
+  height: @barchartdivheight;
 }

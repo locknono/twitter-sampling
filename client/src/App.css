@@ -37,5 +37,11 @@
 }
 .right-side {
   height: 700px;
-  width: 250px;
+  width: 380px;
+}
+.scatter-div {
+  height: 380px;
+}
+.barchart-div {
+  height: 300px;
 }

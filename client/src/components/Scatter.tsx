@@ -4,9 +4,7 @@ import { useState, useEffect } from "react";
 import { padding } from "../constants";
 import { getMinMax, getSvgRenderWidthHeight } from "../shared";
 
-interface Props {
-  title: string;
-}
+interface Props {}
 export default function Scatter(props: Props) {
-  return <svg></svg>
+  return <svg />;
 }
