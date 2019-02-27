@@ -5,9 +5,14 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import json
 
+try:
+    os.mkdir(g.dataPath + 'wordCloud/')
+except Exception as e:
+    print(e)
+
 topicTextDict = {}
-with open('../data/LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r', encoding='utf-8') as f:
-    with open('../data/finalText.txt', 'r', encoding='utf-8') as f2:
+with open(g.ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r', encoding='utf-8') as f:
+    with open(g.dataPath + 'finalText.txt', 'r', encoding='utf-8') as f2:
         for line, line2 in zip(f, f2):
             line = line.strip('\n')
             line = line.replace('(', '[').replace(')', ']')
@@ -33,6 +38,6 @@ with open('../data/LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r'
                 topicTextDict[maxTopicIndex] = []
 
 for key in topicTextDict:
-    with open('../data/wordCloud/{0}.txt'.format(key), 'w', encoding='utf-8') as wf:
+    with open(g.dataPath + 'wordCloud/{0}.txt'.format(key), 'w', encoding='utf-8') as wf:
         for text in topicTextDict[key]:
             wf.write(text + '\n')

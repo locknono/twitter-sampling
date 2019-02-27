@@ -12,6 +12,8 @@
 
 @controlPanelHeight: 250px;
 
+@wordCloudHeight: @height - @dataHeight - @controlPanelHeight;
+
 @scatterDivHeight: @rightSideWidth;
 
 @barchartdivheight: 300px;
@@ -45,6 +47,12 @@
   .panel-margin();
 }
 
+.word-cloud-div {
+  width: @leftSideWidth;
+  height: @wordCloudHeight;
+  .panel-margin();
+}
+
 .middle {
   height: @height;
   width: @middileWidth;
@@ -66,4 +74,8 @@
 }
 .barchart-div {
   height: @barchartdivheight;
+}
+
+.heading {
+  margin-bottom: 0;
 }

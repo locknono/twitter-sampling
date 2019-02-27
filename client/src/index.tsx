@@ -7,7 +7,11 @@ import registerServiceWorker from "./registerServiceWorker";
 import { Provider } from "react-redux";
 import { createStore, combineReducers } from "redux";
 
-const rootReducer = combineReducers({});
+//import dataTree from "./reducers/dataTree";
+
+const rootReducer = combineReducers({
+  /* dataTree */
+});
 
 const store = createStore(rootReducer);
 

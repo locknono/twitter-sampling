@@ -26,6 +26,13 @@
   margin-bottom: 0;
   margin-right: 0;
 }
+.word-cloud-div {
+  width: 250px;
+  height: 200px;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+}
 .middle {
   height: 700px;
   width: 700px;
@@ -44,4 +51,7 @@
 }
 .barchart-div {
   height: 300px;
+}
+.heading {
+  margin-bottom: 0;
 }

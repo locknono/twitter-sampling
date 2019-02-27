@@ -136,6 +136,7 @@ def saveNewLDAFig(idList, diffSum):
 
 def iterateForBestResult(points):
     global maxRatio
+    global ldaTopicNumbers
     activeIDList = []
     # replaceGroups will be a 2d array,the ids in each list could be replaced by each other
     replaceGroups = []
@@ -176,6 +177,9 @@ def iterateForBestResult(points):
                         saveNewLDAFig(copyActiveIDList, maxRatio)
                         with open('../data/iter/bestIterResult-{0}.json'.format(ratio), 'w', encoding='utf-8') as f:
                             f.write(json.dumps(copyActiveIDList))
+                        ldaTopicNumbers['iter'] = getOrderedProbabilityList(topicProbabilityDict)
+                        with open('../client/public/barData.json', 'w', encoding='utf-8') as f:
+                            f.write(json.dumps(ldaTopicNumbers))
                     break
             else:
                 cannotBetterList.append(index)
@@ -186,7 +190,7 @@ if __name__ == '__main__':
     idProbabilityDict = {}
     r1 = None  # original relationship
     r2 = None  # relationship after sampling
-
+    ldaTopicNumbers = {}
     with open(g.ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r',
               encoding='utf-8') as f:
         topicProbabilityDict = {}
@@ -199,6 +203,7 @@ if __name__ == '__main__':
             topicProbabilityDict = generateTopicProbabilityDict(line, topicProbabilityDict)
         # avgTopicProbabilityDict(topicProbabilityDict, count)
         saveProbablityBarChart(topicProbabilityDict, 'original')
+        ldaTopicNumbers['original'] = getOrderedProbabilityList(topicProbabilityDict)
         r1 = getRatioRelationship(topicProbabilityDict)
 
     with open(g.ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r', encoding='utf-8') as f:
@@ -224,6 +229,7 @@ if __name__ == '__main__':
             topicProbabilityDict = generateTopicProbabilityDict(idProbabilityDict[textID], topicProbabilityDict)
         # avgTopicProbabilityDict(topicProbabilityDict, len(idList))
         saveProbablityBarChart(topicProbabilityDict, 'afterSampling')
+        ldaTopicNumbers['sampling'] = getOrderedProbabilityList(topicProbabilityDict)
         r2 = getRatioRelationship(topicProbabilityDict)
         ratio = compareRatioRelationshipList(r1, r2)
         iterateForBestResult(points)

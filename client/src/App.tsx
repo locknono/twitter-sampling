@@ -7,6 +7,9 @@ import BarChart from "./components/BarChart";
 import ControlPanel from "./components/ControlPanel";
 import Heading from "./components/Heading";
 import Scatter from "./components/Scatter";
+import ScatterImg from "./components/ScatterImg";
+import WordCloud from "./components/WordCloud";
+
 class App extends React.Component {
   public render() {
     return (
@@ -14,15 +17,16 @@ class App extends React.Component {
         <div className="left-side panel panel-default">
           <DataDescription />
           <ControlPanel />
+          <WordCloud />
         </div>
         <div className="middle panel panel-default">
           <Map />
-          <HookTest />
         </div>
         <div className="right-side panel panel-default">
           <div className="scatter-div">
             <Heading title="LDA Scatter" />
-            <Scatter />
+            {/* <Scatter /> */}
+            <ScatterImg />
           </div>
 
           <div className="barchart-div">

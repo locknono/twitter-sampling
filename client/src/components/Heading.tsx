@@ -5,6 +5,5 @@ interface Props {
 }
 export default function Heading(props: Props) {
   const { title } = props;
-  return <div className="panel panel-default"> {title} </div>;
+  return <div className="panel panel-default heading"> {title} </div>;
 }
-
