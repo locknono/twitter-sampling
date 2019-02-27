@@ -35,12 +35,6 @@ def getOrderedProbabilityList(topicProbabilityDict):
     return orderedProbabilityList
 
 
-def showProbablityBarChart(topicProbabilityDict):
-    orderedProbabilityList = getOrderedProbabilityList(topicProbabilityDict)
-    plt.bar(range(len(orderedProbabilityList)), orderedProbabilityList)
-    plt.show()
-
-
 def saveProbablityBarChart(topicProbabilityDict, fileName):
     def autolabel(rects, xpos='center'):
         """
@@ -136,7 +130,7 @@ def saveNewLDAFig(idList, diffSum):
                 line = line.replace('(', '[').replace(')', ']')
                 line = json.loads(line)
                 topicProbabilityDict = generateTopicProbabilityDict(line, topicProbabilityDict)
-        avgTopicProbabilityDict(topicProbabilityDict, len(indexList))
+        # avgTopicProbabilityDict(topicProbabilityDict, len(indexList))
         saveProbablityBarChart(topicProbabilityDict, diffSum)
 
 
@@ -155,10 +149,13 @@ def iterateForBestResult(points):
         replaceGroups.append([p['id']])
         for p2 in p['pointsInDisk']:
             replaceGroups[index].append(p2['id'])
-
+    countDict = {}
+    for i, g in enumerate(replaceGroups):
+        countDict[i] = len(g)
+    countAsecIndexList = [k for k, v in sorted(countDict.items(), key=lambda obj: obj[1])]
     while (maxRatio > 0):
         cannotBetterList = []
-        for index, id1 in enumerate(activeIDList):
+        for index in countAsecIndexList:
             curDiskIDs = replaceGroups[index]
             copyActiveIDList = copy.deepcopy(activeIDList)
             for id2 in curDiskIDs:
@@ -167,7 +164,7 @@ def iterateForBestResult(points):
                 for textID in copyActiveIDList:
                     topicProbabilityDict = generateTopicProbabilityDict(idProbabilityDict[textID],
                                                                         topicProbabilityDict)
-                avgTopicProbabilityDict(topicProbabilityDict, len(activeIDList))
+                # avgTopicProbabilityDict(topicProbabilityDict, len(activeIDList))
                 r2 = getRatioRelationship(topicProbabilityDict)
                 ratio = compareRatioRelationshipList(r1, r2)
                 if (ratio < maxRatio):
@@ -183,32 +180,6 @@ def iterateForBestResult(points):
             else:
                 cannotBetterList.append(index)
         print('len' + str(len(cannotBetterList)))
-        """
-        for index, p1 in enumerate(activePointList):
-            print(index)
-            for p2 in p1['pointsInDisk']:
-                copyActiveIDList = copy.deepcopy(activeIDList)
-                for i in range(len(copyActiveIDList)):
-                    if copyActiveIDList[i] == p1['id']:
-                        copyActiveIDList[i] = p2['id']
-                        break
-                topicProbabilityDict = {}
-                for textID in copyActiveIDList:
-                    topicProbabilityDict = generateTopicProbabilityDict(idProbabilityDict[textID], topicProbabilityDict)
-                r2 = getRatioRelationship(topicProbabilityDict)
-                ratio = compareRatioRelationshipList(r1, r2)
-                if (ratio < maxRatio):
-                    activeIDList = copyActiveIDList
-                    maxRatio = ratio
-                    print(maxRatio)
-                    if maxRatio < 30:
-                        saveNewLDAFig(copyActiveIDList, maxRatio)
-                        with open('../data/iter/bestIterResult-{0}.json'.format(ratio), 'w', encoding='utf-8') as f:
-                            f.write(json.dumps(copyActiveIDList))
-                    break
-                else:
-                    continue
-        """
 
 
 if __name__ == '__main__':
@@ -226,24 +197,9 @@ if __name__ == '__main__':
             line = line.replace('(', '[').replace(')', ']')
             line = json.loads(line)
             topicProbabilityDict = generateTopicProbabilityDict(line, topicProbabilityDict)
-        avgTopicProbabilityDict(topicProbabilityDict, count)
+        # avgTopicProbabilityDict(topicProbabilityDict, count)
         saveProbablityBarChart(topicProbabilityDict, 'original')
         r1 = getRatioRelationship(topicProbabilityDict)
-
-    with open(g.ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r', encoding='utf-8') as f:
-        randomIndexSet = set()
-        while len(randomIndexSet) < 3003:
-            randomIndexSet.add(random.randint(0, 12861))
-        randomIndexList = list(randomIndexSet)
-        topicProbabilityDict = {}
-        for index, line in enumerate(f):
-            if index in randomIndexList:
-                line = line.strip('\n')
-                line = line.replace('(', '[').replace(')', ']')
-                line = json.loads(line)
-                topicProbabilityDict = generateTopicProbabilityDict(line, topicProbabilityDict)
-        avgTopicProbabilityDict(topicProbabilityDict, len(randomIndexList))
-        saveProbablityBarChart(topicProbabilityDict, 'random')
 
     with open(g.ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r', encoding='utf-8') as f:
         with open(g.dataPath + 'finalIDLocation.csv', 'r', encoding='utf-8') as idFile:
@@ -266,7 +222,7 @@ if __name__ == '__main__':
         topicProbabilityDict = {}
         for textID in idList:
             topicProbabilityDict = generateTopicProbabilityDict(idProbabilityDict[textID], topicProbabilityDict)
-        avgTopicProbabilityDict(topicProbabilityDict, len(idList))
+        # avgTopicProbabilityDict(topicProbabilityDict, len(idList))
         saveProbablityBarChart(topicProbabilityDict, 'afterSampling')
         r2 = getRatioRelationship(topicProbabilityDict)
         ratio = compareRatioRelationshipList(r1, r2)
