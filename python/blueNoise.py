@@ -12,6 +12,8 @@ import json
 import time
 import g
 import os
+import logging
+
 
 def getDistance(p1, p2):
     x1, y1, x2, y2 = p1['lat'], p1['lng'], p2['lat'], p2['lng']
@@ -151,9 +153,9 @@ def blueNoise(originalPoints, r):
     points = dereplication(originalPoints)
     overlapDict = getOverlapDict(originalPoints)
     overlapRate = round((len(originalPoints) - len(points)) / len(originalPoints), 2)
-    print('original points:' + str(len(originalPoints)))
-    print('overlap rate:' + str(overlapRate))
-    print('blue noise for ' + str(len(points)) + ' points')
+    logging.info('original points:' + str(len(originalPoints)))
+    logging.info('overlap rate:' + str(overlapRate))
+    logging.info('blue noise for ' + str(len(points)) + ' points')
     for p in points:
         allLat.append(p['lat'])
         allLng.append(p['lng'])
@@ -182,6 +184,7 @@ def blueNoise(originalPoints, r):
             initialActivePoint['status'] = 1
             initialActivePoint['coverByDisk'] = True
             samplePoints.append(initialActivePoint)
+            logging.info('sampling points:{0}'.format(len(samplePoints)))
             activePoints.append(initialActivePoint)
         randomActivePoint = activePoints[random.randint(
             0, len(activePoints) - 1)]
@@ -208,6 +211,7 @@ def blueNoise(originalPoints, r):
                 p1['coverByDisk'] = True
                 activePoints.append(p1)
                 samplePoints.append(p1)
+                logging.info('sampling points:{0}'.format(len(samplePoints)))
                 break
         else:
             randomActivePoint['status'] = 0
@@ -229,12 +233,13 @@ def blueNoise(originalPoints, r):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
     maxCount = 0
     maxR = 0
 
     # for r in range(30000, 0, -10000):
-    for r in [100000, 30000, 5000, 3000, 2000, 1000, 500, 200]:
-        r = 500
+    for r in [100000, 30000, 5000, 2000, 500, 200]:
+        r = 1000
         t1 = time.time()
         points = []
         with open(g.dataPath + 'finalIDLocation.csv', 'r', encoding='utf-8') as f:
@@ -255,8 +260,8 @@ if __name__ == '__main__':
                                                                                                     points))
         with open(recentBlueNoiseFilePath, 'w',
                   encoding='utf-8') as f:
-            print(str(r) + ' is ok,' + str((time.time() - t1) / 60))
-            print('-------------------')
+            logging.info(str(r) + ' is ok,' + str((time.time() - t1) / 60))
+            logging.info('-------------------')
             f.write(json.dumps(samplePoints))
             if (len(samplePoints) > maxCount):
                 maxCount = len(samplePoints)
