@@ -10,6 +10,7 @@ import Scatter from "./components/Scatter";
 import ScatterImg from "./components/ScatterImg";
 import WordCloud from "./components/WordCloud";
 import BarchartImg from "./components/BarchartImg";
+import River from "./components/River";
 class App extends React.Component {
   public render() {
     return (
@@ -21,6 +22,7 @@ class App extends React.Component {
         </div>
         <div className="middle panel panel-default">
           <Map />
+          <River />
         </div>
         <div className="right-side panel panel-default">
           <div className="scatter-div">

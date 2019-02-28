@@ -91,8 +91,7 @@ def centence_output(centence):
     return
 
 
-# 主函数
-def main():
+if __name__ == '__main__':
     url = g.dataPath + "cleanedData.txt"
     centence = centence_input(url)
     print("step1 success")
@@ -113,6 +112,3 @@ def main():
     print(sum)
     centence_output(out_centence)
     print("step3 success")
-
-
-main()

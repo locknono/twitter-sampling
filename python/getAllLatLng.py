@@ -41,7 +41,5 @@ def getBound():
         print(inBoundCount)
 
 
-t1 = time.time()
-#getAllLatLng()
-print(time.time() - t1)
-getBound()
+if __name__ == '__main__':
+    getBound()

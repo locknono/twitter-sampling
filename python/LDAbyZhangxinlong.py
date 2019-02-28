@@ -9,6 +9,8 @@ import numpy as np
 import g
 import os
 import time
+import json
+import matplotlib.pyplot as plt
 
 """
 ’asymmetric’: Uses a fixed normalized asymmetric prior of 1.0 / topicno.
@@ -165,11 +167,6 @@ for i in list1:
     target4.writelines(str(i) + str(nu) + "\r\n")
     nu += 1
 print('特征向量OK')
-
-import json
-import matplotlib.pyplot as plt
-import g
-import time
 
 
 def generateTopicProbabilityDict(probabilityForOneRow, topicProbabilityDict):
