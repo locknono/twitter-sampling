@@ -163,7 +163,7 @@ def blueNoise(originalPoints, r):
     kde = stats.gaussian_kde(dataForKDE)
 
     # @status: 0 for inactive,1 for active,None for neither active nor inactive
-    # if a point is inactive,then it's points between R and 2R must are all covered by disks
+    # if a point is inactive,then its points between R and 2R must are all covered by disks
     # but `a point is covered by disk` does not mean it is inactive
 
     for p in points:
