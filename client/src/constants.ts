@@ -8,3 +8,7 @@ export namespace padding {
   export const barChartPadding = 0.1;
   export const scatterPadding = 0.1;
 }
+
+export namespace color {
+  export const originalBarColor = "rgb(13, 157, 255)";
+}
