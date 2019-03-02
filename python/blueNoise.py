@@ -241,7 +241,7 @@ if __name__ == '__main__':
 
     # for r in range(30000, 0, -10000):
     for r in [100000, 25000, 6000, 1250, 300]:
-        r = 500
+        r = 100
         t1 = time.time()
         points = []
         with open(g.dataPath + 'finalIDLocation.csv', 'r', encoding='utf-8') as f:

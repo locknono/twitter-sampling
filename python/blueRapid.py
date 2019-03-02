@@ -4,6 +4,7 @@ import random
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+from blueRapidEstimate import getRalationshipList, compareRelationshipList
 
 
 class Point():
@@ -15,12 +16,19 @@ class Point():
 Disk = List[Point]
 
 
-def getEstimates(samples: List[Point], dimension: int, S: int) -> List[float]:
+def getEpsilon(m: int, S: float, dimension: int, delta: float, c: float):
+    epsilon = c * S * math.sqrt(
+        (1 - (m - 1) / S) * (2 * math.log(math.log(m, math.e), math.e) + math.log((math.pow(math.pi, 2) * dimension) / (
+                3 * delta), math.e))) / (2 * m)
+    return epsilon
+
+
+def getEstimates(samples: List[Point], dimension: int) -> List[float]:
     estimates = np.full(dimension, 0).tolist()
     for p in samples:
         for i in range(len(p.values)):
-            estimates[i] += p.values[i] * S
-    logging.info('estimates:' + str(estimates))
+            estimates[i] += p.values[i]
+    logging.info('initial estimates:' + str(estimates))
     return estimates
 
 
@@ -49,22 +57,18 @@ def ifIntervalsDonotIntersect(intervals: List[float]):
     return intersectFlag
 
 
-def blueRapid(disks: List[Disk], dimension: int, delta: float):
+def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
     S = 0
     for disk in disks:
         S += len(disk)
     logging.info('S:' + str(S))
 
-    es = []
-    BASE = 10
-    for m in range(2, 100):
-        epsilon = S * math.sqrt(
-            (2 * math.log(math.log(m, BASE)) + math.log((math.pow(math.pi, 2) * dimension) / (3 * delta),
-                                                        BASE)) / 2 * m)
-        es.append(epsilon)
-    plt.bar(np.arange(len(es)), es)
-    plt.show()
-
+    for i in range(len(disks)):
+        for j in range(len(disks[i])):
+            for m in range(len(disks[i][j].values)):
+                if disks[i][j].values[m] > 1:
+                    continue
+                disks[i][j].values[m] = S * disks[i][j].values[m]
     # step 1 :Initialize m ← 1;
     m: int = 1
 
@@ -76,35 +80,33 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float):
 
     initialSamples = [randomPoint]
 
-    estimates = getEstimates(initialSamples, dimension, S)
+    estimates = getEstimates(initialSamples, dimension)
 
     A = range(len(randomPoint.values))
 
+    random.shuffle(disks)
     for index, disk in enumerate(disks):
         p = disk[random.randint(0, len(disk) - 1)]
 
         m += 1
 
-
-        BASE=10
-        epsilon = S * math.sqrt(
-            (2 * math.log(math.log(m, BASE)) + math.log((math.pow(math.pi, 2) * dimension) / (3 * delta),
-                                                        BASE)) / 2 * m)
+        epsilon = getEpsilon(m, S, dimension, delta, c)
 
         for i in range(len(A)):
-            estimates[i] = S * (((m - 1) / m) * estimates[i] + (1 / m) * p.values[i])
-
-        print('epsilon' + str(epsilon))
+            estimates[i] = (((m - 1) / m) * estimates[i] + (1 / m) * p.values[i])
         intervals = getIntervals(estimates, epsilon)
 
         if (ifIntervalsDonotIntersect(intervals) == True):
             continue
         else:
             # plt.bar(np.arange(len(estimates)), estimates)
+            # plt.show()
             logging.info('complete')
+            logging.info('m:' + str(m))
             logging.info('intervals:' + str(intervals))
             logging.info('estimates:' + str(estimates))
             return estimates
+    return None
 
 
 if __name__ == '__main__':
