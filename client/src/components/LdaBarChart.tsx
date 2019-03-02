@@ -2,6 +2,7 @@ import * as React from "react";
 import * as d3 from "d3";
 import { padding, color } from "../constants";
 import { setData } from "../actions/setDataAction";
+import { setCurTopic } from "../actions/setUIState";
 import { connect } from "react-redux";
 import dataTree from "../reducers/dataTree";
 interface Props {}
@@ -14,6 +15,7 @@ interface State {
 
 interface Props {
   setData: typeof setData;
+  setCurTopic: typeof setCurTopic;
   original: number[];
   sampling: number[];
 }
@@ -30,7 +32,8 @@ const mapStateToProps = (state: any, ownProps: any) => {
 };
 
 const mapDispatchToProps = {
-  setData
+  setData,
+  setCurTopic
 };
 
 class LdaBarChart extends React.Component<Props, State> {
@@ -40,6 +43,13 @@ class LdaBarChart extends React.Component<Props, State> {
       svgWidth: null,
       svgHeight: null
     };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick(barIndex: number) {
+    console.log("barIndex: ", barIndex);
+    const { setCurTopic } = this.props;
+    setCurTopic(barIndex);
   }
 
   componentDidMount() {
@@ -99,6 +109,7 @@ class LdaBarChart extends React.Component<Props, State> {
             width={xScale.bandwidth()}
             height={yScale(0) - yScale(e)}
             fill={color.originalBarColor}
+            onClick={() => this.handleClick(i)}
           />
         );
       });
@@ -112,6 +123,7 @@ class LdaBarChart extends React.Component<Props, State> {
             width={xScale.bandwidth()}
             height={yScaleForSampling(0) - yScaleForSampling(e)}
             fill={color.originalBarColor}
+            onClick={() => this.handleClick(i)}
           />
         );
       });
