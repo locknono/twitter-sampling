@@ -1,14 +1,21 @@
 import * as React from "react";
 import * as d3 from "d3";
 import { padding, color } from "../constants";
+import { setData } from "../actions/setDataAction";
+import { connect } from "react-redux";
+import dataTree from "../reducers/dataTree";
 interface Props {}
 
 interface State {
-  original: number[];
-  sampling: number[];
   iter?: number[];
   svgWidth: number | null;
   svgHeight: number | null;
+}
+
+interface Props {
+  setData: typeof setData;
+  original: number[];
+  sampling: number[];
 }
 
 interface fetchedBarData {
@@ -16,22 +23,32 @@ interface fetchedBarData {
   sampling: number[];
   iter?: number[];
 }
+
+const mapStateToProps = (state: any, ownProps: any) => {
+  const { originalBarData, samplingBarData } = state.dataTree;
+  return { original: originalBarData, sampling: samplingBarData };
+};
+
+const mapDispatchToProps = {
+  setData
+};
+
 class LdaBarChart extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      original: [],
-      sampling: [],
       svgWidth: null,
       svgHeight: null
     };
   }
 
   componentDidMount() {
+    const { setData } = this.props;
     fetch("./barData.json")
       .then(res => res.json())
       .then((data: fetchedBarData) => {
-        this.setState(data);
+        setData("ORIGINAL_BARDATA", data.original);
+        setData("SAMPLING_BARDATA", data.sampling);
       });
 
     const svgWidth = parseFloat(d3.select("#barchart-svg").style("width"));
@@ -41,7 +58,8 @@ class LdaBarChart extends React.Component<Props, State> {
   }
 
   render() {
-    const { original, sampling, svgHeight, svgWidth } = this.state;
+    const { svgHeight, svgWidth } = this.state;
+    const { original, sampling } = this.props;
 
     let originalBars = null,
       samplingBars = null;
@@ -108,4 +126,7 @@ class LdaBarChart extends React.Component<Props, State> {
   }
 }
 
-export default LdaBarChart;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LdaBarChart);
