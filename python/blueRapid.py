@@ -46,15 +46,14 @@ def getIntervals(estimates: List[float], epsilon: float) -> List[float]:
     return intervals
 
 
-def ifIntervalsDonotIntersect(intervals: List[float]):
-    intersectFlag = False
+def ifIntervalsIntersect(intervals: List[float]):
     for i in range(len(intervals)):
         for j in range(i, len(intervals)):
             if intervals[i][0] > intervals[j][0] and intervals[i][0] < intervals[j][1]:
-                intersectFlag = True
+                return True
             if intervals[i][1] > intervals[j][0] and intervals[i][1] < intervals[j][1]:
-                intersectFlag = True
-    return intersectFlag
+                return True
+    return False
 
 
 def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
@@ -63,6 +62,7 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
         S += len(disk)
     logging.info('S:' + str(S))
 
+    # zoom
     for i in range(len(disks)):
         for j in range(len(disks[i])):
             for m in range(len(disks[i][j].values)):
@@ -94,13 +94,10 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
 
         for i in range(len(A)):
             estimates[i] = (((m - 1) / m) * estimates[i] + (1 / m) * p.values[i])
+
         intervals = getIntervals(estimates, epsilon)
 
-        if (ifIntervalsDonotIntersect(intervals) == True):
-            continue
-        else:
-            # plt.bar(np.arange(len(estimates)), estimates)
-            # plt.show()
+        if (ifIntervalsIntersect(intervals) == False):
             logging.info('complete')
             logging.info('m:' + str(m))
             logging.info('intervals:' + str(intervals))

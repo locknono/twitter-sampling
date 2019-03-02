@@ -30,7 +30,7 @@ for k in idLdaDict:
 l1 = getRalationshipList(originalValues)
 
 ratioList = []
-for i in range(0, 100):
+for i in range(0, 10):
     estimates = blueRapid(disks, dimension=g.topicNumber, delta=0.05, c=1)
     if estimates != None:
         l2 = getRalationshipList(estimates)
