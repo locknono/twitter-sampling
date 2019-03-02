@@ -216,7 +216,9 @@ def blueNoise(originalPoints, r):
         else:
             randomActivePoint['status'] = 0
             activePoints.remove(randomActivePoint)
+    print(ifAllPointsInDisk(points, samplePoints))
     setSamplePointsToOutputFormat(points, samplePoints)
+
     for p in samplePoints:
         for i in range(len(p['pointsInDisk']) - 1, 0, -1):
             coord = (p['pointsInDisk'][i]['lat'], p['pointsInDisk'][i]['lng'])
@@ -238,7 +240,7 @@ if __name__ == '__main__':
     maxR = 0
 
     # for r in range(30000, 0, -10000):
-    for r in [100000, 30000, 5000, 2000, 500, 200]:
+    for r in [100000, 25000, 6000, 1250, 300]:
         r = 500
         t1 = time.time()
         points = []

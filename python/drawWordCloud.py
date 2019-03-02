@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import g
 from wordcloud import STOPWORDS
 
-
 if __name__ == '__main__':
     try:
         os.mkdir(g.dataPath + 'wordCloud/')

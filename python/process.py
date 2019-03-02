@@ -1,4 +1,4 @@
-# @author zhouxiaoyun,zhangxinlong,guozhiyong
+# @author zhouxiaoyun,zhangxinlong
 import csv
 import codecs
 from nltk.stem.porter import PorterStemmer

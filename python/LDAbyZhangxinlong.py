@@ -21,7 +21,7 @@ try:
 except Exception as e:
     print(e)
 
-ALPHA = 0.01
+ALPHA = 0.25
 
 parameterText = 'alpha={0}'.format(ALPHA)
 ldaDir = ''
@@ -103,7 +103,7 @@ print(len(corpus))
 
 ldamodel = gensim.models.ldamodel.LdaModel(corpus, num_topics=g.topicNumber, alpha=ALPHA, eval_every=5,
                                            id2word=dictionary,
-                                           passes=g.topicNumber)
+                                           passes=20)
 
 # 模型储存
 temp_file = datapath("D:\model_NY")
@@ -206,3 +206,5 @@ with open(ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r
         line = json.loads(line)
         topicProbabilityDict = generateTopicProbabilityDict(line, topicProbabilityDict)
     saveProbablityBarChart(topicProbabilityDict)
+
+os.system('python ./getIDLdaProDict.py')
