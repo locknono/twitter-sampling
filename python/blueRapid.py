@@ -6,6 +6,7 @@ import math
 import matplotlib.pyplot as plt
 from blueRapidEstimate import getRalationshipList, compareRelationshipList, getTopicRelationsByIndex
 import copy
+import time
 
 class Point():
     def __init__(self, id: str, values: List[float]):
@@ -108,8 +109,11 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
 
     failFlag = False
     while (len(A) > 0):
+        random.shuffle(disks)
         for index, disk in enumerate(disks):
-            p = disk[random.randint(0, len(disk) - 1)]
+            if (len(disk) == 0): continue
+            randomIndex = 0 if len(disk) == 1 else random.randint(0, len(disk) - 1)
+            p = disk[randomIndex]
             m = m + 1
             logging.info('m：' + str(m))
             epsilon = getEpsilon(m, S, dimension, delta, c)
@@ -157,7 +161,7 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
                 logging.info(str(A))
                 estimates = preEstimates
                 intervals = preIntervals
-
+                disk.remove(p)
                 # remove topic does not intersect from A
                 for index in range(len(A) - 1, 0 - 1, -1):
                     if index in preIndicesNotInA:
