@@ -7,6 +7,8 @@ import BarChart from "./components/BarChart";
 import ControlPanel from "./components/ControlPanel";
 import Heading from "./components/Heading";
 import Scatter from "./components/Scatter";
+import LdaScatter from "./components/LdaScatter";
+
 import ScatterImg from "./components/ScatterImg";
 import WordCloud from "./components/WordCloud";
 import BarchartImg from "./components/BarchartImg";
@@ -29,7 +31,7 @@ class App extends React.Component {
           <div className="scatter-div">
             <Heading title="LDA Scatter" />
             {/* <Scatter /> */}
-            <ScatterImg />
+            <LdaScatter />
           </div>
 
           <div className="barchart-div">

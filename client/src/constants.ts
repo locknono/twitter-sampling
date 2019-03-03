@@ -11,4 +11,5 @@ export namespace padding {
 
 export namespace color {
   export const originalBarColor = "rgb(13, 157, 255)";
+  export const scatterColor = "rgb(13, 157, 255)";
 }
