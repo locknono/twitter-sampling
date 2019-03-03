@@ -28,7 +28,6 @@ def getEstimates(samples: List[Point], dimension: int) -> List[float]:
     for p in samples:
         for i in range(len(p.values)):
             estimates[i] += p.values[i]
-    logging.info('initial estimates:' + str(estimates))
     return estimates
 
 
@@ -105,22 +104,26 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
             m += 1
             epsilon = getEpsilon(m, S, dimension, delta, c)
 
-            if (epsilon <= 0):
-                failFlag = True
-                break
+
             for i in range(len(A)):
                 estimates[i] = (((m - 1) / m) * estimates[i] + (1 / m) * p.values[i])
             intervals = getIntervals(estimates, epsilon)
 
             indices = getIndicesDonotIntersect(intervals)
 
-            for i in range(len(A) - 1, 0, -1):
+            
+            for i in range(len(A) - 1, 0 - 1, -1):
                 if i in indices:
                     A.pop(i)
+            if (epsilon <= 0 and len(A) > 0):
+                failFlag = True
+                break
         if failFlag == True:
             logging.error('fail')
             logging.error('len(A):' + str(len(A)))
             logging.error('A:' + str(A))
+            logging.error('intervals:' + str(intervals))
+            logging.error('estimates:' + str(estimates))
             break
     else:
         logging.info('complete')
