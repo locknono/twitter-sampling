@@ -104,20 +104,44 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
             m += 1
             epsilon = getEpsilon(m, S, dimension, delta, c)
 
-
+            # preEstimates and preIntervals,if fits,use this point,else,continue
+            preEstimates = [v for v in estimates]
             for i in range(len(A)):
-                estimates[i] = (((m - 1) / m) * estimates[i] + (1 / m) * p.values[i])
-            intervals = getIntervals(estimates, epsilon)
+                preEstimates[i] = (((m - 1) / m) * estimates[i] + (1 / m) * p.values[i])
+            preIntervals = getIntervals(preEstimates, epsilon)
 
-            indices = getIndicesDonotIntersect(intervals)
+            # fits:indices not in A are the same with indices donot intersect
 
-            
-            for i in range(len(A) - 1, 0 - 1, -1):
-                if i in indices:
-                    A.pop(i)
-            if (epsilon <= 0 and len(A) > 0):
-                failFlag = True
-                break
+            donotIntersectIndices = getIndicesDonotIntersect(preIntervals)
+            continueFlag = False
+
+            # indices not in A:
+            fixedIndices = [i for i in range(dimension)]
+            for index in A:
+                if index in fixedIndices:
+                    fixedIndices.remove(index)
+
+            for index in fixedIndices:
+                if index not in donotIntersectIndices:
+                    continueFlag = True
+                    break
+            if continueFlag == True:
+                continue
+            else:  # fits
+                estimates = preEstimates
+                intervals = preIntervals
+                donotIntersectIndices = getIndicesDonotIntersect(intervals)
+
+                # remove topic does not intersect from A
+                for index in range(len(A) - 1, 0 - 1, -1):
+                    if index in donotIntersectIndices:
+                        A.pop(index)
+
+                if (epsilon <= 0 and len(A) > 0):
+                    failFlag = True
+                    break
+                if len(A) == 0:
+                    break
         if failFlag == True:
             logging.error('fail')
             logging.error('len(A):' + str(len(A)))
@@ -127,6 +151,7 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
             break
     else:
         logging.info('complete')
+        logging.info('epsilon:' + str(epsilon))
         logging.info('m:' + str(m))
         logging.info('A:' + str(A))
         logging.info('intervals:' + str(intervals))
