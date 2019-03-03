@@ -1,3 +1,3 @@
 interface ScatterData {
-  [index: string]: number[];
+  [index: string]: [number, number];
 }

@@ -8,12 +8,13 @@ import ControlPanel from "./components/ControlPanel";
 import Heading from "./components/Heading";
 import Scatter from "./components/Scatter";
 import LdaScatter from "./components/LdaScatter";
-
+import LdaScatterCanvas from "./components/LdaScatterCanvas";
 import ScatterImg from "./components/ScatterImg";
 import WordCloud from "./components/WordCloud";
 import BarchartImg from "./components/BarchartImg";
 import River from "./components/River";
 import LdaBarChart from "./components/LdaBarChart";
+
 class App extends React.Component {
   public render() {
     return (
@@ -31,7 +32,7 @@ class App extends React.Component {
           <div className="scatter-div">
             <Heading title="LDA Scatter" />
             {/* <Scatter /> */}
-            <LdaScatter />
+            <LdaScatterCanvas />
           </div>
 
           <div className="barchart-div">
