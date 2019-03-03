@@ -4,8 +4,8 @@ import random
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from blueRapidEstimate import getRalationshipList, compareRelationshipList
-
+from blueRapidEstimate import getRalationshipList, compareRelationshipList, getTopicRelationsByIndex
+import copy
 
 class Point():
     def __init__(self, id: str, values: List[float]):
@@ -74,6 +74,16 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
         S += len(disk)
     logging.info('S:' + str(S))
 
+    vs = np.full(dimension, 0).tolist()
+    for disk in disks:
+        for p in disk:
+            for i in range(len(p.values)):
+                vs[i] += p.values[i]
+
+    r1 = getTopicRelationsByIndex(vs)
+    re1 = getRalationshipList(vs)
+    print(r1)
+
     # zoom
     for i in range(len(disks)):
         for j in range(len(disks[i])):
@@ -101,33 +111,46 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
         random.shuffle(disks)
         for index, disk in enumerate(disks):
             p = disk[random.randint(0, len(disk) - 1)]
-            m += 1
+            m = m + 1
+            logging.info('m：' + str(m))
             epsilon = getEpsilon(m, S, dimension, delta, c)
-
             # preEstimates and preIntervals,if fits,use this point,else,continue
-            preEstimates = [v for v in estimates]
+            preEstimates = copy.deepcopy(estimates)
             for i in range(len(A)):
                 preEstimates[i] = (((m - 1) / m) * estimates[i] + (1 / m) * p.values[i])
             preIntervals = getIntervals(preEstimates, epsilon)
-
+            r2 = getTopicRelationsByIndex(preEstimates)
             # fits:indices not in A are the same with indices donot intersect
 
-            donotIntersectIndices = getIndicesDonotIntersect(preIntervals)
             continueFlag = False
 
             # indices not in A:
-            fixedIndices = [i for i in range(dimension)]
-            for index in A:
-                if index in fixedIndices:
-                    fixedIndices.remove(index)
+            preIndicesNotInA = getIndicesDonotIntersect(preIntervals)
+            # logging.info('preIndicesNotInA' + str(preIndicesNotInA))
+            for i in range(len(preIndicesNotInA)):
+                for j in range(len(preIndicesNotInA)):
+                    index1 = preIndicesNotInA[i]
+                    index2 = preIndicesNotInA[j]
+                    if r1[index1][index2] != r2[index1][index2]:
+                        # logging.info(str(index1) + '-' + str(index2))
+                        continueFlag = True
 
-            for index in fixedIndices:
-                if index not in donotIntersectIndices:
-                    continueFlag = True
-                    break
             if continueFlag == True:
+                logging.info('continue')
+                m = m - 1
+                re2 = getRalationshipList(estimates)
+                ratio = compareRelationshipList(re1, re2)
+                logging.info('ratio：' + str(ratio))
+                logging.info('m：' + str(m))
+
+                logging.info('preEs：' + str(preEstimates))
+                logging.info('preInts：' + str(preIntervals))
+                #logging.info('p.values：' + str(p.values))
+
                 continue
             else:  # fits
+                logging.info('fits')
+                logging.info(str(A))
                 estimates = preEstimates
                 intervals = preIntervals
                 donotIntersectIndices = getIndicesDonotIntersect(intervals)
