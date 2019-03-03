@@ -108,7 +108,6 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
 
     failFlag = False
     while (len(A) > 0):
-        random.shuffle(disks)
         for index, disk in enumerate(disks):
             p = disk[random.randint(0, len(disk) - 1)]
             m = m + 1
@@ -132,7 +131,7 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
                     index1 = preIndicesNotInA[i]
                     index2 = preIndicesNotInA[j]
                     if r1[index1][index2] != r2[index1][index2]:
-                        # logging.info(str(index1) + '-' + str(index2))
+                        logging.info(str(index1) + '-' + str(index2))
                         continueFlag = True
 
             if continueFlag == True:
@@ -140,11 +139,16 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
                 m = m - 1
                 re2 = getRalationshipList(estimates)
                 ratio = compareRelationshipList(re1, re2)
+
+                logging.info('A：' + str(A))
+                logging.info('preIndicesNotInA：' + str(preIndicesNotInA))
                 logging.info('ratio：' + str(ratio))
                 logging.info('m：' + str(m))
-
+                logging.info('oriEs：' + str(vs))
                 logging.info('preEs：' + str(preEstimates))
                 logging.info('preInts：' + str(preIntervals))
+                logging.info('-----------------------')
+
                 #logging.info('p.values：' + str(p.values))
 
                 continue
@@ -153,11 +157,10 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
                 logging.info(str(A))
                 estimates = preEstimates
                 intervals = preIntervals
-                donotIntersectIndices = getIndicesDonotIntersect(intervals)
 
                 # remove topic does not intersect from A
                 for index in range(len(A) - 1, 0 - 1, -1):
-                    if index in donotIntersectIndices:
+                    if index in preIndicesNotInA:
                         A.pop(index)
 
                 if (epsilon <= 0 and len(A) > 0):
