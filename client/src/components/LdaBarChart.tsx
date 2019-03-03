@@ -18,6 +18,7 @@ interface Props {
   setCurTopic: typeof setCurTopic;
   original: number[];
   sampling: number[];
+  curTopic: CurTopic;
 }
 
 interface fetchedBarData {
@@ -28,7 +29,8 @@ interface fetchedBarData {
 
 const mapStateToProps = (state: any, ownProps: any) => {
   const { originalBarData, samplingBarData } = state.dataTree;
-  return { original: originalBarData, sampling: samplingBarData };
+  const { curTopic } = state.uiState;
+  return { original: originalBarData, sampling: samplingBarData, curTopic };
 };
 
 const mapDispatchToProps = {
@@ -46,7 +48,7 @@ class LdaBarChart extends React.Component<Props, State> {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick(barIndex: number) {
+  handleClick(barIndex: CurTopic) {
     const { setCurTopic } = this.props;
     setCurTopic(barIndex);
   }
@@ -68,7 +70,7 @@ class LdaBarChart extends React.Component<Props, State> {
 
   render() {
     const { svgHeight, svgWidth } = this.state;
-    const { original, sampling } = this.props;
+    const { original, sampling, curTopic } = this.props;
 
     let originalBars = null,
       samplingBars = null;
@@ -100,7 +102,10 @@ class LdaBarChart extends React.Component<Props, State> {
         ]);
 
       originalBars = original.map((e, i) => {
-        console.log("i: ", i);
+        const fillColor =
+          curTopic === undefined || curTopic !== i
+            ? color.originalBarColor
+            : color.brighterBarColor;
         return (
           <rect
             key={e}
@@ -108,13 +113,17 @@ class LdaBarChart extends React.Component<Props, State> {
             y={yScale(e)}
             width={xScale.bandwidth()}
             height={yScale(0) - yScale(e)}
-            fill={color.originalBarColor}
+            fill={fillColor}
             onClick={() => this.handleClick(i)}
           />
         );
       });
 
       samplingBars = sampling.map((e, i) => {
+        const fillColor =
+          curTopic === undefined || curTopic !== i
+            ? color.originalBarColor
+            : color.brighterBarColor;
         return (
           <rect
             key={e}
@@ -122,7 +131,7 @@ class LdaBarChart extends React.Component<Props, State> {
             y={yScaleForSampling(e)}
             width={xScale.bandwidth()}
             height={yScaleForSampling(0) - yScaleForSampling(e)}
-            fill={color.originalBarColor}
+            fill={fillColor}
             onClick={() => this.handleClick(i)}
           />
         );
