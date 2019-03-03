@@ -137,7 +137,10 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
                     if r1[index1][index2] != r2[index1][index2]:
                         logging.info(str(index1) + '-' + str(index2))
                         continueFlag = True
-
+                        break
+                else:
+                    continue
+                break
             if continueFlag == True:
                 logging.info('continue')
                 m = m - 1
