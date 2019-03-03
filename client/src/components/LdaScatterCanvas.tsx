@@ -5,19 +5,23 @@ import { color, padding } from "../constants";
 import { connect } from "react-redux";
 
 interface Props {
-  setData: typeof setData;
   scatterData: ScatterData;
+  docPrData: any;
+  curTopic: CurTopic;
+  setData: typeof setData;
 }
 
 const mapState = (state: any) => {
-  const { scatterData } = state.dataTree;
-  return { scatterData };
+  const { scatterData, docPrData } = state.dataTree;
+  const { curTopic } = state.uiState;
+
+  return { scatterData, docPrData, curTopic };
 };
 const mapDispatch = {
   setData
 };
 function LdaScatterCanvasCanvas(props: Props) {
-  const { setData, scatterData } = props;
+  const { setData, scatterData, docPrData, curTopic } = props;
   const [width, setWidth] = React.useState<number | undefined>(undefined);
   const [height, setHeight] = React.useState<number | undefined>(undefined);
   const [ctx, setCtx] = React.useState<CanvasRenderingContext2D | null>(null);
@@ -81,6 +85,38 @@ function LdaScatterCanvasCanvas(props: Props) {
     }
   });
 
+  React.useEffect(() => {
+    const points = [];
+    if (!curTopic || !ctx || !width || !height) return;
+    for (let k in docPrData) {
+      const maxIndex = docPrData[k].indexOf(Math.max(...docPrData[k]));
+      if (maxIndex === curTopic) {
+        points.push(scatterData[k]);
+      }
+    }
+    const xScale = d3
+      .scaleLinear()
+      .domain([xMin, xMax])
+      .range([
+        width * padding.scatterPadding,
+        width * (1 - padding.scatterPadding)
+      ]);
+    ctx.fillStyle = "black";
+
+    const yScale = d3
+      .scaleLinear()
+      .domain([yMin, yMax])
+      .range([
+        height * padding.scatterPadding,
+        height * (1 - padding.scatterPadding)
+      ]);
+    for (let i = 0; i < points.length; i++) {
+      ctx.beginPath();
+      ctx.arc(xScale(points[i][0]), yScale(points[i][1]), 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+
   return (
     <canvas id="scatter-canvas" ref={canvasRef} width={width} height={height} />
   );
@@ -92,6 +128,7 @@ async function fetchAndSetScatterData(url: string, set: typeof setData) {
   set(SCATTER_DATA, data);
 }
 
+function getCoordByID(id: string) {}
 export default connect(
   mapState,
   mapDispatch

@@ -1,7 +1,7 @@
 import { SET_CUR_TOPIC } from "../actions/setUIState";
 
 interface UIState {
-  curTopic: number | undefined;
+  curTopic: CurTopic;
 }
 
 const initialState: UIState = { curTopic: undefined };

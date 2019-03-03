@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import { createStore, combineReducers } from "redux";
 import dataTree from "./reducers/dataTree";
 import { uiState } from "./reducers/uiState";
+import { DOC_PR_DATA, setData } from "./actions/setDataAction";
 //import dataTree from "./reducers/dataTree";
 
 const rootReducer = combineReducers({
@@ -17,6 +18,11 @@ const rootReducer = combineReducers({
 
 const store = createStore(rootReducer);
 
+fetch("./idLdaDict.json")
+  .then(res => res.json())
+  .then(data => {
+    store.dispatch(setData(DOC_PR_DATA, data));
+  });
 ReactDOM.render(
   <Provider store={store}>
     <App />

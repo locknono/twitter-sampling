@@ -1,3 +1,5 @@
 interface ScatterData {
-  [index: string]: [number, number];
+  [id: string]: [number, number];
 }
+
+type CurTopic = number | undefined;

@@ -1,13 +1,15 @@
 import {
   SET_ORIGINAL_BARDATA,
   SET_SAMPLING_BARDATA,
-  SET_SCATTER_DATA
+  SET_SCATTER_DATA,
+  SET_DOC_PR_DATA
 } from "../actions/setDataAction";
 
 const initialState = {
   originalBarData: [],
   samplingBarData: [],
-  scatterData: null
+  scatterData: null,
+  ducPrData: null
 };
 
 export default function dataTree(state = initialState, action: any) {
@@ -20,6 +22,9 @@ export default function dataTree(state = initialState, action: any) {
       break;
     case SET_SCATTER_DATA:
       return { ...state, scatterData: action.data };
+      break;
+    case SET_DOC_PR_DATA:
+      return { ...state, docPrData: action.data };
       break;
     default:
       return state;

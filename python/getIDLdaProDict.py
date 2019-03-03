@@ -21,3 +21,5 @@ if __name__ == '__main__':
 
     with open(g.ldaDir + 'idLdaDict.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(outputDict))
+    with open('../client/public/idLdaDict.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(outputDict))
