@@ -56,6 +56,19 @@ def ifIntervalsIntersect(intervals: List[float]):
     return False
 
 
+def getIndicesDonotIntersect(intervals: List[float]):
+    l = []
+    for i in range(len(intervals)):
+        for j in range(i, len(intervals)):
+            if intervals[i][0] > intervals[j][0] and intervals[i][0] < intervals[j][1]:
+                break
+            if intervals[i][1] > intervals[j][0] and intervals[i][1] < intervals[j][1]:
+                break
+        else:
+            l.append(i)
+    return l
+
+
 def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
     S = 0
     for disk in disks:
@@ -82,28 +95,42 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
 
     estimates = getEstimates(initialSamples, dimension)
 
-    A = range(len(randomPoint.values))
+    A = [i for i in range(len(randomPoint.values))]
 
-    random.shuffle(disks)
-    for index, disk in enumerate(disks):
-        p = disk[random.randint(0, len(disk) - 1)]
+    failFlag = False
+    while (len(A) > 0):
+        random.shuffle(disks)
+        for index, disk in enumerate(disks):
+            p = disk[random.randint(0, len(disk) - 1)]
+            m += 1
+            epsilon = getEpsilon(m, S, dimension, delta, c)
 
-        m += 1
+            if (epsilon <= 0):
+                failFlag = True
+                break
+            for i in range(len(A)):
+                estimates[i] = (((m - 1) / m) * estimates[i] + (1 / m) * p.values[i])
+            intervals = getIntervals(estimates, epsilon)
 
-        epsilon = getEpsilon(m, S, dimension, delta, c)
+            indices = getIndicesDonotIntersect(intervals)
 
-        for i in range(len(A)):
-            estimates[i] = (((m - 1) / m) * estimates[i] + (1 / m) * p.values[i])
-
-        intervals = getIntervals(estimates, epsilon)
-
-        if (ifIntervalsIntersect(intervals) == False):
-            logging.info('complete')
-            logging.info('m:' + str(m))
-            logging.info('intervals:' + str(intervals))
-            logging.info('estimates:' + str(estimates))
-            return estimates
-    return None
+            for i in range(len(A) - 1, 0, -1):
+                if i in indices:
+                    A.pop(i)
+        if failFlag == True:
+            logging.error('fail')
+            logging.error('len(A):' + str(len(A)))
+            logging.error('A:' + str(A))
+            break
+    else:
+        logging.info('complete')
+        logging.info('m:' + str(m))
+        logging.info('A:' + str(A))
+        logging.info('intervals:' + str(intervals))
+        logging.info('estimates:' + str(estimates))
+    if failFlag == True:
+        return None
+    return estimates
 
 
 if __name__ == '__main__':

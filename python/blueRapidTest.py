@@ -30,7 +30,7 @@ for k in idLdaDict:
 l1 = getRalationshipList(originalValues)
 
 ratioList = []
-for i in range(0, 10):
+for i in range(0, 1):
     estimates = blueRapid(disks, dimension=g.topicNumber, delta=0.05, c=1)
     if estimates != None:
         l2 = getRalationshipList(estimates)
@@ -46,4 +46,7 @@ for v in ratioList:
         sum += v
         count += 1
 
-print(sum / count)
+try:
+    print('equal ratio:' + sum / count)
+except Exception as e:
+    pass

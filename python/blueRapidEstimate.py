@@ -13,7 +13,6 @@ def getRalationshipList(estimates: List[float]):
 
 
 def compareRelationshipList(l1, l2):
-    print(l1)
     equalCount = 0
     for i in range(len(l1)):
         if l1[i] == l2[i]:
