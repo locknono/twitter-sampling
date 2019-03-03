@@ -1,12 +1,12 @@
 import * as React from "react";
 import * as d3 from "d3";
 import { setData, SCATTER_DATA } from "../actions/setDataAction";
-import { color, padding } from "../constants";
+import { color, padding, scatterRadius } from "../constants";
 import { connect } from "react-redux";
 
 interface Props {
   scatterData: ScatterData;
-  docPrData: any;
+  docPrData: DocPrData;
   curTopic: CurTopic;
   setData: typeof setData;
 }
@@ -76,7 +76,7 @@ function LdaScatterCanvasCanvas(props: Props) {
         ctx.arc(
           xScale(points[i][0]),
           yScale(points[i][1]),
-          0.5,
+          scatterRadius,
           0,
           Math.PI * 2
         );
@@ -87,7 +87,7 @@ function LdaScatterCanvasCanvas(props: Props) {
 
   React.useEffect(() => {
     const points = [];
-    if (!curTopic || !ctx || !width || !height) return;
+    if (curTopic === undefined || !ctx || !width || !height) return;
     for (let k in docPrData) {
       const maxIndex = docPrData[k].indexOf(Math.max(...docPrData[k]));
       if (maxIndex === curTopic) {
@@ -102,7 +102,6 @@ function LdaScatterCanvasCanvas(props: Props) {
         width * (1 - padding.scatterPadding)
       ]);
     ctx.fillStyle = "black";
-
     const yScale = d3
       .scaleLinear()
       .domain([yMin, yMax])
@@ -112,7 +111,13 @@ function LdaScatterCanvasCanvas(props: Props) {
       ]);
     for (let i = 0; i < points.length; i++) {
       ctx.beginPath();
-      ctx.arc(xScale(points[i][0]), yScale(points[i][1]), 0.5, 0, Math.PI * 2);
+      ctx.arc(
+        xScale(points[i][0]),
+        yScale(points[i][1]),
+        scatterRadius,
+        0,
+        Math.PI * 2
+      );
       ctx.fill();
     }
   });

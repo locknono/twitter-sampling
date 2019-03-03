@@ -47,7 +47,6 @@ class LdaBarChart extends React.Component<Props, State> {
   }
 
   handleClick(barIndex: number) {
-    console.log("barIndex: ", barIndex);
     const { setCurTopic } = this.props;
     setCurTopic(barIndex);
   }
@@ -101,6 +100,7 @@ class LdaBarChart extends React.Component<Props, State> {
         ]);
 
       originalBars = original.map((e, i) => {
+        console.log("i: ", i);
         return (
           <rect
             key={e}
