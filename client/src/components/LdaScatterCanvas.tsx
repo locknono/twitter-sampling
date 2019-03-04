@@ -14,7 +14,6 @@ interface Props {
 const mapState = (state: any) => {
   const { scatterData, docPrData } = state.dataTree;
   const { curTopic } = state.uiState;
-
   return { scatterData, docPrData, curTopic };
 };
 const mapDispatch = {
@@ -54,7 +53,7 @@ function LdaScatterCanvasCanvas(props: Props) {
   const yMax = d3.max(points, d => d[1]) as number;
 
   React.useEffect(() => {
-    if (width && height && ctx) {
+    if (width && height && ctx && docPrData) {
       const xScale = d3
         .scaleLinear()
         .domain([xMin, xMax])
@@ -70,12 +69,13 @@ function LdaScatterCanvasCanvas(props: Props) {
           height * (1 - padding.scatterPadding)
         ]);
 
-      ctx.fillStyle = color.scatterColor;
-      for (let i = 0; i < points.length; i++) {
+      for (let id in scatterData) {
+        const maxIndex = docPrData[id].indexOf(Math.max(...docPrData[id]));
+        ctx.fillStyle = color.tenColors[maxIndex];
         ctx.beginPath();
         ctx.arc(
-          xScale(points[i][0]),
-          yScale(points[i][1]),
+          xScale(scatterData[id][0]),
+          yScale(scatterData[id][1]),
           scatterRadius,
           0,
           Math.PI * 2
@@ -123,7 +123,14 @@ function LdaScatterCanvasCanvas(props: Props) {
   });
 
   return (
-    <canvas id="scatter-canvas" ref={canvasRef} width={width} height={height} />
+    <div className="scatter-canvas-div">
+      <canvas
+        id="scatter-canvas"
+        ref={canvasRef}
+        width={width}
+        height={height}
+      />
+    </div>
   );
 }
 

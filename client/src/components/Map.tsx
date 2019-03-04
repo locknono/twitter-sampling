@@ -150,12 +150,14 @@ class Map extends React.Component<Props, Object> {
         radius: 5,
         color: "blue"
       }
-    );
+    ).then(layerGroup => {
+      layerGroup.addTo(this.map);
+    });
   }
 
   deployMap() {
-    const center: [number, number] = [40.75738066643303, -74.0106898997513];
-    const zoom = 13.5;
+    const center: [number, number] = [40.00468625270052, -75.11984249576928];
+    const zoom = 11.5;
     const preferCanvas = true;
     const zoomControl = false;
     const attributionControl = false;

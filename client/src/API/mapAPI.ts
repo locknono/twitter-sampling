@@ -18,4 +18,5 @@ export async function fetchAndAddGroupLayer(
   });
   const layerGroup = L.layerGroup(layers);
   controlLayer.addOverlay(layerGroup, layerName);
+  return layerGroup;
 }
