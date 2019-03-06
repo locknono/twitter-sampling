@@ -4,7 +4,7 @@ import { padding, color } from "../constants";
 import { setData } from "../actions/setDataAction";
 import { setCurTopic } from "../actions/setUIState";
 import { connect } from "react-redux";
-import dataTree from "../reducers/dataTree";
+import { fetchJsonData } from "../shared";
 interface Props {}
 
 interface State {
@@ -55,12 +55,10 @@ class LdaBarChart extends React.Component<Props, State> {
 
   componentDidMount() {
     const { setData } = this.props;
-    fetch("./barData.json")
-      .then(res => res.json())
-      .then((data: fetchedBarData) => {
-        setData("ORIGINAL_BARDATA", data.original);
-        setData("SAMPLING_BARDATA", data.sampling);
-      });
+    fetchJsonData("./barData.json").then((data: fetchedBarData) => {
+      setData("ORIGINAL_BARDATA", data.original);
+      setData("SAMPLING_BARDATA", data.sampling);
+    });
 
     const svgWidth = parseFloat(d3.select("#barchart-svg").style("width"));
     const svgHeight = parseFloat(d3.select("#barchart-svg").style("height"));
@@ -101,41 +99,21 @@ class LdaBarChart extends React.Component<Props, State> {
           svgHeight * (0.5 + padding.barChartPadding / 2)
         ]);
 
-      originalBars = original.map((e, i) => {
-        const fillColor =
-          curTopic === undefined || curTopic !== i
-            ? color.originalBarColor
-            : color.brighterBarColor;
-        return (
-          <rect
-            key={e}
-            x={xScale(i.toString())}
-            y={yScale(e)}
-            width={xScale.bandwidth()}
-            height={yScale(0) - yScale(e)}
-            fill={fillColor}
-            onClick={() => this.handleClick(i)}
-          />
-        );
-      });
+      originalBars = getBars(
+        original,
+        xScale,
+        yScale,
+        curTopic,
+        this.handleClick
+      );
 
-      samplingBars = sampling.map((e, i) => {
-        const fillColor =
-          curTopic === undefined || curTopic !== i
-            ? color.originalBarColor
-            : color.brighterBarColor;
-        return (
-          <rect
-            key={e}
-            x={xScale(i.toString())}
-            y={yScaleForSampling(e)}
-            width={xScale.bandwidth()}
-            height={yScaleForSampling(0) - yScaleForSampling(e)}
-            fill={fillColor}
-            onClick={() => this.handleClick(i)}
-          />
-        );
-      });
+      samplingBars = getBars(
+        sampling,
+        xScale,
+        yScaleForSampling,
+        curTopic,
+        this.handleClick
+      );
     }
 
     return (
@@ -151,3 +129,30 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(LdaBarChart);
+
+function getBars(
+  data: number[],
+  xScale: d3.ScaleBand<string>,
+  yScale: d3.ScaleLinear<number, number>,
+  curTopic: CurTopic,
+  clickFunc: Function
+) {
+  const rects = data.map((e, i) => {
+    const fillColor =
+      curTopic === undefined || curTopic !== i
+        ? color.originalBarColor
+        : color.brighterBarColor;
+    return (
+      <rect
+        key={e}
+        x={xScale(i.toString())}
+        y={yScale(e)}
+        width={xScale.bandwidth()}
+        height={yScale(0) - yScale(e)}
+        fill={fillColor}
+        onClick={() => clickFunc(i)}
+      />
+    );
+  });
+  return rects;
+}

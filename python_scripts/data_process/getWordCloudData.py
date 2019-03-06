@@ -44,7 +44,7 @@ if __name__ == '__main__':
             allKList.append(sortedKList)
             print(i)
 
-        wordCount = 250
+        wordCount = 200
 
         renderData = []
         for i in range(len(allKList)):

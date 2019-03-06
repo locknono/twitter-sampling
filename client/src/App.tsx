@@ -4,10 +4,10 @@ import Map from "./components/Map";
 import DataDescription from "./components/DataDescription";
 import ControlPanel from "./components/ControlPanel";
 import Heading from "./components/Heading";
-import LdaScatterCanvas from "./components/LdaScatterCanvas";
+import Scatter from "./components/Scatter";
 import WordCloud from "./components/WordCloud";
 import River from "./components/River";
-import LdaBarChart from "./components/LdaBarChart";
+import BarChart from "./components/BarChart";
 
 class App extends React.Component {
   public render() {
@@ -25,15 +25,11 @@ class App extends React.Component {
         <div className="right-side panel panel-default">
           <div className="scatter-div">
             <Heading title="LDA Scatter" />
-            {/* <Scatter /> */}
-            <LdaScatterCanvas />
+            <Scatter />
           </div>
-
           <div className="barchart-div">
             <Heading title="LDA" />
-            <LdaBarChart />
-            {/* <BarchartImg /> */}
-            {/* <BarChart values={[5, 1, 2, 6, 5, 5, 9]} width={300} height={300} /> */}
+            <BarChart />
           </div>
         </div>
       </div>
