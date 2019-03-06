@@ -6,7 +6,7 @@ import * as cloud from "d3-cloud";
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
 import { setCurTopic } from "../actions/setUIState";
 import { connect } from "react-redux";
-import { color } from "src/constants";
+import { color, maxCloudWordSize } from "src/constants";
 
 interface Props {
   cloudData: CloudData;
@@ -43,12 +43,35 @@ function WordCloud(props: Props) {
   });
 
   React.useEffect(() => {
-    async function fetchData() {
+    (async function fetchData() {
       const res = await fetch("./allWordCloudData.json");
-      const data = await res.json();
+      const data: CloudData = await res.json();
+
+      const logFunc = Math.log10;
+      for (let i = 0; i < data.length; i++) {
+        const curTopicWords = data[i];
+        let maxFre = -1;
+        let minFre = 100;
+        for (let j = 0; j < curTopicWords.length; j++) {
+          if (logFunc(curTopicWords[j].fre) > maxFre) {
+            maxFre = logFunc(curTopicWords[j].fre);
+          }
+          if (logFunc(curTopicWords[j].fre) < minFre) {
+            minFre = logFunc(curTopicWords[j].fre);
+          }
+        }
+        const fontSizeScale = d3
+          .scaleLinear()
+          .domain([minFre, maxFre])
+          .range([0, maxCloudWordSize])
+          .clamp(true);
+        for (let j = 0; j < curTopicWords.length; j++) {
+          curTopicWords[j].size = fontSizeScale(logFunc(curTopicWords[j].fre));
+        }
+      }
+
       setData(CLOUD_DATA, data);
-    }
-    fetchData();
+    })();
   }, []);
 
   //initialize cloud layout
@@ -62,7 +85,7 @@ function WordCloud(props: Props) {
        * so pass a copy instead of passing the words
        */
       .words(JSON.parse(JSON.stringify(cloudData[curTopic])))
-      .padding(1)
+      .padding(0.5)
       /* .rotate(function() {
         return ~~(Math.random() * 2) * 90;
       }) */
@@ -71,6 +94,7 @@ function WordCloud(props: Props) {
         return d.size as number;
       })
       .on("end", function(words) {
+        console.log("words: ", words);
         setCloudLayout(layout);
         setLayoutWords(words);
       });
@@ -79,7 +103,6 @@ function WordCloud(props: Props) {
 
   React.useEffect(() => {
     if (!cloudLayout || curTopic === undefined) return;
-
     cloudLayout.words(JSON.parse(JSON.stringify(cloudData[curTopic])));
     cloudLayout.start();
   }, [curTopic]);

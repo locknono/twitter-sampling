@@ -10,41 +10,41 @@
 }
 .left-side {
   height: 700px;
-  width: 250px;
+  width: 280px;
 }
 .data-description-div {
-  height: 250px;
-  width: 250px;
+  height: 240px;
+  width: 280px;
   padding-bottom: 0;
   margin-bottom: 0;
   margin-right: 0;
 }
 .control-panel-div {
-  width: 250px;
-  height: 250px;
+  width: 280px;
+  height: 240px;
   padding-bottom: 0;
   margin-bottom: 0;
   margin-right: 0;
 }
 .word-cloud-div {
-  width: 250px;
-  height: 200px;
+  width: 280px;
+  height: 220px;
   padding-bottom: 0;
   margin-bottom: 0;
   margin-right: 0;
 }
 .middle {
   height: 700px;
-  width: 700px;
+  width: 800px;
 }
 #map {
   top: 0;
-  width: 700px;
-  height: 500px;
+  width: 800px;
+  height: 480px;
 }
 #river {
-  width: 700px;
-  height: 200px;
+  width: 800px;
+  height: 220px;
 }
 .right-side {
   height: 700px;

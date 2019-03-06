@@ -10,7 +10,8 @@ type CurTopic = number | undefined;
 
 interface CloudWord {
   text: string;
-  size: number;
+  fre: number;
+  size?: number;
 }
 
 type CloudData = CloudWord[][];
