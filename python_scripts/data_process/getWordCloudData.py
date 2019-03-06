@@ -44,7 +44,7 @@ if __name__ == '__main__':
             allKList.append(sortedKList)
             print(i)
 
-        wordCount = 200
+        wordCount = 100
 
         renderData = []
         for i in range(len(allKList)):
@@ -52,7 +52,7 @@ if __name__ == '__main__':
             for j in range(0, wordCount if len(allKList[i]) > wordCount else len(allKList[i])):
                 word = allKList[i][j][0]
                 fre = allKList[i][j][1]
-                renderWord = {"text": word, "size": fre}
+                renderWord = {"text": word, "fre": fre}
                 renderData[i].append(renderWord)
 
         with open('../client/public/allWordCloudData.json', 'w', encoding='utf-8') as wf:
