@@ -1,17 +1,11 @@
 import * as React from "react";
 import "./App.css";
 import Map from "./components/Map";
-import HookTest from "./components/HookTest";
 import DataDescription from "./components/DataDescription";
-import BarChart from "./components/BarChart";
 import ControlPanel from "./components/ControlPanel";
 import Heading from "./components/Heading";
-import Scatter from "./components/Scatter";
-import LdaScatter from "./components/LdaScatter";
 import LdaScatterCanvas from "./components/LdaScatterCanvas";
-import ScatterImg from "./components/ScatterImg";
 import WordCloud from "./components/WordCloud";
-import BarchartImg from "./components/BarchartImg";
 import River from "./components/River";
 import LdaBarChart from "./components/LdaBarChart";
 
