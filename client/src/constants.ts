@@ -26,6 +26,17 @@ export namespace color {
     "#cab2d6",
     "#6a3d9a"
   ];
+  export const cloudColors = [
+    "rgb(13, 157, 255)",
+    "rgb(140, 162, 82)",
+    "rgb(173, 73, 74)",
+    "rgb(107, 110, 207)",
+    "rgb(140, 109, 49)",
+    "rgb(222, 158, 214)",
+    "rgb(206, 219, 156)",
+    "rgb(132, 60, 57)",
+    "rgb(231, 150, 156)"
+  ];
 }
 
 export const scatterRadius = 1;

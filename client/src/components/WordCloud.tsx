@@ -6,6 +6,7 @@ import * as cloud from "d3-cloud";
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
 import { setCurTopic } from "../actions/setUIState";
 import { connect } from "react-redux";
+import { color } from "src/constants";
 
 interface Props {
   cloudData: CloudData;
@@ -81,13 +82,17 @@ function WordCloud(props: Props) {
   let renderWords;
   let renderGroup;
   if (curTopic !== undefined && layoutWords) {
-    renderWords = layoutWords.map((e: any) => {
+    renderWords = layoutWords.map((e: any, i: number) => {
       return (
         <text
           key={`${e.text}-${e.x}-${e.y}`}
           textAnchor="middle"
           transform={"translate(" + [e.x, e.y] + ")rotate(" + e.rotate + ")"}
-          style={{ fontSize: e.size, fontFamily: "Impact" }}
+          style={{
+            fontSize: e.size,
+            fontFamily: "Impact",
+            fill: color.cloudColors[i % color.cloudColors.length]
+          }}
         >
           {e.text}
         </text>
