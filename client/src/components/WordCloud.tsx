@@ -51,13 +51,17 @@ function WordCloud(props: Props) {
     fetchData();
   }, []);
 
+  //initialize cloud layout
   React.useEffect(() => {
     if (!width || !height || curTopic === undefined) return;
     if (cloudLayout !== undefined) return;
     const layout = cloud()
       .size([width, height])
-      .words(cloudData[curTopic])
-
+      /**
+       * the cloud layout would change the property of `words` we pass in,
+       * so pass a copy instead of passing the words
+       */
+      .words(JSON.parse(JSON.stringify(cloudData[curTopic])))
       .padding(1)
       /* .rotate(function() {
         return ~~(Math.random() * 2) * 90;
@@ -75,7 +79,8 @@ function WordCloud(props: Props) {
 
   React.useEffect(() => {
     if (!cloudLayout || curTopic === undefined) return;
-    cloudLayout.words(cloudData[curTopic]);
+
+    cloudLayout.words(JSON.parse(JSON.stringify(cloudData[curTopic])));
     cloudLayout.start();
   }, [curTopic]);
 
