@@ -25,9 +25,11 @@ def findMaxIndexAndValueForOneDoc(list):
 
 
 def getTopicProSumList(idLdaDict):
-    randomKey = idLdaDict.keys()[0]
-    dimension = len(idLdaDict[randomKey])
-    topicProSumList = np.full(dimension, 0)
+    dimension = None
+    for k in idLdaDict:
+        dimension = len(idLdaDict[k])
+        break
+    topicProSumList = np.full(dimension, 0.0)
     for k in idLdaDict:
         curDocList = np.array(idLdaDict[k])
         topicProSumList += curDocList
