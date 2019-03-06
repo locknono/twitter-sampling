@@ -11,6 +11,11 @@ import shutil
 import g
 
 if __name__ == '__main__':
+
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+    
     with open(g.ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r', encoding='utf-8') as f:
         with open(g.dataPath + 'finalIDLocation.csv', 'r', encoding='utf-8') as f2:
             csvF = csv.reader(f2)
@@ -26,10 +31,6 @@ if __name__ == '__main__':
                         topicHeatmapData[item[0]] = []
                     else:
                         topicHeatmapData[item[0]].append([lat, lng, item[1]])
-            """
-            with open('../data/heatmapData.json', 'w', encoding='utf-8') as wf:
-                wf.write(json.dumps(topicHeatmapData))
-            """
 
             shutil.rmtree(g.ldaDir + 'heatmapData/')
             shutil.rmtree('../client/public/heatmapData/')

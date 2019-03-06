@@ -16,7 +16,7 @@ declare module "d3" {
   }
 }
 export default function WordCloud() {
-  const [width, setWidth] = React.useState<number | undefined>(undefined);
+  /* const [width, setWidth] = React.useState<number | undefined>(undefined);
   const [height, setHeight] = React.useState<number | undefined>(undefined);
 
   React.useLayoutEffect(() => {
@@ -88,10 +88,16 @@ export default function WordCloud() {
           return d.text;
         });
     }
-  });
+  }); */
   return (
-    <div className="word-cloud-div panel panel-default">
+    /*  <div className="word-cloud-div panel panel-default">
       <svg id="cloud-svg" />
+    </div> */
+    <div className="word-cloud-div panel panel-default">
+      <img
+        src="./wordCloud/s1.png"
+        style={{ width: "100%", height: "100%" }}
+      />
     </div>
   );
 }

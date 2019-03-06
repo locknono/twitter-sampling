@@ -73,6 +73,7 @@ def ifInbiggerThanNYCBound(lat, lng):
         return False
     return True
 
+
 def extractFromSingleFile(filePath, latlngSet):
     truePoints = []
     t1 = time.time()
@@ -169,18 +170,21 @@ def extractDataInNyc():
 
 
 if __name__ == '__main__':
-    # extractFromAllFiles()
-    try:
-        os.mkdir(g.dataPath)
-    except Exception as e:
-        print(e)
-    latlngSet = set()
-    for i in range(14, 14 + g.dataDays):
-        print('../data/2018-10-{0}.txt'.format(i))
-        extractFromSingleFile('../data/2018-10-{0}.txt'.format(i), latlngSet)
-    extractDataInNyc()
-    rowCount = 0
-    with open(g.dataPath + 'extractedDataInAllAreaSingleThread.txt', 'r', encoding='utf-8') as f:
-        for line in f:
-            rowCount += 1
-    print('extractedData:' + str(rowCount))
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+# extractFromAllFiles()
+try:
+    os.mkdir(g.dataPath)
+except Exception as e:
+    print(e)
+latlngSet = set()
+for i in range(14, 14 + g.dataDays):
+    print('../data/2018-10-{0}.txt'.format(i))
+    extractFromSingleFile('../data/2018-10-{0}.txt'.format(i), latlngSet)
+extractDataInNyc()
+rowCount = 0
+with open(g.dataPath + 'extractedDataInAllAreaSingleThread.txt', 'r', encoding='utf-8') as f:
+    for line in f:
+        rowCount += 1
+print('extractedData:' + str(rowCount))

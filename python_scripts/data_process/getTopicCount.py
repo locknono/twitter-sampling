@@ -1,8 +1,14 @@
 import g
 import json
 import matplotlib.pyplot as plt
+import os
 
 if __name__ == '__main__':
+
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+
     topicCountDict = {}
 
     with open(g.ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber)) as f:

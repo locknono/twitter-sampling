@@ -6,7 +6,7 @@ from nltk.stem.lancaster import LancasterStemmer
 from nltk.stem import SnowballStemmer
 from nltk.stem import WordNetLemmatizer
 import g
-
+import os
 
 # 停用词获取
 def stopwords_get():
@@ -92,6 +92,11 @@ def centence_output(centence):
 
 
 if __name__ == '__main__':
+
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+
     url = g.dataPath + "cleanedData.txt"
     centence = centence_input(url)
     print("step1 success")

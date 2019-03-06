@@ -1,8 +1,13 @@
 import csv
 import time
-
+import os
 
 def getAllLatLng():
+
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+
     with open('../data/extractedDataInAllArea.txt', 'r', encoding='utf-8', errors='ignore') as f:
         with open('../data/allLatLng.csv', 'a', encoding='utf-8') as wf:
             for line in f:

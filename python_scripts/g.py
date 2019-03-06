@@ -6,6 +6,7 @@ dataDays = 12
 
 topicNumber = 10
 
+workDir='pytho'
 dataPath = '../data/random/'
 
 """
@@ -13,4 +14,4 @@ dataPath = '../data/random/'
 ’auto’: Learns an asymmetric prior from the corpus (not available if distributed==True).
 """
 
-ldaDir = dataPath + 'LDA/' + 'alpha=1/'
+ldaDir = dataPath + 'LDA/' + 'alpha=0.3/'

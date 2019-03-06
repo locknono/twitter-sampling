@@ -3,8 +3,13 @@ import json
 import numpy as np
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
-
+import os
 if __name__ == '__main__':
+
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+
     with open(g.ldaDir + 'idLdaDict.json'.format(g.topicNumber), 'r', encoding='utf-8') as f:
         outputData = {}
         tsneData = []
@@ -25,7 +30,7 @@ if __name__ == '__main__':
         plt.savefig('../client/public/scatter.png')
         plt.close()
 
-    with open(g.dataPath + 'scatterData.json', 'w', encoding='utf-8') as f:
+    with open(g.ldaDir + 'scatterData.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(outputData))
     with open('../client/public/scatterData.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(outputData))

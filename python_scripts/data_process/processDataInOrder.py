@@ -15,11 +15,13 @@ os.system('python ./getFinalLocationJsonFormat.py')
 
 os.system('python ./getGrids.py')
 
-os.system('python ./blueNoise.py')
+os.system('python ../blueNoise.py')
+os.system('python ../LDAbyZhangxinlong.py')
 
-os.system('python ./LDAbyZhangxinlong.py')
+os.system('python ../getIDLdaProDict.py')
+os.system('python ../getTsneData.py')
 
-os.system('python ./getHeatmapData.py')
+os.system('python ./getHeatmapDataForAllTopics.py')
 os.system('python ./getHeatmapDataForOriginalPoints.py')
 
 print((time.time() - t1) / 60)

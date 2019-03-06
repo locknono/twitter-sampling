@@ -1,0 +1,35 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def saveBarChart(list):
+    plt.bar(range(len(list)), list)
+    plt.show()
+    plt.close()
+
+
+def saveBarChart(list, path):
+    plt.bar(range(len(list)), list)
+    plt.savefig(path)
+    plt.close()
+
+
+def findMaxIndexAndValueForOneDoc(list):
+    maxV = -1
+    maxIndex = -1
+    for i, v in enumerate(list):
+        if v > maxV:
+            maxV = v
+            maxIndex = i
+    return [maxIndex, maxV]
+
+
+def getTopicProSumList(idLdaDict):
+    randomKey = idLdaDict.keys()[0]
+    dimension = len(idLdaDict[randomKey])
+    topicProSumList = np.full(dimension, 0)
+    for k in idLdaDict:
+        curDocList = np.array(idLdaDict[k])
+        topicProSumList += curDocList
+    return topicProSumList.tolist()
+

@@ -7,18 +7,8 @@ import random
 from blueRapidEstimate import getRalationshipList, compareRelationshipList
 import copy
 import logging
-
+from shared.lda_op import findMaxIndexAndValueForOneDoc, getTopicProSumList
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
-
-
-def getTopicProSumList(idLdaDict, name):
-    topicProList = np.full(g.topicNumber, 0).tolist()
-    for k in idLdaDict:
-        maxV = -1
-        maxIndex = -1
-        for i, v in enumerate(idLdaDict[k]):
-            topicProList[i] += v
-    return topicProList
 
 
 def getTopicCount(idLdaDict):
@@ -28,13 +18,7 @@ def getTopicCount(idLdaDict):
     count = 0
     for k in idLdaDict:
         count += 1
-        maxV = -1
-        maxIndex = -1
-        for i, v in enumerate(idLdaDict[k]):
-            if v > maxV:
-                maxV = v
-                maxIndex = i
-
+        maxIndex, maxV = findMaxIndexAndValueForOneDoc(idLdaDict[k])
         if maxIndex in topicLdaDict:
             tmpList[maxIndex] += maxV
             topicLdaDict[maxIndex].append(idLdaDict[k])
@@ -54,9 +38,11 @@ if __name__ == '__main__':
     rate = 0.05
     l1 = None
     l2 = None
+
     with open(g.ldaDir + 'idLdaDict.json', 'r', encoding='utf-8') as f:
         idLdaDict = json.loads(f.read())
-        l1 = getTopicProSumList(idLdaDict, 'ori.png')
+        l1 = getTopicProSumList(idLdaDict)
+
     print(l1)
     counts, topicLdaDict = getTopicCount(idLdaDict)
     print(counts)
@@ -66,6 +52,15 @@ if __name__ == '__main__':
         kList.append(k)
 
     ratioList = []
+    randomRatioList = []
+
+    randomList = np.full(g.topicNumber, 0).tolist()
+    for i in range(int(rate * len(idLdaDict.keys()))):
+        randomIndex = random.randint(0, len(kList))
+        randomId = kList[randomIndex]
+        for index, v in enumerate(idLdaDict[randomId]):
+            randomList[index] += v
+        kList.pop(randomIndex)
 
     for time in range(99):
         td = copy.deepcopy(topicLdaDict)
@@ -82,10 +77,17 @@ if __name__ == '__main__':
 
         r1 = getRalationshipList(l1)
         r2 = getRalationshipList(l2)
+        r3 = getRalationshipList(randomList)
+
         ratio = compareRelationshipList(r1, r2)
+        ratio2 = compareRelationshipList(r1, r3)
+
         ratioList.append(round(ratio, 2))
 
+        randomRatioList.append(round(ratio2, 2))
         print(ratioList)
+        print(randomRatioList)
+        print('------------')
     """
     for m in range(100):
         kl = copy.deepcopy(kList)

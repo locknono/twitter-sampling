@@ -4,6 +4,8 @@ import codecs
 import json
 import g
 from split import ifInbiggerThanNYCBound, ifInNYC
+import os
+
 
 def extractFromSingleFile(filePath, bounds):
     t1 = time.time()
@@ -37,6 +39,11 @@ def extractFromSingleFile(filePath, bounds):
 
 
 if __name__ == '__main__':
+
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+
     bounds = []
     for i in range(14, 14 + g.dataDays):
         print('../data/2018-10-{0}.txt'.format(i))
