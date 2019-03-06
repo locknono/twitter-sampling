@@ -20,7 +20,7 @@ def compareRelationshipList(l1, l2):
     return equalCount / len(l1)
 
 
-def getTopicRelationsByIndex(estimates: List[float]):
+def getTopicRelationsDict(estimates: List[float]):
     outputDict = {}
     for i in range(len(estimates)):
         outputDict[i] = []
