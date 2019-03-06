@@ -4,14 +4,15 @@ import random
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from blueRapidEstimate import getRalationshipList, compareRelationshipList, getTopicRelationsByIndex
+from blueRapidEstimate import getRalationshipList, compareRelationshipList, getTopicRelationsDict
 import copy
 import time
 
 class Point():
-    def __init__(self, id: str, values: List[float]):
+    def __init__(self, id: str, value: float, tIndex: int):
         self.id = id
-        self.values = values
+        self.value = value
+        self.tIndex = tIndex
 
 
 Disk = List[Point]
@@ -78,20 +79,18 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
     vs = np.full(dimension, 0).tolist()
     for disk in disks:
         for p in disk:
-            for i in range(len(p.values)):
-                vs[i] += p.values[i]
+            tIndex = p.tIndex
+            vs[tIndex] += p.value
 
-    r1 = getTopicRelationsByIndex(vs)
+    r1 = getTopicRelationsDict(vs)
     re1 = getRalationshipList(vs)
     print(r1)
 
     # zoom
     for i in range(len(disks)):
         for j in range(len(disks[i])):
-            for m in range(len(disks[i][j].values)):
-                if disks[i][j].values[m] > 1:
-                    continue
-                disks[i][j].values[m] = S * disks[i][j].values[m]
+            disks[i][j].value = S * disks[i][j].value
+
     # step 1 :Initialize m ← 1;
     m: int = 1
 
@@ -105,9 +104,10 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
 
     estimates = getEstimates(initialSamples, dimension)
 
-    A = [i for i in range(len(randomPoint.values))]
+    A = [i for i in range(dimension)]
 
     failFlag = False
+
     while (len(A) > 0):
         random.shuffle(disks)
         for index, disk in enumerate(disks):
@@ -117,12 +117,13 @@ def blueRapid(disks: List[Disk], dimension: int, delta: float, c: float):
             m = m + 1
             logging.info('m：' + str(m))
             epsilon = getEpsilon(m, S, dimension, delta, c)
+
             # preEstimates and preIntervals,if fits,use this point,else,continue
             preEstimates = copy.deepcopy(estimates)
             for i in range(len(A)):
                 preEstimates[i] = (((m - 1) / m) * estimates[i] + (1 / m) * p.values[i])
             preIntervals = getIntervals(preEstimates, epsilon)
-            r2 = getTopicRelationsByIndex(preEstimates)
+            r2 = getTopicRelationsDict(preEstimates)
             # fits:indices not in A are the same with indices donot intersect
 
             continueFlag = False
