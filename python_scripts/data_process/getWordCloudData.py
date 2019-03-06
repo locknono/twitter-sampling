@@ -44,12 +44,12 @@ if __name__ == '__main__':
             allKList.append(sortedKList)
             print(i)
 
-        wordCount = 50
+        wordCount = 250
 
         renderData = []
         for i in range(len(allKList)):
             renderData.append([])
-            for j in range(0, len(allKList[i]) if len(allKList[i]) > wordCount else wordCount):
+            for j in range(0, wordCount if len(allKList[i]) > wordCount else len(allKList[i])):
                 word = allKList[i][j][0]
                 fre = allKList[i][j][1]
                 renderWord = {"text": word, "size": fre}

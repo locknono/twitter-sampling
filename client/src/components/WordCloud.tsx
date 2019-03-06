@@ -3,21 +3,36 @@ import { useState } from "react";
 import Heading from "../components/Heading";
 import * as d3 from "d3";
 import * as cloud from "d3-cloud";
+import { setData, CLOUD_DATA } from "../actions/setDataAction";
+import { setCurTopic } from "../actions/setUIState";
+import { connect } from "react-redux";
 
-declare module "d3" {
-  namespace layout {
-    interface Cloud<T extends cloud.Word> {
-      random(): Cloud<T>;
-      random(randomFunction: () => number): Cloud<T>;
-
-      canvas(): Cloud<T>;
-      canvas(canvasGenerator: () => HTMLCanvasElement): Cloud<T>;
-    }
-  }
+interface Props {
+  cloudData: CloudData;
+  curTopic: CurTopic;
+  setData: typeof setData;
+  setCurTopic: typeof setCurTopic;
 }
-export default function WordCloud() {
-  /* const [width, setWidth] = React.useState<number | undefined>(undefined);
+const mapState = (state: any) => {
+  const { cloudData } = state.dataTree;
+  const { curTopic } = state.uiState;
+  return { cloudData, curTopic };
+};
+const mapDispatch = {
+  setData,
+  setCurTopic
+};
+
+function WordCloud(props: Props) {
+  const { cloudData, curTopic, setData, setCurTopic } = props;
+  const [width, setWidth] = React.useState<number | undefined>(undefined);
   const [height, setHeight] = React.useState<number | undefined>(undefined);
+  const [cloudLayout, setCloudLayout] = React.useState<any | undefined>(
+    undefined
+  );
+  const [layoutWords, setLayoutWords] = React.useState<any | undefined>(
+    undefined
+  );
 
   React.useLayoutEffect(() => {
     const w = parseFloat(d3.select("#cloud-svg").style("width"));
@@ -27,77 +42,78 @@ export default function WordCloud() {
   });
 
   React.useEffect(() => {
-    if (!width || !height) return;
-    const c = cloud();
-    const texts = [
-      "Hello",
-      "world",
-      "normally",
-      "you",
-      "want",
-      "more",
-      "words",
-      "than",
-      "this"
-    ];
-    c.size([width, height])
-      .words(
-        texts.map(d => {
-          return { text: d, size: 10 + Math.random() * 90 };
-        })
-      )
-      .padding(5)
-      .rotate(function() {
+    async function fetchData() {
+      const res = await fetch("./allWordCloudData.json");
+      const data = await res.json();
+      setData(CLOUD_DATA, data);
+    }
+    fetchData();
+  }, []);
+
+  React.useEffect(() => {
+    if (!width || !height || curTopic === undefined) return;
+    if (cloudLayout !== undefined) return;
+    const layout = cloud()
+      .size([width, height])
+      .words(cloudData[curTopic])
+
+      .padding(1)
+      /* .rotate(function() {
         return ~~(Math.random() * 2) * 90;
-      })
+      }) */
       .font("Impact")
       .fontSize(function(d) {
         return d.size as number;
       })
-      .on("end", draw);
-    c.start();
+      .on("end", function(words) {
+        setCloudLayout(layout);
+        setLayoutWords(words);
+      });
+    layout.start();
+  });
 
-    function draw(
-      words: {
-        size: number;
-        text: string;
-        x: number;
-        y: number;
-        rotate: number;
-      }[]
-    ) {
-      d3.select("#cloud-svg")
-        .append("g")
-        .attr(
-          "transform",
-          "translate(" + c.size()[0] / 2 + "," + c.size()[1] / 2 + ")"
-        )
-        .selectAll("text")
-        .data(words)
-        .enter()
-        .append("text")
-        .style("font-size", function(d) {
-          return d.size + "px";
-        })
-        .style("font-family", "Impact")
-        .attr("text-anchor", "middle")
-        .attr("transform", function(d) {
-          return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-        })
-        .text(function(d) {
-          return d.text;
-        });
-    }
-  }); */
+  React.useEffect(() => {
+    if (!cloudLayout || curTopic === undefined) return;
+    cloudLayout.words(cloudData[curTopic]);
+    cloudLayout.start();
+  }, [curTopic]);
+
+  let renderWords;
+  let renderGroup;
+  if (curTopic !== undefined && layoutWords) {
+    renderWords = layoutWords.map((e: any) => {
+      return (
+        <text
+          key={`${e.text}-${e.x}-${e.y}`}
+          textAnchor="middle"
+          transform={"translate(" + [e.x, e.y] + ")rotate(" + e.rotate + ")"}
+          style={{ fontSize: e.size, fontFamily: "Impact" }}
+        >
+          {e.text}
+        </text>
+      );
+    });
+  }
+
+  if (cloudLayout) {
+    renderGroup = (
+      <g
+        transform={`translate(${cloudLayout.size()[0] /
+          2},${cloudLayout.size()[1] / 2})`}
+      >
+        {renderWords}
+      </g>
+    );
+  }
+
   return (
-    /*  <div className="word-cloud-div panel panel-default">
-      <svg id="cloud-svg" />
-    </div> */
     <div className="word-cloud-div panel panel-default">
-      <img
-        src="./wordCloud/s1.png"
-        style={{ width: "100%", height: "100%" }}
-      />
+      <svg id="cloud-svg">{renderGroup}</svg>
     </div>
   );
 }
+
+export default connect(
+  mapState,
+  mapDispatch
+)(WordCloud);

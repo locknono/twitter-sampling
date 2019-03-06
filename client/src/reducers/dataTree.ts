@@ -1,15 +1,18 @@
+import { CLOUD_DATA } from "../actions/setDataAction";
 import {
   SET_ORIGINAL_BARDATA,
   SET_SAMPLING_BARDATA,
   SET_SCATTER_DATA,
-  SET_DOC_PR_DATA
+  SET_DOC_PR_DATA,
+  SET_CLOUD_DATA
 } from "../actions/setDataAction";
 
 const initialState = {
   originalBarData: [],
   samplingBarData: [],
   scatterData: null,
-  ducPrData: null
+  ducPrData: null,
+  cloudData: null
 };
 
 export default function dataTree(state = initialState, action: any) {
@@ -25,6 +28,9 @@ export default function dataTree(state = initialState, action: any) {
       break;
     case SET_DOC_PR_DATA:
       return { ...state, docPrData: action.data };
+      break;
+    case SET_CLOUD_DATA:
+      return { ...state, cloudData: action.data };
       break;
     default:
       return state;

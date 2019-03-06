@@ -7,3 +7,10 @@ interface DocPrData {
 }
 
 type CurTopic = number | undefined;
+
+interface CloudWord {
+  text: string;
+  size: number;
+}
+
+type CloudData = CloudWord[][];
