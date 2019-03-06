@@ -3,7 +3,6 @@ import { useState } from "react";
 import Heading from "../components/Heading";
 import * as d3 from "d3";
 import * as cloud from "d3-cloud";
-import { namespace } from "d3";
 
 declare module "d3" {
   namespace layout {
@@ -67,7 +66,6 @@ export default function WordCloud() {
         rotate: number;
       }[]
     ) {
-      console.log("words: ", words);
       d3.select("#cloud-svg")
         .append("g")
         .attr(

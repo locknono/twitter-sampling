@@ -4,8 +4,6 @@ import time
 
 dataDays = 12
 
-sampleFilePath = '../data/20kRows.txt'
-
 topicNumber = 10
 
 dataPath = '../data/random/'
