@@ -74,30 +74,27 @@ class LdaBarChart extends React.Component<Props, State> {
       samplingBars = null;
 
     if (svgWidth && svgHeight) {
+      const xStart = svgWidth * padding.barChartPadding;
+      const xEnd = svgWidth * (1 - padding.barChartPadding);
+      const y1Start = (svgHeight * padding.barChartPadding) / 2;
+      const y1End = svgHeight * (0.5 - padding.barChartPadding / 2);
+      const y2Start = svgHeight * (0.5 + padding.barChartPadding / 2);
+      const y2End = svgHeight * (1 - padding.barChartPadding / 2);
       const xScale = d3
         .scaleBand()
         .domain(original.map((e, i) => i.toString()))
-        .range([
-          svgWidth * padding.barChartPadding,
-          svgWidth * (1 - padding.barChartPadding)
-        ])
+        .range([xStart, xEnd])
         .paddingInner(0.3);
 
       const yScale = d3
         .scaleLinear()
         .domain([0, Math.max(...original)])
-        .range([
-          svgHeight * (0.5 - padding.barChartPadding / 2),
-          (svgHeight * padding.barChartPadding) / 2
-        ]);
+        .range([y1End, y1Start]);
 
       const yScaleForSampling = d3
         .scaleLinear()
         .domain([0, Math.max(...sampling)])
-        .range([
-          svgHeight * (1 - padding.barChartPadding / 2),
-          svgHeight * (0.5 + padding.barChartPadding / 2)
-        ]);
+        .range([y2End, y2Start]);
 
       const x1g = d3
         .select("#x1-axis-g")
@@ -113,7 +110,7 @@ class LdaBarChart extends React.Component<Props, State> {
         );
       const y1g = d3
         .select("#y1-axis-g")
-        .attr("transform", `translate(${svgWidth * padding.barChartPadding},0)`)
+        .attr("transform", `translate(${xStart},0)`)
         .call(
           d3
             .axisLeft(yScale)
@@ -126,10 +123,7 @@ class LdaBarChart extends React.Component<Props, State> {
 
       const x2g = d3
         .select("#x2-axis-g")
-        .attr(
-          "transform",
-          `translate(${0},${svgHeight * (0.5 - padding.barChartPadding / 2)})`
-        )
+        .attr("transform", `translate(${0},${y1End})`)
         .call(
           d3
             .axisBottom(xScale)
@@ -139,7 +133,7 @@ class LdaBarChart extends React.Component<Props, State> {
 
       const y2g = d3
         .select("#y2-axis-g")
-        .attr("transform", `translate(${svgWidth * padding.barChartPadding},0)`)
+        .attr("transform", `translate(${xStart},0)`)
         .call(
           d3
             .axisLeft(yScaleForSampling)

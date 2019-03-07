@@ -76,15 +76,23 @@ function WordCloud(props: Props) {
 
   //initialize cloud layout
   React.useEffect(() => {
-    if (!width || !height || curTopic === undefined) return;
-    if (cloudLayout !== undefined) return;
+    if (!width || !height) return;
+    if (cloudLayout !== undefined || !cloudData) return;
+    let topicIndex;
+    if (curTopic === undefined) {
+      topicIndex = 10;
+    } else {
+      topicIndex = curTopic;
+    }
+    console.log("cloudData: ", cloudData);
     const layout = cloud()
       .size([width, height])
       /**
        * the cloud layout would change the property of `words` we pass in,
        * so pass a copy instead of passing the words
        */
-      .words(JSON.parse(JSON.stringify(cloudData[curTopic])))
+      .words(JSON.parse(JSON.stringify(cloudData[topicIndex])))
+
       .padding(0.5)
       /* .rotate(function() {
         return ~~(Math.random() * 2) * 90;
@@ -102,14 +110,20 @@ function WordCloud(props: Props) {
   });
 
   React.useEffect(() => {
+    let topicIndex;
+    if (curTopic === undefined) {
+      topicIndex = 10;
+    } else {
+      topicIndex = curTopic;
+    }
     if (!cloudLayout || curTopic === undefined) return;
-    cloudLayout.words(JSON.parse(JSON.stringify(cloudData[curTopic])));
+    cloudLayout.words(JSON.parse(JSON.stringify(cloudData[topicIndex])));
     cloudLayout.start();
   }, [curTopic]);
 
   let renderWords;
   let renderGroup;
-  if (curTopic !== undefined && layoutWords) {
+  if (layoutWords) {
     renderWords = layoutWords.map((e: any, i: number) => {
       return (
         <text
