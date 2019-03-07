@@ -81,7 +81,7 @@ class LdaBarChart extends React.Component<Props, State> {
           svgWidth * padding.barChartPadding,
           svgWidth * (1 - padding.barChartPadding)
         ])
-        .paddingInner(0.1);
+        .paddingInner(0.3);
 
       const yScale = d3
         .scaleLinear()
@@ -98,6 +98,57 @@ class LdaBarChart extends React.Component<Props, State> {
           svgHeight * (1 - padding.barChartPadding / 2),
           svgHeight * (0.5 + padding.barChartPadding / 2)
         ]);
+
+      const x1g = d3
+        .select("#x1-axis-g")
+        .attr(
+          "transform",
+          `translate(${0},${svgHeight * (1 - padding.barChartPadding / 2)})`
+        )
+        .call(
+          d3
+            .axisBottom(xScale)
+            .tickSizeOuter(0)
+            .tickSize(3)
+        );
+      const y1g = d3
+        .select("#y1-axis-g")
+        .attr("transform", `translate(${svgWidth * padding.barChartPadding},0)`)
+        .call(
+          d3
+            .axisLeft(yScale)
+            .tickSizeOuter(0)
+            .tickSize(3)
+        )
+        .call(y1g => {
+          y1g.select(".domain").remove();
+        });
+
+      const x2g = d3
+        .select("#x2-axis-g")
+        .attr(
+          "transform",
+          `translate(${0},${svgHeight * (0.5 - padding.barChartPadding / 2)})`
+        )
+        .call(
+          d3
+            .axisBottom(xScale)
+            .tickSizeOuter(0)
+            .tickSize(3)
+        );
+
+      const y2g = d3
+        .select("#y2-axis-g")
+        .attr("transform", `translate(${svgWidth * padding.barChartPadding},0)`)
+        .call(
+          d3
+            .axisLeft(yScaleForSampling)
+            .tickSizeOuter(0)
+            .tickSize(3)
+        )
+        .call(y2g => {
+          y2g.select(".domain").remove();
+        });
 
       originalBars = getBars(
         original,
@@ -120,6 +171,10 @@ class LdaBarChart extends React.Component<Props, State> {
       <svg className="view-svg" id="barchart-svg">
         {originalBars}
         {samplingBars}
+        <g id="x1-axis-g" />
+        <g id="y1-axis-g" />
+        <g id="x2-axis-g" />
+        <g id="y2-axis-g" />
       </svg>
     );
   }
