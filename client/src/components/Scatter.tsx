@@ -123,14 +123,7 @@ function LdaScatterCanvasCanvas(props: Props) {
   });
 
   return (
-    <div className="scatter-canvas-div">
-      <canvas
-        id="scatter-canvas"
-        ref={canvasRef}
-        width={width}
-        height={height}
-      />
-    </div>
+    <canvas id="scatter-canvas" ref={canvasRef} width={width} height={height} />
   );
 }
 

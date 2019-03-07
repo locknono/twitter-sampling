@@ -18,16 +18,19 @@ class App extends React.Component {
           <ControlPanel />
           <WordCloud />
         </div>
+
         <div className="middle panel panel-default">
           <Map />
           <River />
         </div>
+
         <div className="right-side panel panel-default">
-          <div className="scatter-div">
-            <Heading title="LDA Scatter" />
+          <div className="scatter-div panel panel-default">
+            <Heading title="Projection View" />
             <Scatter />
           </div>
-          <div className="barchart-div">
+
+          <div className="barchart-div panel panel-default">
             <Heading title="LDA" />
             <BarChart />
           </div>

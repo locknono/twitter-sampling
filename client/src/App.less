@@ -16,7 +16,7 @@
 
 @scatterDivHeight: @rightSideWidth;
 
-@barchartdivheight: 300px;
+@barchartdivheight: @height - @scatterDivHeight;
 
 .panel-margin {
   padding-bottom: 0;
@@ -28,6 +28,12 @@
   margin: 10px;
   text-align: center;
   display: flex;
+}
+
+.view-div {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .left-side {
@@ -51,6 +57,7 @@
   width: @leftSideWidth;
   height: @wordCloudHeight;
   .panel-margin();
+  .view-div();
 }
 
 .middle {
@@ -62,11 +69,18 @@
   top: 0;
   width: @middileWidth;
   height: @mapHeight;
+  .panel-margin();
 }
 
-#river {
+.river-view {
   width: @middileWidth;
   height: @height - @mapHeight;
+  .panel-margin();
+  .view-div();
+}
+#river {
+  width: 100%;
+  height: 100%;
 }
 
 .right-side {
@@ -76,13 +90,20 @@
 
 .scatter-div {
   height: @scatterDivHeight;
+  .view-div();
 }
+
 .barchart-div {
   height: @barchartdivheight;
+  .view-div();
 }
 
 .heading {
-  margin-bottom: 0;
+  height: 22px;
+  text-align: left;
+  padding-top: 2px;
+  padding-left: 10px;
+  font-family: "Arial", "Microsoft YaHei", "黑体", "宋体", sans-serif;
 }
 
 .view-svg {

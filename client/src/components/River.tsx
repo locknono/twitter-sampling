@@ -2,6 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 
 import * as echarts from "echarts";
+import Heading from "./Heading";
 
 class River extends React.Component {
   componentDidMount() {
@@ -192,7 +193,12 @@ class River extends React.Component {
     myChart.setOption(option as any);
   }
   render() {
-    return <div id="river" />;
+    return (
+      <div className="river-view panel panel-default">
+        <Heading title="Theme River" />
+        <div id="river" />
+      </div>
+    );
   }
 }
 
