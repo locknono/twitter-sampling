@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as d3 from "d3";
 import { setData, SCATTER_DATA } from "../actions/setDataAction";
-import { color, padding, scatterRadius } from "../constants";
+import { color, padding, scatterRadius, topicNumber } from "../constants";
 import { connect } from "react-redux";
 
 interface Props {
@@ -120,7 +120,42 @@ function LdaScatterCanvasCanvas(props: Props) {
       );
       ctx.fill();
     }
-  });
+  }, [curTopic, ctx]);
+
+  React.useEffect(() => {
+    if (!ctx || !width || !height) return;
+
+    const indices = [];
+    for (let i = 0; i < topicNumber; i++) {
+      indices.push(i.toString());
+    }
+    const xScale = d3
+      .scaleBand()
+      .domain(indices)
+      .range([
+        (width * padding.scatterPadding) / 3,
+        (width * (1 - padding.scatterPadding)) / 2
+      ])
+      .paddingInner(0.2);
+
+    indices.map((e, i) => {
+      ctx.fillStyle = color.tenColors[i];
+      ctx.fillRect(
+        xScale(e) as number,
+        height * (1 - padding.scatterPadding / 2),
+        xScale.bandwidth(),
+        xScale.bandwidth()
+      );
+    });
+
+    ctx.fillStyle = "black";
+    ctx.font = "12px Arial";
+    ctx.fillText(
+      "10 topics",
+      (xScale((topicNumber - 1).toString()) as number) + xScale.bandwidth() + 1,
+      height * (1 - padding.scatterPadding / 2) + xScale.bandwidth() - 2.5
+    );
+  }, [ctx]);
 
   return (
     <canvas id="scatter-canvas" ref={canvasRef} width={width} height={height} />
