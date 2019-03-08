@@ -66,8 +66,8 @@ function LdaScatterCanvasCanvas(props: Props) {
         ctx.fillStyle = color.tenColors[maxIndex];
         ctx.beginPath();
         ctx.arc(
-          xScale(scatterData[id][0]),
-          yScale(scatterData[id][1]),
+          Math.floor(xScale(scatterData[id][0])),
+          Math.floor(yScale(scatterData[id][1])),
           scatterRadius,
           0,
           Math.PI * 2
