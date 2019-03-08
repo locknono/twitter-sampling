@@ -87,6 +87,7 @@ function River(props: Props) {
       },
       color: color.tenColors
     };
+    myChart.on("click", function() {});
     myChart.setOption(option as any);
   });
 

@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import { setData, SCATTER_DATA } from "../actions/setDataAction";
 import { color, padding, scatterRadius, topicNumber } from "../constants";
 import { connect } from "react-redux";
-
+import { useWidthAndHeight } from "src/hooks/layoutHooks";
 interface Props {
   scatterData: ScatterData;
   docPrData: DocPrData;
@@ -21,9 +21,8 @@ const mapDispatch = {
 };
 function LdaScatterCanvasCanvas(props: Props) {
   const { setData, scatterData, docPrData, curTopic } = props;
-  const [width, setWidth] = React.useState<number | undefined>(undefined);
-  const [height, setHeight] = React.useState<number | undefined>(undefined);
   const [ctx, setCtx] = React.useState<CanvasRenderingContext2D | null>(null);
+  const [width, height] = useWidthAndHeight("scatter-canvas");
 
   const canvasRef = React.useRef(null);
   React.useLayoutEffect(() => {
@@ -32,13 +31,6 @@ function LdaScatterCanvasCanvas(props: Props) {
 
   React.useEffect(() => {
     fetchAndSetScatterData("./scatterData.json", setData);
-  }, []);
-
-  React.useLayoutEffect(() => {
-    const w = parseFloat(d3.select("#scatter-canvas").style("width"));
-    const h = parseFloat(d3.select("#scatter-canvas").style("height"));
-    setWidth(w);
-    setHeight(h);
   }, []);
 
   const points: [number, number][] = [];

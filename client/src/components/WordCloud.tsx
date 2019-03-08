@@ -7,7 +7,7 @@ import { setData, CLOUD_DATA } from "../actions/setDataAction";
 import { setCurTopic } from "../actions/setUIState";
 import { connect } from "react-redux";
 import { color, maxCloudWordSize } from "src/constants";
-
+import { useWidthAndHeight } from "src/hooks/layoutHooks";
 interface Props {
   cloudData: CloudData;
   curTopic: CurTopic;
@@ -26,21 +26,13 @@ const mapDispatch = {
 
 function WordCloud(props: Props) {
   const { cloudData, curTopic, setData, setCurTopic } = props;
-  const [width, setWidth] = React.useState<number | undefined>(undefined);
-  const [height, setHeight] = React.useState<number | undefined>(undefined);
+  const [width, height] = useWidthAndHeight("cloud-svg");
   const [cloudLayout, setCloudLayout] = React.useState<any | undefined>(
     undefined
   );
   const [layoutWords, setLayoutWords] = React.useState<any | undefined>(
     undefined
   );
-
-  React.useLayoutEffect(() => {
-    const w = parseFloat(d3.select("#cloud-svg").style("width"));
-    const h = parseFloat(d3.select("#cloud-svg").style("height"));
-    setWidth(w);
-    setHeight(h);
-  });
 
   React.useEffect(() => {
     (async function fetchData() {
