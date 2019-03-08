@@ -4,7 +4,8 @@ import {
   SET_SAMPLING_BARDATA,
   SET_SCATTER_DATA,
   SET_DOC_PR_DATA,
-  SET_CLOUD_DATA
+  SET_CLOUD_DATA,
+  SET_RIVER_DATA
 } from "../actions/setDataAction";
 
 const initialState = {
@@ -12,7 +13,8 @@ const initialState = {
   samplingBarData: [],
   scatterData: null,
   ducPrData: null,
-  cloudData: null
+  cloudData: null,
+  riverData: null
 };
 
 export default function dataTree(state = initialState, action: any) {
@@ -31,6 +33,9 @@ export default function dataTree(state = initialState, action: any) {
       break;
     case SET_CLOUD_DATA:
       return { ...state, cloudData: action.data };
+      break;
+    case SET_RIVER_DATA:
+      return { ...state, riverData: action.data };
       break;
     default:
       return state;

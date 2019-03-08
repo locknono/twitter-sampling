@@ -48,5 +48,5 @@ if __name__ == '__main__':
     for i in range(14, 14 + g.dataDays):
         print('../data/2018-10-{0}.txt'.format(i))
         extractFromSingleFile('../data/2018-10-{0}.txt'.format(i), bounds)
-    with open('../client/public/bounds.json', 'w', encoding='utf-8') as f:
+    with open('../client/public/grids.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(bounds))

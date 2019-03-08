@@ -18,8 +18,9 @@ os.system('python ./getGrids.py')
 os.system('python ../blueNoise.py')
 os.system('python ../LDAbyZhangxinlong.py')
 
-os.system('python ../getIDLdaProDict.py')
-os.system('python ../getTsneData.py')
+os.system('python ./getIDLdaProDict.py')
+os.system('python ./getRiverData.py')
+os.system('python ./getTsneData.py')
 
 os.system('python ./getHeatmapDataForAllTopics.py')
 os.system('python ./getHeatmapDataForOriginalPoints.py')

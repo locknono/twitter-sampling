@@ -10,7 +10,7 @@ sys.path.append(wd + '/shared')
 from lda_op import findMaxIndexAndValueForOneDoc
 
 idTimeDict = {}
-timeTopicValueDict = {}
+topicTimeValueDict = {}
 if __name__ == '__main__':
     with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8') as f:
         for line in f:
@@ -26,20 +26,23 @@ if __name__ == '__main__':
             time = idTimeDict[id]
 
             topicTimeTuple = (maxIndex, time)
-            if topicTimeTuple in timeTopicValueDict:
-                timeTopicValueDict[topicTimeTuple] += maxValue
+            if topicTimeTuple in topicTimeValueDict:
+                topicTimeValueDict[topicTimeTuple] += maxValue
             else:
-                timeTopicValueDict[topicTimeTuple] = maxValue
+                topicTimeValueDict[topicTimeTuple] = maxValue
 
     riverData = []
-    for k in timeTopicValueDict:
-        topic = k[0]
-        time = k[1]
-        value = timeTopicValueDict[k]
-        singleList = [time, value, str(topic)]
-        riverData.append(singleList)
+    for i in range(0, g.topicNumber):
+        for k in topicTimeValueDict:
+            topic = k[0]
+            if topic != i:
+                continue
+            time = k[1]
+            value = topicTimeValueDict[k]
+            singleList = [time, value, str(topic)]
+            riverData.append(singleList)
     with open(g.dataPath + 'riverData.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(riverData))
 
-    with open('../client/riverData.json', 'w', encoding='utf-8') as f:
+    with open('../client/public/riverData.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(riverData))
