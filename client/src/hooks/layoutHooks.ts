@@ -6,7 +6,6 @@ export function useWidthAndHeight(domID: string) {
   const [height, setHeight] = React.useState<number | undefined>(undefined);
   React.useLayoutEffect(() => {
     const w = parseFloat(d3.select(`#${domID}`).style("width"));
-    console.log("w: ", w);
     const h = parseFloat(d3.select(`#${domID}`).style("height"));
     setWidth(w);
     setHeight(h);

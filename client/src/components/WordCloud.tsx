@@ -76,7 +76,7 @@ function WordCloud(props: Props) {
     } else {
       topicIndex = curTopic;
     }
-    console.log("cloudData: ", cloudData);
+
     const layout = cloud()
       .size([width, height])
       /**
@@ -94,7 +94,6 @@ function WordCloud(props: Props) {
         return d.size as number;
       })
       .on("end", function(words) {
-        console.log("words: ", words);
         setCloudLayout(layout);
         setLayoutWords(words);
       });

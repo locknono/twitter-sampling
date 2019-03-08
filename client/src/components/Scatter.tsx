@@ -4,6 +4,7 @@ import { setData, SCATTER_DATA } from "../actions/setDataAction";
 import { color, padding, scatterRadius, topicNumber } from "../constants";
 import { connect } from "react-redux";
 import { useWidthAndHeight } from "src/hooks/layoutHooks";
+import { useCtxWithRef } from "src/hooks/canvasHooks";
 interface Props {
   scatterData: ScatterData;
   docPrData: DocPrData;
@@ -21,11 +22,18 @@ const mapDispatch = {
 };
 function LdaScatterCanvasCanvas(props: Props) {
   const { setData, scatterData, docPrData, curTopic } = props;
-  const [ctx, setCtx] = React.useState<CanvasRenderingContext2D | null>(null);
+
   const [width, height] = useWidthAndHeight("scatter-canvas");
 
+  const [
+    backgroudCtx,
+    setBackgroundCtx
+  ] = React.useState<CanvasRenderingContext2D | null>(null);
+  const [ctx, setCtx] = React.useState<CanvasRenderingContext2D | null>(null);
+  const backgroundCanvasRef = React.useRef(null);
   const canvasRef = React.useRef(null);
   React.useLayoutEffect(() => {
+    setBackgroundCtx((backgroundCanvasRef.current as any).getContext("2d"));
     setCtx((canvasRef.current as any).getContext("2d"));
   }, []);
 
@@ -44,8 +52,9 @@ function LdaScatterCanvasCanvas(props: Props) {
   const yMin = d3.min(points, d => d[1]) as number;
   const yMax = d3.max(points, d => d[1]) as number;
 
+  //background
   React.useEffect(() => {
-    if (width && height && ctx && docPrData) {
+    if (width && height && backgroudCtx && docPrData) {
       const xScale = d3
         .scaleLinear()
         .domain([xMin, xMax])
@@ -60,26 +69,28 @@ function LdaScatterCanvasCanvas(props: Props) {
           height * padding.scatterPadding,
           height * (1 - padding.scatterPadding)
         ]);
-
+      console.log("scatterData: ", scatterData);
       for (let id in scatterData) {
         const maxIndex = docPrData[id].indexOf(Math.max(...docPrData[id]));
-        ctx.fillStyle = color.tenColors[maxIndex];
-        ctx.beginPath();
-        ctx.arc(
+        backgroudCtx.fillStyle = color.tenColors[maxIndex];
+        backgroudCtx.beginPath();
+        backgroudCtx.arc(
           Math.floor(xScale(scatterData[id][0])),
           Math.floor(yScale(scatterData[id][1])),
           scatterRadius,
           0,
           Math.PI * 2
         );
-        ctx.fill();
+        backgroudCtx.fill();
       }
     }
-  });
+  }, [scatterData, docPrData]);
 
+  //click function
   React.useEffect(() => {
     const points = [];
     if (curTopic === undefined || !ctx || !width || !height) return;
+    ctx.clearRect(0, 0, width, height);
     for (let k in docPrData) {
       const maxIndex = docPrData[k].indexOf(Math.max(...docPrData[k]));
       if (maxIndex === curTopic) {
@@ -104,19 +115,19 @@ function LdaScatterCanvasCanvas(props: Props) {
     for (let i = 0; i < points.length; i++) {
       ctx.beginPath();
       ctx.arc(
-        xScale(points[i][0]),
-        yScale(points[i][1]),
+        Math.floor(xScale(points[i][0])),
+        Math.floor(yScale(points[i][1])),
         scatterRadius,
         0,
         Math.PI * 2
       );
       ctx.fill();
     }
-  }, [curTopic, ctx]);
+  }, [curTopic, backgroudCtx]);
 
+  //color bars
   React.useEffect(() => {
-    if (!ctx || !width || !height) return;
-
+    if (!backgroudCtx || !width || !height) return;
     const indices = [];
     for (let i = 0; i < topicNumber; i++) {
       indices.push(i.toString());
@@ -131,8 +142,8 @@ function LdaScatterCanvasCanvas(props: Props) {
       .paddingInner(0.2);
 
     indices.map((e, i) => {
-      ctx.fillStyle = color.tenColors[i];
-      ctx.fillRect(
+      backgroudCtx.fillStyle = color.tenColors[i];
+      backgroudCtx.fillRect(
         xScale(e) as number,
         height * (1 - padding.scatterPadding / 2),
         xScale.bandwidth(),
@@ -140,17 +151,30 @@ function LdaScatterCanvasCanvas(props: Props) {
       );
     });
 
-    ctx.fillStyle = "black";
-    ctx.font = "12px Arial";
-    ctx.fillText(
+    backgroudCtx.fillStyle = "black";
+    backgroudCtx.font = "12px Arial";
+    backgroudCtx.fillText(
       "10 topics",
       (xScale((topicNumber - 1).toString()) as number) + xScale.bandwidth() + 1,
       height * (1 - padding.scatterPadding / 2) + xScale.bandwidth() - 2.5
     );
-  }, [ctx]);
+  }, [backgroudCtx]);
 
   return (
-    <canvas id="scatter-canvas" ref={canvasRef} width={width} height={height} />
+    <div className="scatter-canvas-div">
+      <canvas
+        id="scatter-canvas-background"
+        ref={backgroundCanvasRef}
+        width={width}
+        height={height}
+      />
+      <canvas
+        id="scatter-canvas"
+        ref={canvasRef}
+        width={width}
+        height={height}
+      />
+    </div>
   );
 }
 

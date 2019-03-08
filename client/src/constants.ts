@@ -40,6 +40,6 @@ export namespace color {
   ];
 }
 
-export const scatterRadius = 1;
+export const scatterRadius = 1.5;
 
 export const maxCloudWordSize = 80;

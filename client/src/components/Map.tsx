@@ -19,9 +19,7 @@ class Map extends React.Component<Props, Object> {
 
   componentDidMount() {
     this.deployMap();
-    this.map.on("click", function(e: L.LeafletEvent) {
-      console.log(e);
-    });
+    this.map.on("click", function(e: L.LeafletEvent) {});
     const controlLayer = L.control
       .layers(undefined, undefined, { collapsed: false })
       .addTo(this.map);
@@ -52,8 +50,8 @@ class Map extends React.Component<Props, Object> {
           const rect = L.rectangle(e, { color: "blue", weight: 1 }).on(
             "click",
             function() {
-              console.log("e: ", e);
-              console.log(e.order);
+              
+              
             }
           );
           rects.push(rect);
@@ -63,7 +61,7 @@ class Map extends React.Component<Props, Object> {
       }); */
 
     fetchAndAddGroupLayer(
-      "./samplePoints.json",
+      "./sampling-2209-0.9090909090909091.json",
       "sampling points",
       L.circle,
       controlLayer,

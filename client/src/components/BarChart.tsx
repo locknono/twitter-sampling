@@ -166,9 +166,23 @@ class LdaBarChart extends React.Component<Props, State> {
         {originalBars}
         {samplingBars}
         <g id="x1-axis-g" />
-        <g id="y1-axis-g" />
+        <g id="y1-axis-g">
+          <text
+            transform={`translate(3,10)`}
+            style={{ stroke: "black", strokeWidth: 1 }}
+          >
+            original
+          </text>
+        </g>
         <g id="x2-axis-g" />
-        <g id="y2-axis-g" />
+        <g id="y2-axis-g">
+          <text
+            transform={`translate(10,160)`}
+            style={{ stroke: "black", strokeWidth: 1 }}
+          >
+            sampling
+          </text>
+        </g>
       </svg>
     );
   }

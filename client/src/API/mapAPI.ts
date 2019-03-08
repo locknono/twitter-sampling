@@ -1,9 +1,5 @@
 import * as L from "leaflet";
 
-function fetchJsonDataInPublicFolder(fileName: string) {
-  return fetch(fileName).then(res => res.json());
-}
-
 export async function fetchAndAddGroupLayer(
   fileName: string,
   layerName: string,
@@ -11,9 +7,10 @@ export async function fetchAndAddGroupLayer(
   controlLayer: L.Control.Layers,
   style?: L.CircleMarkerOptions
 ) {
-  const data: [] = await fetchJsonDataInPublicFolder(fileName);
+  const res = await fetch(fileName);
+  const data = await res.json();
   const layers: L.Layer[] = [];
-  data.map(e => {
+  data.map((e:any) => {
     layers.push(layerCreatingFunction(e, style));
   });
   const layerGroup = L.layerGroup(layers);
