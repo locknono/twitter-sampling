@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./App.css";
+import "./css/App.css";
 import Map from "./components/Map";
 import DataDescription from "./components/DataDescription";
 import ControlPanel from "./components/ControlPanel";

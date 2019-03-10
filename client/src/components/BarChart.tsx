@@ -209,15 +209,17 @@ function getBars(
         ? color.originalBarColor
         : color.brighterBarColor;
     return (
-      <rect
-        key={e}
-        x={xScale(i.toString())}
-        y={yScale(e)}
-        width={xScale.bandwidth()}
-        height={yScale(0) - yScale(e)}
-        fill={fillColor}
-        onClick={() => clickFunc(i)}
-      />
+      <g className="bars-group">
+        <rect
+          key={e}
+          x={xScale(i.toString())}
+          y={yScale(e)}
+          width={xScale.bandwidth()}
+          height={yScale(0) - yScale(e)}
+          fill={fillColor}
+          onClick={() => clickFunc(i)}
+        />
+      </g>
     );
   });
   return rects;
