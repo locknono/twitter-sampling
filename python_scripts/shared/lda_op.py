@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
+import json
 
 def saveBarChart(list):
     plt.bar(range(len(list)), list)
@@ -35,3 +35,9 @@ def getTopicProSumList(idLdaDict):
         topicProSumList += curDocList
     return topicProSumList.tolist()
 
+
+def fetchIDLdaDict(url):
+    idLdaDict = {}
+    with open(url, 'r', encoding='utf-8') as f:
+        idLdaDict = json.loads(f.read())
+    return idLdaDict

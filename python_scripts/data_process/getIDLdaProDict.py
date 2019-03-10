@@ -1,10 +1,15 @@
 import g
 import json
 import os
+
+"""
+cwd = os.getcwd()
+wd = os.path.split(cwd)[0]
+os.chdir(wd)
+"""
+
 if __name__ == '__main__':
-    cwd = os.getcwd()
-    wd = os.path.split(cwd)[0]
-    os.chdir(wd)
+
     outputDict = {}
     with open(g.dataPath + 'finalText.txt', 'r', encoding='utf-8') as f1:
         with open(g.ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r', encoding='utf-8') as f2:

@@ -5,6 +5,10 @@ import { color, padding, scatterRadius, topicNumber } from "../constants";
 import { connect } from "react-redux";
 import { useWidthAndHeight } from "src/hooks/layoutHooks";
 import { useCtxWithRef } from "src/hooks/canvasHooks";
+import { updateQueue } from "../fiber/updateQueue";
+import createFiber from "../fiber/fiber";
+import * as v4 from "uuid/v4";
+
 interface Props {
   scatterData: ScatterData;
   docPrData: DocPrData;
@@ -54,6 +58,9 @@ function LdaScatterCanvasCanvas(props: Props) {
 
   //background
   React.useEffect(() => {
+    if (!backgroudCtx || !docPrData || !scatterData) {
+      return;
+    }
     if (width && height && backgroudCtx && docPrData) {
       const xScale = d3
         .scaleLinear()
@@ -69,20 +76,33 @@ function LdaScatterCanvasCanvas(props: Props) {
           height * padding.scatterPadding,
           height * (1 - padding.scatterPadding)
         ]);
-      console.log("scatterData: ", scatterData);
-      for (let id in scatterData) {
-        const maxIndex = docPrData[id].indexOf(Math.max(...docPrData[id]));
-        backgroudCtx.fillStyle = color.tenColors[maxIndex];
-        backgroudCtx.beginPath();
-        backgroudCtx.arc(
-          Math.floor(xScale(scatterData[id][0])),
-          Math.floor(yScale(scatterData[id][1])),
-          scatterRadius,
-          0,
-          Math.PI * 2
-        );
-        backgroudCtx.fill();
+      const keys = Object.keys(scatterData);
+      console.log("keys: ", keys);
+      const sliceCount = 10;
+      const pad = keys.length / sliceCount;
+      const indexSlices = [];
+      for (let i = 0; i < sliceCount; i++) {
+        indexSlices.push([Math.floor(i * pad), Math.floor((i + 1) * pad)]);
       }
+
+      const drawSlice = (startIndex: number, endIndex: number) => () => {
+        for (let i = startIndex; i < endIndex; i++) {
+          const id = keys[i];
+          const maxIndex = docPrData[id].indexOf(Math.max(...docPrData[id]));
+          backgroudCtx.fillStyle = color.tenColors[maxIndex];
+          backgroudCtx.beginPath();
+          backgroudCtx.arc(
+            Math.floor(xScale(scatterData[id][0])),
+            Math.floor(yScale(scatterData[id][1])),
+            scatterRadius,
+            0,
+            Math.PI * 2
+          );
+          backgroudCtx.fill();
+        }
+      };
+      const fiber = createFiber(drawSlice(0, keys.length - 1), 1, v4(), v4());
+      updateQueue.push(fiber);
     }
   }, [scatterData, docPrData]);
 
@@ -189,3 +209,5 @@ export default connect(
   mapState,
   mapDispatch
 )(LdaScatterCanvasCanvas);
+
+function drawCurTopic() {}

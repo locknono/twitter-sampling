@@ -61,7 +61,7 @@ class Map extends React.Component<Props, Object> {
       }); */
 
     fetchAndAddGroupLayer(
-      "./sampling-2209-0.9090909090909091.json",
+      "./samplePoints.json",
       "sampling points",
       L.circle,
       controlLayer,

@@ -2,12 +2,11 @@
 import os
 import time
 
-dataDays = 12
+dataDays = 10  # 15 + 1
 
 topicNumber = 10
 
-workDir='pytho'
-dataPath = '../data/random/'
+dataPath = '../data/newData/'
 
 """
 ’asymmetric’: Uses a fixed normalized asymmetric prior of 1.0 / topicno.

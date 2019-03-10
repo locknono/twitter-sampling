@@ -80,7 +80,6 @@ def extractFromSingleFile(filePath, latlngSet):
     with open(filePath, 'r', encoding='utf-8') as f:
         writeF = codecs.open(g.dataPath + "extractedDataInAllAreaSingleThread.txt", 'a', encoding='utf-8')
         for index, line in enumerate(f):
-            trueFlag = None
             try:
                 line = line.split('\t')
                 textID = line[0]
@@ -91,7 +90,6 @@ def extractFromSingleFile(filePath, latlngSet):
                     lat = float(line[5])
                     lng = float(line[4])
                     if (ifInbiggerThanNYCBound(lat, lng) == False):
-                        trueFlag = False
                         continue
                     else:
                         trueFlag = True
@@ -146,7 +144,7 @@ def extractFromSingleFile(filePath, latlngSet):
 
 def extractFromAllFiles():
     pool = Pool()
-    pool.map(extractFromSingleFile, ['../data/2018-10-{0}.txt'.format(day) for day in range(14, 26 + 1)])
+    pool.map(extractFromSingleFile, ['../data/2016-06-{0}.txt'.format(day) for day in range(10, 10 + g.dataDays)])
 
 
 def extractDataInNyc():
@@ -179,9 +177,8 @@ try:
 except Exception as e:
     print(e)
 latlngSet = set()
-for i in range(14, 14 + g.dataDays):
-    print('../data/2018-10-{0}.txt'.format(i))
-    extractFromSingleFile('../data/2018-10-{0}.txt'.format(i), latlngSet)
+for i in range(10, 10 + g.dataDays):
+    extractFromSingleFile('../data/2016-06-{0}.txt'.format(i), latlngSet)
 extractDataInNyc()
 rowCount = 0
 with open(g.dataPath + 'extractedDataInAllAreaSingleThread.txt', 'r', encoding='utf-8') as f:

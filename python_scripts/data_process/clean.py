@@ -83,9 +83,11 @@ if __name__ == '__main__':
         # 多空格换单空格
         tweets[i][1] = re.sub(" +", " ", tweets[i][1])
 
+        """
         if (len(tweets[i][1].split(' ')) <= 3):
             tweets.pop(i)
         else:
-            writeF.write(
-                tweets[i][0] + '\t' + tweets[i][1] + '\t' + tweets[i][2] + '\t' + tweets[i][3] + '\t' + tweets[i][4] +
-                '\t\n')
+        """
+        writeF.write(
+            tweets[i][0] + '\t' + tweets[i][1] + '\t' + tweets[i][2] + '\t' + tweets[i][3] + '\t' + tweets[i][4] +
+            '\t\n')

@@ -5,6 +5,7 @@ import { setData } from "../actions/setDataAction";
 import { setCurTopic } from "../actions/setUIState";
 import { connect } from "react-redux";
 import { fetchJsonData } from "../shared";
+import { updateQueue } from "src/fiber/updateQueue";
 interface Props {}
 
 interface State {
@@ -67,6 +68,8 @@ class LdaBarChart extends React.Component<Props, State> {
   }
 
   render() {
+    console.log("updateQueue: ", updateQueue);
+
     const { svgHeight, svgWidth } = this.state;
     const { original, sampling, curTopic } = this.props;
 
@@ -162,7 +165,7 @@ class LdaBarChart extends React.Component<Props, State> {
     }
 
     return (
-      <svg className="view-svg" id="barchart-svg">
+      <svg id="barchart-svg">
         {originalBars}
         {samplingBars}
         <g id="x1-axis-g" />

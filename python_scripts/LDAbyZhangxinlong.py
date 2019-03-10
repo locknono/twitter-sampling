@@ -12,6 +12,12 @@ import time
 import json
 import matplotlib.pyplot as plt
 
+cwd = os.getcwd()
+print(cwd)
+wd = os.path.split(cwd)[0]
+print(wd)
+os.chdir(wd)
+
 """
 ’asymmetric’: Uses a fixed normalized asymmetric prior of 1.0 / topicno.
 ’auto’: Learns an asymmetric prior from the corpus (not available if distributed==True).
@@ -21,7 +27,7 @@ try:
 except Exception as e:
     print(e)
 
-ALPHA = 0.25
+ALPHA = 0.3
 
 parameterText = 'alpha={0}'.format(ALPHA)
 ldaDir = ''
@@ -168,7 +174,7 @@ for i in list1:
     nu += 1
 print('特征向量OK')
 
-
+ldamodel.inference(corpus)
 def generateTopicProbabilityDict(probabilityForOneRow, topicProbabilityDict):
     for item in probabilityForOneRow:
         if item[0] in topicProbabilityDict:
@@ -207,4 +213,4 @@ with open(ldaDir + 'LDA_topic_document_pro_NY_{0}.txt'.format(g.topicNumber), 'r
         topicProbabilityDict = generateTopicProbabilityDict(line, topicProbabilityDict)
     saveProbablityBarChart(topicProbabilityDict)
 
-os.system('python ./getIDLdaProDict.py')
+os.system('python ./data_process/getIDLdaProDict.py')
