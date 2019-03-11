@@ -6,15 +6,19 @@ export interface Fiber {
   frameID: number | string;
 }
 
+enum Priority {
+  backgroud,
+  interaction
+}
 export default function createFiber(
   renderMethod: Function,
-  priority: number,
+  priority?: Priority,
   streamID?: string,
   frameID?: string
 ) {
   const fiber: Fiber = Object.create(null);
   fiber.renderMethod = renderMethod;
-  fiber.priority = priority;
+  fiber.priority = priority ? priority : 0;
   fiber.streamID = streamID ? streamID : v4();
   fiber.frameID = frameID ? frameID : v4();
   return fiber;

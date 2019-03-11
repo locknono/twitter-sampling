@@ -68,8 +68,6 @@ class LdaBarChart extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("updateQueue: ", updateQueue);
-
     const { svgHeight, svgWidth } = this.state;
     const { original, sampling, curTopic } = this.props;
 

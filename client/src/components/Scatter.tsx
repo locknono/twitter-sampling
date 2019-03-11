@@ -77,8 +77,7 @@ function LdaScatterCanvasCanvas(props: Props) {
           height * (1 - padding.scatterPadding)
         ]);
       const keys = Object.keys(scatterData);
-      console.log("keys: ", keys);
-      const sliceCount = 10;
+      const sliceCount = 2000;
       const pad = keys.length / sliceCount;
       const indexSlices = [];
       for (let i = 0; i < sliceCount; i++) {
@@ -101,14 +100,19 @@ function LdaScatterCanvasCanvas(props: Props) {
           backgroudCtx.fill();
         }
       };
-      const fiber = createFiber(drawSlice(0, keys.length - 1), 1, v4(), v4());
-      updateQueue.push(fiber);
+      for (let i = 0; i < indexSlices.length; i++) {
+        const fiber = createFiber(
+          drawSlice(indexSlices[i][0], indexSlices[i][1])
+        );
+        updateQueue.push(fiber);
+      }
+      updateQueue.flush();
     }
   }, [scatterData, docPrData]);
 
   //click function
   React.useEffect(() => {
-    const points = [];
+    const points: [number, number][] = [];
     if (curTopic === undefined || !ctx || !width || !height) return;
     ctx.clearRect(0, 0, width, height);
     for (let k in docPrData) {
@@ -132,17 +136,21 @@ function LdaScatterCanvasCanvas(props: Props) {
         height * padding.scatterPadding,
         height * (1 - padding.scatterPadding)
       ]);
-    for (let i = 0; i < points.length; i++) {
-      ctx.beginPath();
-      ctx.arc(
-        Math.floor(xScale(points[i][0])),
-        Math.floor(yScale(points[i][1])),
-        scatterRadius,
-        0,
-        Math.PI * 2
-      );
-      ctx.fill();
-    }
+    const fiber = createFiber(() => {
+      for (let i = 0; i < points.length; i++) {
+        ctx.beginPath();
+        ctx.arc(
+          Math.floor(xScale(points[i][0])),
+          Math.floor(yScale(points[i][1])),
+          scatterRadius,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      }
+    }, 1);
+    updateQueue.push(fiber);
+    updateQueue.flush();
   }, [curTopic, backgroudCtx]);
 
   //color bars
