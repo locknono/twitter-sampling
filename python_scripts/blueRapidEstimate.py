@@ -4,7 +4,7 @@ from typing import List
 def getRalationshipList(estimates: List[float]):
     ls = []
     for i in range(len(estimates)):
-        for j in range(i, len(estimates)):
+        for j in range(i+1, len(estimates)):
             if estimates[i] > estimates[j]:
                 ls.append(0)
             else:

@@ -6,7 +6,7 @@ dataDays = 10  # 15 + 1
 
 topicNumber = 10
 
-dataPath = '../data/newData/'
+dataPath = '../data/random/'
 
 """
 ’asymmetric’: Uses a fixed normalized asymmetric prior of 1.0 / topicno.

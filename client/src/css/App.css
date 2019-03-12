@@ -123,4 +123,11 @@
 }
 .bars-group > rect {
   animation: slideIn 1 s linear 0s;
+  transition: fill 1s;
+}
+.bars-group > rect:hover {
+  fill: black;
+}
+.bars-group > rect:active {
+  fill: red;
 }

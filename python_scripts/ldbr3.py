@@ -5,8 +5,6 @@ import random
 import math
 
 
-# one sample for one disk ,starts from the fewest count
-
 class Point:
     def __init__(self, id, lat, lng, value, topic):
         self.id = id
@@ -51,23 +49,51 @@ def setRadius(point: Point, r: float, kde):
     point.r = radius
 
 
-def drawOneSampleForOneGroup(points: List[Point], topic: int):
-    samplePoint = None
-    while (samplePoint == None):
+def drawSamplesForA(points: List[Point], A: List[int]):
+    samplePoints = []
+    print('draw')
+    for topic in A:
+        samplePoints.append(None)
+    randomTime = 0
+    while (None in samplePoints):
+        randomTime += 1
+        if randomTime > 200000:
+            return None
+
+        # randomDisk
         randomPoint = points[random.randint(0, len(points) - 1)]
         if randomPoint.covered == True:
             continue
-        if randomPoint.topic != topic:
+        if randomPoint.topic not in A:
             continue
-        for p in points:
-            if p.covered == True:
+
+        pointsInDisk = []
+        if randomPoint.topic in A:
+            for p in points:
+                if p.covered == True:
+                    continue
+                dis = getGeoDistance(p, randomPoint)
+                if dis < randomPoint.r:
+                    pointsInDisk.append(p)
+        topics = [p.topic for p in pointsInDisk]
+
+        haveFlag = True
+        for t in A:
+            if t not in topics:
+                haveFlag = False
+        if haveFlag == False:
+            continue
+
+        for p in pointsInDisk:
+            if p.topic not in A:
                 continue
-            dis = getGeoDistance(p, randomPoint)
-            if dis < randomPoint.r:
+            index = A.index(p.topic)
+            if samplePoints[index] == None:
                 p.covered = True
-        samplePoint = randomPoint
-        points.remove(randomPoint)
-    return samplePoint
+                samplePoints[index] = p
+                points.remove(p)
+
+    return samplePoints
 
 
 def getEstimateForOneGroup(sampleGroup: List[Point]):
@@ -123,7 +149,7 @@ def ldbr(points: List[Point], r: float, k: int, delta: float, c: float):
     kde = getKDE(points)
     for p in points:
         setRadius(p, r, kde)
-    # print('set all radius')
+    print('set all radius')
     A = []
     sampleGroups: List[List[Point]] = []
     for i in range(k):
@@ -131,11 +157,7 @@ def ldbr(points: List[Point], r: float, k: int, delta: float, c: float):
         sampleGroups.append([])
     m = 1
 
-    samples = []
-    for topic in A:
-        samplePoint = drawOneSampleForOneGroup(points, topic)
-        samples.append(samplePoint)
-
+    samples = drawSamplesForA(points, A)
     for i in range(len(A)):
         # print(str(A[i]))
         sampleGroups[A[i]].append(samples[i])
@@ -152,16 +174,13 @@ def ldbr(points: List[Point], r: float, k: int, delta: float, c: float):
         epsilon = getEpsilon(m, N, k, delta, c)
 
         # print(epsilon)
-        samples = []
-        for topic in A:
-            samplePoint = drawOneSampleForOneGroup(points, topic)
-            if samplePoint == None:
-                return [None, None]
-            samples.append(samplePoint)
 
+        samples = drawSamplesForA(points, A)
+        if samples == None:
+            return [None, None]
         for i in range(len(A)):
             sampleGroups[A[i]].append(samples[i])
-            estimates[A[i]] = ((m - 1) / m) * estimates[A[i]] + (1 / m) * samples[i].value
+            estimates[A[i]] = ((m - 1) / m) * estimates[A[i]] + (1 / m) * samples[i].value;
             # print(str(estimates))
         for i in range(len(A) - 1, 0 - 1, -1):
             if ifActive(estimates, A[i], epsilon) == False:

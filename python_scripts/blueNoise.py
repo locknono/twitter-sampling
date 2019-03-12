@@ -235,12 +235,6 @@ def blueNoise(originalPoints, r):
 
 
 if __name__ == '__main__':
-    cwd = os.getcwd()
-    print(cwd)
-    wd = os.path.split(cwd)[0]
-    print(wd)
-    os.chdir(wd)
-
 
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
     maxCount = 0

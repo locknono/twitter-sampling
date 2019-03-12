@@ -37,7 +37,7 @@ def getTopicProSumList(idLdaDict):
 
 
 def fetchIDLdaDict(url):
-    idLdaDict = {}
+    idLdaDict = None
     with open(url, 'r', encoding='utf-8') as f:
         idLdaDict = json.loads(f.read())
     return idLdaDict

@@ -52,21 +52,42 @@ def setRadius(point: Point, r: float, kde):
 
 
 def drawOneSampleForOneGroup(points: List[Point], topic: int):
+    print('draw')
+    coundDict = {}
     samplePoint = None
     while (samplePoint == None):
-        randomPoint = points[random.randint(0, len(points) - 1)]
-        if randomPoint.covered == True:
-            continue
-        if randomPoint.topic != topic:
-            continue
-        for p in points:
-            if p.covered == True:
+        for i, p1 in enumerate(points):
+            print(i)
+            if p1.topic != topic:
                 continue
-            dis = getGeoDistance(p, randomPoint)
-            if dis < randomPoint.r:
-                p.covered = True
-        samplePoint = randomPoint
-        points.remove(randomPoint)
+            if p1.covered == True:
+                continue
+            pointsInDisk = []
+            for p2 in points:
+                if p2.covered == True:
+                    continue
+                if p1 == p2:
+                    continue
+                dis = getGeoDistance(p1, p2)
+                if dis < p1.r:
+                    pointsInDisk.append(p2)
+            coundDict[p1] = len(pointsInDisk)
+        sortedEntries = sorted(coundDict.items(), key=lambda k: k[1])
+        for k, v in sortedEntries:
+            randomPoint = k
+            if randomPoint.covered == True:
+                continue
+            if randomPoint.topic != topic:
+                continue
+            for p in points:
+                if p.covered == True:
+                    continue
+                dis = getGeoDistance(p, randomPoint)
+                if dis < randomPoint.r:
+                    p.covered = True
+            samplePoint = randomPoint
+            points.remove(randomPoint)
+            break
     return samplePoint
 
 
