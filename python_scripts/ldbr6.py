@@ -3,7 +3,7 @@ from scipy import stats
 import numpy as np
 import random
 import math
-
+import json
 
 # one sample for one disk ,starts from the fewest count
 
@@ -18,6 +18,7 @@ class Point:
         self.covered = False
         self.r = None
         self.isDisk = False
+        self.diskIndices = []
 
 
 def getGeoDistance(p1, p2):
@@ -54,32 +55,34 @@ def setRadius(point: Point, r: float, kde):
 
 def drawOneSampleForOneGroup(points: List[Point], topic: int, disks):
     samplePoint = None
-    randomTime = 0
-    while (samplePoint == None):
-        #randomTime += 1
-        #if randomTime >= 1000000:
-        #    return [None, None, None]
-        randomPoint = points[random.randint(0, len(points) - 1)]
-        if randomPoint.topic != topic:
-            continue
-        for disk in disks:
-            if getGeoDistance(randomPoint, disk) < disk.r:
-                disk.count += 1
-                disk.isDisk = True
-                samplePoint = randomPoint
-                randomPoint.isDisk = True
-                points.remove(randomPoint)
-                return samplePoint
-            """
-        randomDisk = disks[random.randint(0, len(disks) - 1)]
-        if getGeoDistance(randomPoint, randomDisk) < randomDisk.r:
-            randomDisk.count += 1
-            randomDisk.isDisk = True
-            samplePoint = randomPoint
-            randomPoint.isDisk = True
-            points.remove(randomPoint)
+
+    allFitsPoints = []
+    for p in points:
+        if p.topic == topic:
+            allFitsPoints.append(p)
+    allFitsDiskIndices = []
+    for p in allFitsPoints:
+        for index in p.diskIndices:
+            allFitsDiskIndices.append(index)
+    sortedFitsDiskIndices = sorted(allFitsDiskIndices, key=lambda k: disks[k].count)
+    minValue = disks[sortedFitsDiskIndices[0]].count
+
+    fitsRandomDomain = []
+    for index in sortedFitsDiskIndices:
+        if disks[index].count == minValue:
+            fitsRandomDomain.append(index)
+    if len(fitsRandomDomain) > 1:
+        randomIndex = fitsRandomDomain[random.randint(0, len(fitsRandomDomain) - 1)]
+        disk = disks[randomIndex]
+    else:
+        disk = disks[fitsRandomDomain[0]]
+    for p in allFitsPoints:
+        if getGeoDistance(p, disk) < disk.r:
+            disk.count += 1
+            disk.isDisk = True
+            samplePoint = p
+            points.remove(p)
             return samplePoint
-        """
 
 def getEstimateForOneGroup(sampleGroup: List[Point]):
     sum = 0
@@ -131,6 +134,25 @@ def ifActive(estimates: List[float], topic: int, epsilon: float):
 
 
 def ldbr(points: List[Point], r: float, k: int, delta: float, c: float, disks):
+    """
+    for p in points:
+        for index, disk in enumerate(disks):
+            if getGeoDistance(p, disk) < disk.r:
+                p.diskIndices.append(index)
+    idIndicesDict = {}
+    for p in points:
+        idIndicesDict[p.id] = p.diskIndices
+    print('pre finished')
+    with open('./save.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(idIndicesDict))
+    """
+    with open('./save.json', 'r', encoding='utf-8') as f:
+        idIndicesDict = json.loads(f.read())
+        for p in points:
+            for id in idIndicesDict:
+                if p.id == id:
+                    p.diskIndices = idIndicesDict[id]
+                    break
     # kde = getKDE(points)
     # for p in points:
     #    setRadius(p, r, kde)
@@ -157,6 +179,7 @@ def ldbr(points: List[Point], r: float, k: int, delta: float, c: float, disks):
         estimates.append(getEstimateForOneGroup(group))
 
     while (len(A) > 0):
+        print(A)
         N = getMaxNInActiveGroups(A, points)
         m = m + 1
 
