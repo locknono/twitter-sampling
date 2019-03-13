@@ -5,6 +5,8 @@ import random
 import math
 
 
+# just rapid sampling
+
 class Point:
     def __init__(self, id, lat, lng, value, topic):
         self.id = id
@@ -118,7 +120,7 @@ def ifActive(estimates: List[float], topic: int, epsilon: float):
     """
 
 
-def ldbr(points: List[Point], r: float, k: int, delta: float, c: float):
+def ldbr(points: List[Point], k: int, delta: float, c: float):
     # kde = getKDE(points)
     # for p in points:
     #    setRadius(p, r, kde)

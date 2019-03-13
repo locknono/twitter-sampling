@@ -2,10 +2,11 @@ import g
 import json
 import csv
 from itertools import islice
-from ldbr4 import ldbr, Point
+from ldbr3 import ldbr, Point
 import math
 import shortuuid
 from typing import List
+from ldbr import getGeoDistance
 from blueRapidEstimate import getRalationshipList, compareRelationshipList
 import copy
 from ldbrTest import getOriginalEstimates
@@ -68,8 +69,9 @@ for p in points:
 ratioList = []
 countList = []
 outputPoints = []
-for c in [0.05]:
-    estimates, sampleGroups = ldbr(copy.deepcopy(points), 10000, len(classLocationDict.keys()), 0.01, c)
+
+for c in [0.025]:
+    estimates, sampleGroups = ldbr(copy.deepcopy(points), 7000, len(classLocationDict.keys()), 0.05, c)
     if estimates == None:
         ratioList.append(None)
         countList.append(None)
@@ -84,12 +86,15 @@ for c in [0.05]:
             count += 1
     for group in sampleGroups:
         for p in group:
-            outputP = {"id": p.id, "r": p.r, "lat": p.lat, "lng": p.lng}
+            outputP = {"id": p.id, "r": p.r, "lat": p.lat, "lng": p.lng, "isDisk": p.isDisk}
             outputPoints.append(outputP)
     ratioList.append(ratio)
     countList.append(count)
 
     with open(g.ldaDir + 'ldbrPoints.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(outputPoints))
+
+    with open('../client/public/ldbrPoints.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(outputPoints))
 
 print(str(ratioList))

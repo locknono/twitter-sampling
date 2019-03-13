@@ -17,6 +17,7 @@ class Point:
         self.kdeValue = None
         self.covered = False
         self.r = None
+        self.isDisk = False
 
 
 def getGeoDistance(p1, p2):
@@ -51,43 +52,50 @@ def setRadius(point: Point, r: float, kde):
     point.r = radius
 
 
-def drawOneSampleForOneGroup(points: List[Point], topic: int):
-    print('draw')
-    coundDict = {}
+def drawOneSampleForOneGroup(points: List[Point], topic: int, disks):
     samplePoint = None
+
+    randomTime = 0
     while (samplePoint == None):
-        for p1 in points:
-            if p1.topic != topic:
-                continue
-            if p1.covered == True:
-                continue
-            pointsInDisk = []
-            for p2 in points:
-                if p2.covered == True:
-                    continue
-                if p1 == p2:
-                    continue
-                dis = getGeoDistance(p1, p2)
-                if dis < p1.r:
-                    pointsInDisk.append(p2)
-            coundDict[p1] = len(pointsInDisk)
-        sortedEntries = sorted(coundDict.items(), key=lambda k: k[1])
-        for k, v in sortedEntries:
-            randomPoint = k
-            if randomPoint.covered == True:
-                continue
-            if randomPoint.topic != topic:
-                continue
-            for p in points:
-                if p.covered == True:
-                    continue
-                dis = getGeoDistance(p, randomPoint)
-                if dis < randomPoint.r:
-                    p.covered = True
-            samplePoint = randomPoint
-            points.remove(randomPoint)
-            break
-    return samplePoint
+        randomTime += 1
+        if randomTime >= 10000:
+            return [None, None, None]
+        randomPoint = points[random.randint(0, len(points) - 1)]
+        if randomPoint.isDisk == True:
+            continue
+        if randomPoint.topic != topic:
+            continue
+        for p in disks:
+            if p.count >= 3:
+                zeroPointDisks = []
+                for zp in disks:
+                    if zp.count == 0:
+                        zeroPointDisks.append(zp)
+                zeroRandomTime = 0
+                while (samplePoint == None):
+                    zeroRandomTime += 1
+                    if zeroRandomTime >= 1000:
+                        break
+                    rp = points[random.randint(0, len(points) - 1)]
+                    if rp.isDisk == True:
+                        continue
+                    if rp.topic != topic:
+                        continue
+                    for zp in zeroPointDisks:
+                        if getGeoDistance(rp, zp) < zp.r:
+                            zp.count += 1
+                            zp.isDisk = True
+                            samplePoint = rp
+                            rp.isDisk = True
+                            points.remove(rp)
+                            return samplePoint
+            if getGeoDistance(randomPoint, p) < p.r:
+                p.count += 1
+                p.isDisk = True
+                samplePoint = randomPoint
+                randomPoint.isDisk = True
+                points.remove(randomPoint)
+                return samplePoint
 
 
 def getEstimateForOneGroup(sampleGroup: List[Point]):
@@ -139,10 +147,10 @@ def ifActive(estimates: List[float], topic: int, epsilon: float):
     """
 
 
-def ldbr(points: List[Point], r: float, k: int, delta: float, c: float):
-    kde = getKDE(points)
-    for p in points:
-        setRadius(p, r, kde)
+def ldbr(points: List[Point], r: float, k: int, delta: float, c: float, disks):
+    # kde = getKDE(points)
+    # for p in points:
+    #    setRadius(p, r, kde)
     # print('set all radius')
     A = []
     sampleGroups: List[List[Point]] = []
@@ -153,7 +161,7 @@ def ldbr(points: List[Point], r: float, k: int, delta: float, c: float):
 
     samples = []
     for topic in A:
-        samplePoint = drawOneSampleForOneGroup(points, topic)
+        samplePoint = drawOneSampleForOneGroup(points, topic, disks)
         samples.append(samplePoint)
 
     for i in range(len(A)):
@@ -174,7 +182,7 @@ def ldbr(points: List[Point], r: float, k: int, delta: float, c: float):
         # print(epsilon)
         samples = []
         for topic in A:
-            samplePoint = drawOneSampleForOneGroup(points, topic)
+            samplePoint = drawOneSampleForOneGroup(points, topic, disks)
             if samplePoint == None:
                 return [None, None]
             samples.append(samplePoint)
@@ -187,7 +195,7 @@ def ldbr(points: List[Point], r: float, k: int, delta: float, c: float):
             if ifActive(estimates, A[i], epsilon) == False:
                 A.pop(i)
         # print(str(A))
-    return [estimates, sampleGroups]
+    return [estimates, sampleGroups, disks]
 
 
 if __name__ == '__main__':

@@ -77,7 +77,7 @@ function LdaScatterCanvasCanvas(props: Props) {
           height * (1 - padding.scatterPadding)
         ]);
       const keys = Object.keys(scatterData);
-      const sliceCount = 200;
+      const sliceCount = 100;
       const pad = keys.length / sliceCount;
       const indexSlices = [];
       for (let i = 0; i < sliceCount; i++) {

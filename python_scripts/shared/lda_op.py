@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 
-def saveBarChart(list):
+def showBarChart(list):
     plt.bar(range(len(list)), list)
     plt.show()
     plt.close()

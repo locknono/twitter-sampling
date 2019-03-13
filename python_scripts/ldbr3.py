@@ -5,6 +5,7 @@ import random
 import math
 
 
+# n un-fixed topics,n points one disk
 class Point:
     def __init__(self, id, lat, lng, value, topic):
         self.id = id
@@ -15,6 +16,7 @@ class Point:
         self.kdeValue = None
         self.covered = False
         self.r = None
+        self.isDisk = False
 
 
 def getGeoDistance(p1, p2):
@@ -67,7 +69,7 @@ def drawSamplesForA(points: List[Point], A: List[int]):
         if randomPoint.topic not in A:
             continue
 
-        pointsInDisk = []
+        pointsInDisk = [randomPoint]
         if randomPoint.topic in A:
             for p in points:
                 if p.covered == True:
@@ -89,10 +91,16 @@ def drawSamplesForA(points: List[Point], A: List[int]):
                 continue
             index = A.index(p.topic)
             if samplePoints[index] == None:
+                for op in points:
+                    if op.covered == True:
+                        continue
+                    dis = getGeoDistance(p, op)
+                    if dis < p.r or dis < op.r:
+                        op.covered = True
                 p.covered = True
                 samplePoints[index] = p
                 points.remove(p)
-
+        randomPoint.isDisk = True
     return samplePoints
 
 

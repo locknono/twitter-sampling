@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as L from "leaflet";
 import * as d3 from "d3";
-//import "leaflet.heat";
-import "leaflet-webgl-heatmap";
+import "leaflet.heat";
+/* import "leaflet-webgl-heatmap"; */
 import { fetchAndAddGroupLayer } from "../API/mapAPI";
 import { colorScale } from "../constants";
 interface Props {}
@@ -123,9 +123,9 @@ class Map extends React.Component<Props, Object> {
           //const heatLayer = (L as any).heatLayer(data, { radius: 15 });
           //controlLayer.addOverlay(heatLayer, `heatmap-${i}`);
         });
-    }
+    }*/
 
-    fetch(`./allHeatmap.json`)
+    /*  fetch(`./allHeatmap.json`)
       .then(res => res.json())
       .then(data => {
         var heatmap = new (L as any).WebGLHeatMap({
@@ -137,6 +137,27 @@ class Map extends React.Component<Props, Object> {
         //const heatLayer = (L as any).heatLayer(data, { radius: 7 });
         //controlLayer.addOverlay(heatLayer, `allHeatmap`);
       }); //#endregion */
+
+    fetch("./ldbrDisks.json")
+      .then(res => res.json())
+      .then(data => {
+        const points: L.Circle[] = [];
+        data.map((e: any) => {
+          if (e.isDisk === true) {
+            if (e.count > 2) {
+              points.push(
+                L.circle([e.lat, e.lng], { radius: e.r, color: "red" })
+              );
+            } else {
+              points.push(
+                L.circle([e.lat, e.lng], { radius: e.r, color: "blue" })
+              );
+            }
+          }
+        });
+        const layerGroup = L.layerGroup(points);
+        controlLayer.addOverlay(layerGroup, "ldbr disks");
+      });
 
     fetchAndAddGroupLayer(
       "./allPoints.json",
@@ -150,6 +171,17 @@ class Map extends React.Component<Props, Object> {
     ).then(layerGroup => {
       layerGroup.addTo(this.map);
     });
+
+    fetchAndAddGroupLayer(
+      "./ldbrPoints.json",
+      "ldbrPoints",
+      L.circle,
+      controlLayer,
+      {
+        radius: 5,
+        color: "blue"
+      }
+    );
   }
 
   deployMap() {

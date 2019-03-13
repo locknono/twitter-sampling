@@ -5,8 +5,6 @@ import random
 import math
 
 
-# one sample for one disk ,starts from the fewest count
-
 class Point:
     def __init__(self, id, lat, lng, value, topic):
         self.id = id
@@ -53,7 +51,12 @@ def setRadius(point: Point, r: float, kde):
 
 def drawOneSampleForOneGroup(points: List[Point], topic: int):
     samplePoint = None
+    randomTime = 0
+    #print(topic)
     while (samplePoint == None):
+        randomTime += 1
+        if randomTime > 100000:
+            return None
         randomPoint = points[random.randint(0, len(points) - 1)]
         if randomPoint.covered == True:
             continue
@@ -150,7 +153,7 @@ def ldbr(points: List[Point], r: float, k: int, delta: float, c: float):
         m = m + 1
 
         epsilon = getEpsilon(m, N, k, delta, c)
-
+        print(epsilon)
         # print(epsilon)
         samples = []
         for topic in A:

@@ -9,6 +9,7 @@ from typing import List
 from blueRapidEstimate import getRalationshipList, compareRelationshipList
 import copy
 from ldbrTest import getOriginalEstimates
+import random
 
 if __name__ == '__main__':
     points = []
@@ -24,18 +25,33 @@ if __name__ == '__main__':
 
     ratioList = []
     countList = []
-    for c in [1, 0.5, 0.04, 0.03, 0.025, 0.02, 0.015, 0.01]:
-        estimates, sampleGroups = ldbr(copy.deepcopy(points), 10000, 5, 0.05, c)
-        if estimates == None:
-            print('fail')
-            continue
-        originalEstimates = getOriginalEstimates(copy.deepcopy(points), 5)
-        r1 = getRalationshipList(estimates)
-        r2 = getRalationshipList(originalEstimates)
-        ratio = compareRelationshipList(r1, r2)
-        count = 0
-        for g in sampleGroups:
-            for p in g:
-                count += 1
-        ratioList.append(ratio)
-        countList.append(count)
+    for t in range(10):
+        for c in [0.1]:
+            estimates, sampleGroups = ldbr(copy.deepcopy(points), 5, 0.05, c)
+            if estimates == None:
+                print('fail')
+                continue
+            originalEstimates = getOriginalEstimates(copy.deepcopy(points), 5)
+            r1 = getRalationshipList(estimates)
+            r2 = getRalationshipList(originalEstimates)
+            ratio = compareRelationshipList(r1, r2)
+            count = 0
+            for g in sampleGroups:
+                for p in g:
+                    count += 1
+            ratioList.append(ratio)
+            countList.append(count)
+
+            randomPoints = []
+            copyPoints = copy.deepcopy(points)
+            while len(randomPoints) < 30:
+                randomPoint = copyPoints[random.randint(0, len(copyPoints) - 1)]
+                copyPoints.remove(randomPoint)
+                randomPoints.append(randomPoint)
+            randomEstimates = getOriginalEstimates(randomPoints, 5)
+            r3 = getRalationshipList(randomEstimates)
+            ratio3 = compareRelationshipList(r1, r3)
+            print(ratio3)
+
+            print(ratioList)
+            print(countList)
