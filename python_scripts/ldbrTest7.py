@@ -2,7 +2,7 @@ import g
 import json
 import csv
 from itertools import islice
-from ldbr6 import ldbr, Point
+from ldbr7 import ldbr, Point
 import math
 import shortuuid
 from typing import List
@@ -92,8 +92,7 @@ outputPoints = []
 for t in range(30):
     c = 0.06 + t * 0.001
 
-    estimates, sampleGroups, disks = ldbr(copy.deepcopy(points), len(classLocationDict.keys()), 0.05, c,
-                                          disks)
+    estimates, sampleGroups = ldbr(copy.deepcopy(points), len(classLocationDict.keys()), 500, 0.05, c)
     if estimates == None:
         ratioList.append(None)
         countList.append(None)
@@ -125,12 +124,6 @@ for t in range(30):
 
     with open(g.ldaDir + 'ldbrPoints.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(outputPoints))
-
-    with open('../client/public/ldbrDisks.json', 'w', encoding='utf-8') as f:
-        outputDisks = []
-        for p in disks:
-            outputDisks.append({"r": p.r, "lat": p.lat, "lng": p.lng, "isDisk": p.isDisk, "count": p.count})
-        f.write(json.dumps(outputDisks))
 
     with open('../client/public/ldbrPoints.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(outputPoints))

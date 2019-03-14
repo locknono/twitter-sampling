@@ -92,8 +92,11 @@ outputPoints = []
 for t in range(30):
     c = 0.06 + t * 0.001
 
+    originalEstimates = getOriginalEstimates(copy.deepcopy(points), len(classLocationDict.keys()))
+    r2 = getRalationshipList(originalEstimates)
+
     estimates, sampleGroups, disks = ldbr(copy.deepcopy(points), len(classLocationDict.keys()), 0.05, c,
-                                          disks)
+                                          disks,originalEstimates)
     if estimates == None:
         ratioList.append(None)
         countList.append(None)
@@ -109,8 +112,7 @@ for t in range(30):
     r1 = getRalationshipList(samplingEstimates)
     # r1 = getRalationshipList(estimates)
 
-    originalEstimates = getOriginalEstimates(copy.deepcopy(points), len(classLocationDict.keys()))
-    r2 = getRalationshipList(originalEstimates)
+
 
     ratio = compareRelationshipList(r2, r1)
     print('采了{0}个'.format(str(count)))
