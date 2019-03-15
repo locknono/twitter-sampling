@@ -72,66 +72,21 @@ def drawOneSampleForOneGroup(points: List[Point], topic: int):
         randomTime += 1
         randomPoint = allFitsPoints[random.randint(0, len(allFitsPoints) - 1)]
         for p in points:
-            if p == randomPoint:
+            if p == randomPoint or p.isDisk == False:
                 continue
             dis = getGeoDistance(p, randomPoint)
-            if (dis < p.r or dis < randomPoint.r) and p.isDisk == True:
+            if dis <= p.r or dis <= randomPoint.r:
                 break
         else:
-            samplePoint = randomPoint
             randomPoint.sampled = True
             randomPoint.isDisk = True
+            samplePoint = randomPoint
             return samplePoint
-        if randomTime > 10:
+        if randomTime >= 3:
             randomPoint = allFitsPoints[random.randint(0, len(allFitsPoints) - 1)]
             randomPoint.sampled = True
             samplePoint = randomPoint
-
-            """
-            fitsDisks = []
-            for p1 in points:
-                if p1.isDisk == False:
-                    continue
-                for p2 in points:
-                    if p2.sampled == True:
-                        continue
-                    if p2.topic == topic and getGeoDistance(p1, p2) < p1.r:
-                        fitsDisks.append(p1)
-                        break
-            
-            print('这个主题还有多少个盘？:' + str(len(fitsDisks)))
-            sortedDisks = sorted(fitsDisks, key=lambda k: k.count)
-            """
-            """
-            finalDisks = []
-            minValue = sortedDisks[0].count
-            for disk in sortedDisks:
-                if disk.count == minValue:
-                    finalDisks.append(disk)
-            randomDisk = finalDisks[random.randint(0, len(finalDisks) - 1)]
-            for p in points:
-                if p.sampled == True:
-                    continue
-                if getGeoDistance(p, randomDisk) < randomDisk.r:
-                    randomDisk.count += 1
-                    samplePoint = p
-                    samplePoint.sampled = True
-                    return samplePoint
-
-            """
-            """
-
-            for disk in sortedDisks:
-                for p in points:
-                    if p.sampled == True:
-                        continue
-                    if getGeoDistance(p, disk) < disk.r:
-                        disk.count += 1
-                        samplePoint = p
-                        samplePoint.sampled = True
-                        return samplePoint
-            """
-
+            return samplePoint
 
 def getEstimateForOneGroup(sampleGroup: List[Point]):
     sum = 0

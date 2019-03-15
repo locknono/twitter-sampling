@@ -6,7 +6,7 @@ if __name__ == '__main__':
     wd = os.path.split(cwd)[0]
     os.chdir(wd)
     with open(g.dataPath + 'cleanedData.txt', 'r', encoding='utf-8') as f:
-        wf = codecs.open(g.dataPath + "idLocation.csv", 'w+', encoding='utf-8')
+        wf = codecs.open(g.dataPath + "idLocation.csv", 'w', encoding='utf-8')
         wf.write('id,lat,lng\n')
         for line in f:
             line = line.strip('\t\n').split('\t')

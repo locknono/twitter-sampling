@@ -27,6 +27,7 @@ function River(props: Props) {
   const { riverData, curTopic, setData } = props;
   React.useEffect(() => {
     fetchJsonData("./riverData.json").then(data => {
+      console.log("data: ", data);
       setData(RIVER_DATA, data);
     });
   }, []);
@@ -85,7 +86,7 @@ function River(props: Props) {
         },
         data: riverData
       },
-      color: color.tenColors
+      color: color.nineColors
     };
     myChart.on("click", function() {});
     myChart.setOption(option as any);

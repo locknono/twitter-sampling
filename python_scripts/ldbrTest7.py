@@ -25,10 +25,7 @@ class Dp:
         self.isDisk = False
 
 
-with open(g.dataPath + 'blueNoise/samplePoints-500-2487-0.12742737100988882.json', 'r', encoding='utf-8') as f:
-    blueResult = json.loads(f.read())
-    for p in blueResult:
-        disks.append(Dp(p['lat'], p['lng'], p['r']))
+
 
 idLocationDict = None
 scatterData = None
@@ -92,6 +89,8 @@ outputPoints = []
 for t in range(30):
     c = 0.06 + t * 0.001
 
+    originalEstimates = getOriginalEstimates(copy.deepcopy(points), len(classLocationDict.keys()))
+    saveBarChart(originalEstimates, g.ldaDir + 'original_dis.png')
     estimates, sampleGroups = ldbr(copy.deepcopy(points), len(classLocationDict.keys()), 500, 0.05, c)
     if estimates == None:
         ratioList.append(None)
@@ -108,7 +107,6 @@ for t in range(30):
     r1 = getRalationshipList(samplingEstimates)
     # r1 = getRalationshipList(estimates)
 
-    originalEstimates = getOriginalEstimates(copy.deepcopy(points), len(classLocationDict.keys()))
     r2 = getRalationshipList(originalEstimates)
 
     ratio = compareRelationshipList(r2, r1)

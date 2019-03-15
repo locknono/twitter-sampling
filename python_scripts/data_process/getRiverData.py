@@ -3,15 +3,15 @@ import json
 import os
 import sys
 
-cwd = os.getcwd()
-wd = os.path.split(cwd)[0]
-os.chdir(wd)
-sys.path.append(wd + '/shared')
-from lda_op import findMaxIndexAndValueForOneDoc
+from shared.lda_op import findMaxIndexAndValueForOneDoc
 
 idTimeDict = {}
 topicTimeValueDict = {}
 if __name__ == '__main__':
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+
     with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip('\t\n').split('\t')

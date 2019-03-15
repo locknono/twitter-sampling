@@ -12,18 +12,18 @@ if __name__ == '__main__':
 
     tweets = []
 
+    index = 0
     with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8', errors='ignore') as f:
         for line in f:
             try:
                 tweet = line.strip("\t\n").split("\t")
-                if tweet[1].find("https://") != -1 or tweet[1].find("http://") != -1:
-                    continue
                 tweets.append(tweet)
             except:
                 pass
 
     writeF = codecs.open(g.dataPath + 'cleanedData.txt', 'a+', encoding='utf-8')  # 文件对应
     for i in range(len(tweets) - 1, 0, -1):
+        tweets[i][1] = re.sub('http.+', '', tweets[i][1])
         tweets[i][1] = re.sub(u'[\U0001F100-\U0001F1FF]', '', tweets[i][1])
         tweets[i][1] = re.sub(u'[\U0001F300-\U0001F5FF]', '', tweets[i][1])
         tweets[i][1] = re.sub(u'[\U0001F600-\U0001F64F]', '', tweets[i][1])
@@ -83,11 +83,6 @@ if __name__ == '__main__':
         # 多空格换单空格
         tweets[i][1] = re.sub(" +", " ", tweets[i][1])
 
-        """
-        if (len(tweets[i][1].split(' ')) <= 3):
-            tweets.pop(i)
-        else:
-        """
         writeF.write(
             tweets[i][0] + '\t' + tweets[i][1] + '\t' + tweets[i][2] + '\t' + tweets[i][3] + '\t' + tweets[i][4] +
             '\t\n')

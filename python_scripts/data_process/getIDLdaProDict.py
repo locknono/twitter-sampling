@@ -2,11 +2,11 @@ import g
 import json
 import os
 
-"""
+
 cwd = os.getcwd()
 wd = os.path.split(cwd)[0]
 os.chdir(wd)
-"""
+
 
 if __name__ == '__main__':
 

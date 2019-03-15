@@ -88,7 +88,7 @@ function LdaScatterCanvasCanvas(props: Props) {
         for (let i = startIndex; i < endIndex; i++) {
           const id = keys[i];
           const maxIndex = docPrData[id].indexOf(Math.max(...docPrData[id]));
-          backgroudCtx.fillStyle = color.tenColors[maxIndex];
+          backgroudCtx.fillStyle = color.nineColors[maxIndex];
           backgroudCtx.beginPath();
           backgroudCtx.arc(
             Math.floor(xScale(scatterData[id][0])),
@@ -170,7 +170,7 @@ function LdaScatterCanvasCanvas(props: Props) {
       .paddingInner(0.2);
 
     indices.map((e, i) => {
-      backgroudCtx.fillStyle = color.tenColors[i];
+      backgroudCtx.fillStyle = color.nineColors[i];
       backgroudCtx.fillRect(
         xScale(e) as number,
         height * (1 - padding.scatterPadding / 2),
@@ -182,7 +182,7 @@ function LdaScatterCanvasCanvas(props: Props) {
     backgroudCtx.fillStyle = "black";
     backgroudCtx.font = "12px Arial";
     backgroudCtx.fillText(
-      "10 topics",
+      `${topicNumber} topics`,
       (xScale((topicNumber - 1).toString()) as number) + xScale.bandwidth() + 1,
       height * (1 - padding.scatterPadding / 2) + xScale.bandwidth() - 2.5
     );

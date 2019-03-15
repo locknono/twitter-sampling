@@ -19,12 +19,14 @@ class Map extends React.Component<Props, Object> {
 
   componentDidMount() {
     this.deployMap();
-    this.map.on("click", function(e: L.LeafletEvent) {});
+    this.map.on("click", function(e: L.LeafletEvent) {
+      console.log(e);
+    });
     const controlLayer = L.control
       .layers(undefined, undefined, { collapsed: false })
       .addTo(this.map);
-    const p1: [number, number] = [40.910191473681756, -73.79956031218173];
-    const p2: [number, number] = [39.796719554947146, -75.38708472624423];
+    const p1: [number, number] = [40.9328129198744, -74.32278448250146];
+    const p2: [number, number] = [40.49040846908216, -73.73446653597058];
 
     const bounds = [p1, p2];
 
@@ -138,21 +140,15 @@ class Map extends React.Component<Props, Object> {
         //controlLayer.addOverlay(heatLayer, `allHeatmap`);
       }); //#endregion */
 
-    fetch("./ldbrDisks.json")
+    fetch("./ldbrPoints.json")
       .then(res => res.json())
       .then(data => {
         const points: L.Circle[] = [];
         data.map((e: any) => {
           if (e.isDisk === true) {
-            if (e.count > 2) {
-              points.push(
-                L.circle([e.lat, e.lng], { radius: e.r, color: "red" })
-              );
-            } else {
-              points.push(
-                L.circle([e.lat, e.lng], { radius: e.r, color: "blue" })
-              );
-            }
+            points.push(
+              L.circle([e.lat, e.lng], { radius: e.r, color: "blue" })
+            );
           }
         });
         const layerGroup = L.layerGroup(points);

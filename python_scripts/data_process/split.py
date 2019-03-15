@@ -59,9 +59,9 @@ def ifInbiggerThanNYCBound(lat, lng):
 
 
 def ifInNYC(lat, lng):
-    if lng < -75.38708472624423 or lng > -73.79956031218173:
+    if lng < -74.21813964843751 or lng > -73.73446653597058:
         return False
-    if lat < 39.796719554947146 or lat > 40.910191473681756:
+    if lat < 40.49040846908216 or lat > 40.891715295571046:
         return False
     return True
 

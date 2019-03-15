@@ -2,12 +2,11 @@ import json
 import os
 import g
 import sys
+from shared.lda_op import findMaxIndexAndValueForOneDoc
 
 cwd = os.getcwd()
 wd = os.path.split(cwd)[0]
 os.chdir(wd)
-sys.path.append(wd + '/shared')
-from lda_op import findMaxIndexAndValueForOneDoc
 
 
 def sortByWordFrequncy(wordDict):

@@ -6,7 +6,7 @@ export interface Fiber {
   frameID: number | string;
 }
 
-enum Priority {
+export enum Priority {
   backgroud,
   interaction
 }

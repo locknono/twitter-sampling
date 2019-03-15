@@ -91,7 +91,7 @@ outputPoints = []
 
 for t in range(30):
     c = 0.08
-    estimates, sampleGroups = ldbr(copy.deepcopy(points), len(classLocationDict.keys()), 100, 0.05, c)
+    estimates, sampleGroups = ldbr(copy.deepcopy(points), len(classLocationDict.keys()), 100, 0.01, c)
     if estimates == None:
         ratioList.append(None)
         countList.append(None)

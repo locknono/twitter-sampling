@@ -6,7 +6,7 @@ import * as cloud from "d3-cloud";
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
 import { setCurTopic } from "../actions/setUIState";
 import { connect } from "react-redux";
-import { color, maxCloudWordSize } from "src/constants";
+import { color, maxCloudWordSize, topicNumber } from "src/constants";
 import { useWidthAndHeight } from "src/hooks/layoutHooks";
 interface Props {
   cloudData: CloudData;
@@ -72,7 +72,7 @@ function WordCloud(props: Props) {
     if (cloudLayout !== undefined || !cloudData) return;
     let topicIndex;
     if (curTopic === undefined) {
-      topicIndex = 10;
+      topicIndex = topicNumber;
     } else {
       topicIndex = curTopic;
     }
