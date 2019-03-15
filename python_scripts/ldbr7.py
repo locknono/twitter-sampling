@@ -84,6 +84,7 @@ def drawOneSampleForOneGroup(points: List[Point], topic: int):
                 randomPoint.count = 1
                 return samplePoint
         if randomTime > 10:
+            print('add to disk')
             fitsDisks = []
             for p1 in points:
                 if p1.isDisk == False:

@@ -20,6 +20,7 @@ class Point:
         self.r = None
         self.isDisk = False
         self.diskIndices = []
+        self.sampled = False
 
 
 def getGeoDistance(p1, p2):
@@ -59,9 +60,9 @@ def drawOneSampleForOneGroup(points: List[Point], topic: int, disks):
 
     allFitsPoints = []
     for p in points:
-        if p.topic == topic:
+        if p.topic == topic and p.sampled != True:
             allFitsPoints.append(p)
-    print(allFitsPoints)
+
     allFitsDiskIndices = []
     for p in allFitsPoints:
         for index in p.diskIndices:
@@ -83,7 +84,7 @@ def drawOneSampleForOneGroup(points: List[Point], topic: int, disks):
             randomDisk.count += 1
             randomDisk.isDisk = True
             samplePoint = p
-            points.remove(p)
+            samplePoint.sampled = True
             return samplePoint
 
 
@@ -226,6 +227,64 @@ def ldbrRemain(points: List[Point], k: int, delta: float, c: float, disks, inita
     for i in range(k):
         A.append(i)
     m = initalM
+
+    samples = []
+    for topic in A:
+        samplePoint = drawOneSampleForOneGroup(points, topic, disks)
+        samples.append(samplePoint)
+
+    for i in range(len(A)):
+        # print(str(A[i]))
+        sampleGroups[A[i]].append(samples[i])
+
+    estimates = []
+
+    for group in sampleGroups:
+        estimates.append(getEstimateForOneGroup(group))
+
+    while (len(A) > 0):
+        print(A)
+        N = getMaxNInActiveGroups(A, points)
+        m = m + 1
+        try:
+            epsilon = getEpsilon(m, N, k, delta, c)
+        except ValueError as e:
+            print('epsilon === 0')
+            return [estimates, sampleGroups, disks]
+
+        # print(epsilon)
+        samples = []
+        for topic in A:
+            samplePoint = drawOneSampleForOneGroup(points, topic, disks)
+            if samplePoint == None:
+                return [None, None]
+            samples.append(samplePoint)
+
+        for i in range(len(A)):
+            sampleGroups[A[i]].append(samples[i])
+            estimates[A[i]] = ((m - 1) / m) * estimates[A[i]] + (1 / m) * samples[i].value
+            # print(str(estimates))
+        for i in range(len(A) - 1, 0 - 1, -1):
+            if ifActive(estimates, A[i], epsilon) == False:
+                A.pop(i)
+        # print(str(A))
+    return [estimates, sampleGroups, disks]
+
+
+def ldbrRemain(points: List[Point], k: int, delta: float, c: float, disks, initialM, sampleGroups):
+    with open('./save.json', 'r', encoding='utf-8') as f:
+        idIndicesDict = json.loads(f.read())
+        for p in points:
+            for id in idIndicesDict:
+                if p.id == id:
+                    p.diskIndices = idIndicesDict[id]
+                    break
+    A = []
+    sampleGroups: List[List[Point]] = []
+    for i in range(k):
+        A.append(i)
+        sampleGroups.append([])
+    m = initialM
 
     samples = []
     for topic in A:

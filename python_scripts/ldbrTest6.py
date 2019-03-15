@@ -90,7 +90,7 @@ countList = []
 outputPoints = []
 
 for t in range(30):
-    c = 0.06 + t * 0.001
+    c = 0.08 + t * 0.001
 
     estimates, sampleGroups, disks = ldbr(copy.deepcopy(points), len(classLocationDict.keys()), 0.05, c,
                                           disks)

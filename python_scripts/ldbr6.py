@@ -116,9 +116,11 @@ def getEpsilon(m, N, k, delta, c):
     return epsilon
 
 
-def ifActive(estimates: List[float], topic: int, epsilon: float):
+def ifActive(estimates: List[float], topic: int, epsilon: float, A: List[int]):
     for i in range(len(estimates)):
         if topic == i:
+            continue
+        if i not in A:
             continue
         if estimates[topic] + epsilon > estimates[i] - epsilon and estimates[topic] + epsilon < estimates[
             i] + epsilon:
@@ -185,7 +187,6 @@ def ldbr(points: List[Point], k: int, delta: float, c: float, disks):
         try:
             epsilon = getEpsilon(m, N, k, delta, c)
         except ValueError as e:
-            print('epsilon === 0')
             return [estimates, sampleGroups, disks]
 
         # print(epsilon)
@@ -201,7 +202,7 @@ def ldbr(points: List[Point], k: int, delta: float, c: float, disks):
             estimates[A[i]] = ((m - 1) / m) * estimates[A[i]] + (1 / m) * samples[i].value
             # print(str(estimates))
         for i in range(len(A) - 1, 0 - 1, -1):
-            if ifActive(estimates, A[i], epsilon) == False:
+            if ifActive(estimates, A[i], epsilon, A) == False:
                 A.pop(i)
         # print(str(A))
     return [estimates, sampleGroups, disks]

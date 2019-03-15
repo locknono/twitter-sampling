@@ -2,11 +2,11 @@ import g
 import json
 import csv
 from itertools import islice
-from ldbr6 import ldbr, Point
+from ldbr8 import ldbr, Point, ldbrRemain
 import math
 import shortuuid
 from typing import List
-from ldbr6 import getGeoDistance
+from ldbr8 import getGeoDistance
 import random
 from blueRapidEstimate import getRalationshipList, compareRelationshipList
 import copy
@@ -96,7 +96,7 @@ for t in range(30):
     r2 = getRalationshipList(originalEstimates)
 
     estimates, sampleGroups, disks = ldbr(copy.deepcopy(points), len(classLocationDict.keys()), 0.05, c,
-                                          disks,originalEstimates)
+                                          disks)
     if estimates == None:
         ratioList.append(None)
         countList.append(None)
@@ -112,6 +112,47 @@ for t in range(30):
     r1 = getRalationshipList(samplingEstimates)
     # r1 = getRalationshipList(estimates)
 
+    wrongIndex = set()
+    for i in range(len(originalEstimates)):
+        for j in range(i, len(originalEstimates)):
+            if originalEstimates[i] > originalEstimates[j] and samplingEstimates[i] < samplingEstimates[j]:
+                wrongIndex.add(i)
+                wrongIndex.add(j)
+            if originalEstimates[i] < originalEstimates[j] and samplingEstimates[i] > samplingEstimates[j]:
+                wrongIndex.add(i)
+                wrongIndex.add(j)
+
+    remainPoints = []
+    for p1 in points:
+        for p2 in samplingPoints:
+            if p1 == p2:
+                continue
+            if p1.topic in wrongIndex:
+                remainPoints.append(p1)
+
+    sampleGroups = []
+    for i in range(len(wrongIndex)):
+        sampleGroups.append([])
+
+    keyMap = {}
+    for i, index in enumerate(wrongIndex):
+        keyMap[index] = i
+
+    sampleGroupsDict = {}
+    for p in remainPoints:
+        sampleGroups[keyMap[p.topic]].append(p)
+
+    countDict = {}
+    for p in points:
+        if p.sampled == True and p.topic in wrongIndex:
+            if p.topic in countDict:
+                countDict[p.topic] += 1
+            else:
+                countDict[p.topic] = 1
+    initialM = sorted(countDict.values())
+
+    remainEstimates, remainSampleGroups, remainDisks = ldbrRemain(copy.deepcopy(remainPoints), len(wrongIndex), 0.05, c,
+                                                                  disks, initialM, sampleGroups)
 
 
     ratio = compareRelationshipList(r2, r1)
