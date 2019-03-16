@@ -31,32 +31,38 @@ def getOriginalEstimates(points: List[Point], topicCount: int):
     return estimates
 
 
-with open(g.ldaDir + 'scatterData.json', 'r', encoding='utf-8') as f:
-    scatterData = json.loads(f.read())
-    kmeansData = []
-    idList = []
-    for k in scatterData:
-        idList.append(k)
-        kmeansData.append(scatterData[k])
-    kmeans = KMeans(n_clusters=9, random_state=0).fit(kmeansData)
-    classList = kmeans.labels_
-    idClassDict = {}
-    for index, id in enumerate(idList):
-        point = {"coord": scatterData[id], "topic": classList[index]}
-        idClassDict[id] = point
-    with open(g.ldaDir + 'idKmeansClassDict.json', 'w', encoding='utf-8') as wf:
-        wf.write(json.dumps(idClassDict))
-
+idKmeansClassDict = None
+with open(g.ldaDir + 'idKmeansClassDict.json', 'r', encoding='utf-8') as f:
+    idKmeansClassDict = json.loads(f.read())
 idLocationDict = None
 with open(g.dataPath + 'finalIDLocation.json', 'r', encoding='utf-8') as f:
     idLocationDict = json.loads(f.read())
-
 idLdaDict = fetchIDLdaDict(g.ldaDir + 'idLdaDict.json')
+centersX = []
+centersY = []
+centersCounts = []
+for i in range(g.topicNumber):
+    centersX.append(0)
+    centersY.append(0)
+    centersCounts.append(0)
+for id in idKmeansClassDict:
+    x = idKmeansClassDict[id]['coord'][0]
+    y = idKmeansClassDict[id]['coord'][1]
+    topic = idKmeansClassDict[id]['topic']
+    centersX[topic] += x
+    centersY[topic] += y
+    centersCounts[topic] += 1
+for x, y, count in zip(centersX, centersY, centersCounts):
+    x /= count
+    y /= count
 
 points = []
 for k in idLdaDict:
-    maxIndex, maxV = findMaxIndexAndValueForOneDoc(idLdaDict[k])
-    p = Point(k, idLocationDict[k][0], idLocationDict[k][1], maxV, maxIndex)
+    x = idKmeansClassDict[k]['coord'][0]
+    y = idKmeansClassDict[k]['coord'][1]
+    topic = idKmeansClassDict[k]['topic']
+    dis = math.sqrt(math.pow(x - centersX[topic], 2) + math.pow(y - centersY[topic], 2))
+    p = Point(k, idLocationDict[k][0], idLocationDict[k][1], dis, topic)
     points.append(p)
 
 ratioList = []
