@@ -10,7 +10,7 @@ export async function fetchAndAddGroupLayer(
   const res = await fetch(fileName);
   const data = await res.json();
   const layers: L.Layer[] = [];
-  data.map((e:any) => {
+  data.map((e: any) => {
     layers.push(layerCreatingFunction(e, style));
   });
   const layerGroup = L.layerGroup(layers);

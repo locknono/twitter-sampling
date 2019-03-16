@@ -27,6 +27,7 @@ export namespace color {
     "rgb(132, 60, 57)",
     "rgb(231, 150, 156)"
   ];
+  export const mapPointColor = "blue";
 }
 
 export const scatterRadius = 1.5;
