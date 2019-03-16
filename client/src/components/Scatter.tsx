@@ -42,19 +42,8 @@ function LdaScatterCanvasCanvas(props: Props) {
   }, []);
 
   React.useEffect(() => {
-    fetchAndSetScatterData("./scatterData.json", setData);
+    fetchAndSetScatterData("./scatterPoints.json", setData);
   }, []);
-
-  const points: [number, number][] = [];
-  for (let k in scatterData) {
-    const p = scatterData[k];
-    points.push(p);
-  }
-
-  const xMin = d3.min(points, d => d[0]) as number;
-  const xMax = d3.max(points, d => d[0]) as number;
-  const yMin = d3.min(points, d => d[1]) as number;
-  const yMax = d3.max(points, d => d[1]) as number;
 
   //background
   React.useEffect(() => {
@@ -62,86 +51,45 @@ function LdaScatterCanvasCanvas(props: Props) {
       return;
     }
     if (width && height && backgroudCtx && docPrData) {
-      const xScale = d3
-        .scaleLinear()
-        .domain([xMin, xMax])
-        .range([
-          width * padding.scatterPadding,
-          width * (1 - padding.scatterPadding)
-        ]);
-      const yScale = d3
-        .scaleLinear()
-        .domain([yMin, yMax])
-        .range([
-          height * padding.scatterPadding,
-          height * (1 - padding.scatterPadding)
-        ]);
-      const keys = Object.keys(scatterData);
-      const sliceCount = 100;
-      const pad = keys.length / sliceCount;
-      const indexSlices = [];
-      for (let i = 0; i < sliceCount; i++) {
-        indexSlices.push([Math.floor(i * pad), Math.floor((i + 1) * pad)]);
-      }
+      const [xScale, yScale] = getScale(scatterData, width, height);
 
-      const drawSlice = (startIndex: number, endIndex: number) => () => {
-        for (let i = startIndex; i < endIndex; i++) {
-          const id = keys[i];
-          const maxIndex = docPrData[id].indexOf(Math.max(...docPrData[id]));
-          backgroudCtx.fillStyle = color.nineColors[maxIndex];
-          backgroudCtx.beginPath();
-          backgroudCtx.arc(
-            Math.floor(xScale(scatterData[id][0])),
-            Math.floor(yScale(scatterData[id][1])),
-            scatterRadius,
-            0,
-            Math.PI * 2
-          );
-          backgroudCtx.fill();
-        }
-      };
-      for (let i = 0; i < indexSlices.length; i++) {
-        const fiber = createFiber(
-          drawSlice(indexSlices[i][0], indexSlices[i][1])
-        );
+      scatterData.map((e, i) => {
+        const fiber = createFiber(() => {
+          backgroudCtx.fillStyle = color.nineColors[i];
+          for (let i = 0; i < e.length; i++) {
+            backgroudCtx.beginPath();
+            backgroudCtx.arc(
+              Math.floor(xScale(e[i][0])),
+              Math.floor(yScale(e[i][1])),
+              scatterRadius,
+              0,
+              Math.PI * 2
+            );
+            backgroudCtx.fill();
+          }
+        }, 1);
         updateQueue.push(fiber);
-      }
+      });
       updateQueue.flush();
     }
   }, [scatterData, docPrData]);
 
   //click function
   React.useEffect(() => {
-    const points: [number, number][] = [];
     if (curTopic === undefined || !ctx || !width || !height) return;
+
+    const [xScale, yScale] = getScale(scatterData, width, height);
+
     ctx.clearRect(0, 0, width, height);
-    for (let k in docPrData) {
-      const maxIndex = docPrData[k].indexOf(Math.max(...docPrData[k]));
-      if (maxIndex === curTopic) {
-        points.push(scatterData[k]);
-      }
-    }
-    const xScale = d3
-      .scaleLinear()
-      .domain([xMin, xMax])
-      .range([
-        width * padding.scatterPadding,
-        width * (1 - padding.scatterPadding)
-      ]);
-    ctx.fillStyle = "black";
-    const yScale = d3
-      .scaleLinear()
-      .domain([yMin, yMax])
-      .range([
-        height * padding.scatterPadding,
-        height * (1 - padding.scatterPadding)
-      ]);
+
     const fiber = createFiber(() => {
-      for (let i = 0; i < points.length; i++) {
+      ctx.fillStyle = "black";
+      console.log("curTopic: ", curTopic);
+      for (let i = 0; i < scatterData[curTopic].length; i++) {
         ctx.beginPath();
         ctx.arc(
-          Math.floor(xScale(points[i][0])),
-          Math.floor(yScale(points[i][1])),
+          Math.floor(xScale(scatterData[curTopic][i][0])),
+          Math.floor(yScale(scatterData[curTopic][i][1])),
           scatterRadius,
           0,
           Math.PI * 2
@@ -208,8 +156,8 @@ function LdaScatterCanvasCanvas(props: Props) {
 
 async function fetchAndSetScatterData(url: string, set: typeof setData) {
   const res = await fetch(url);
-  const data = await res.json();
-  set(SCATTER_DATA, data);
+  const scatterData = await res.json();
+  set(SCATTER_DATA, scatterData);
 }
 
 function getCoordByID(id: string) {}
@@ -218,4 +166,32 @@ export default connect(
   mapDispatch
 )(LdaScatterCanvasCanvas);
 
-function drawCurTopic() {}
+function getScale(scatterData: ScatterData, width: number, height: number) {
+  const xMin = d3.min(scatterData, e => {
+    return d3.min(e, d => d[0]);
+  }) as number;
+  const yMin = d3.min(scatterData, e => {
+    return d3.min(e, d => d[1]);
+  }) as number;
+  const xMax = d3.max(scatterData, e => {
+    return d3.max(e, d => d[0]);
+  }) as number;
+  const yMax = d3.max(scatterData, e => {
+    return d3.max(e, d => d[1]);
+  }) as number;
+  const xScale = d3
+    .scaleLinear()
+    .domain([xMin, xMax])
+    .range([
+      width * padding.scatterPadding,
+      width * (1 - padding.scatterPadding)
+    ]);
+  const yScale = d3
+    .scaleLinear()
+    .domain([yMin, yMax])
+    .range([
+      height * padding.scatterPadding,
+      height * (1 - padding.scatterPadding)
+    ]);
+  return [xScale, yScale];
+}

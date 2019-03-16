@@ -2,102 +2,122 @@ import g
 import json
 import csv
 from itertools import islice
-from ldbr4 import ldbr, Point
+from ldbr9 import ldbr, Point
 import math
 import shortuuid
 from typing import List
+from ldbr9 import getGeoDistance
+import random
 from blueRapidEstimate import getRalationshipList, compareRelationshipList
 import copy
+from ldbrTest import getOriginalEstimates
+from shared.lda_op import fetchIDLdaDict, findMaxIndexAndValueForOneDoc, showBarChart, saveBarChart
+import g
+import os
+from sklearn.cluster import KMeans
+import numpy as np
 
 
-def getOriginalEstimates(points: List[Point], topicCount: int):
-    estimates = []
-    counts = []
-    for i in range(topicCount):
-        estimates.append(0)
-        counts.append(0)
-    for p in points:
-        estimates[p.topic] += p.value
-        counts[p.topic] += 1
-    for i in range(len(estimates)):
-        estimates[i] = estimates[i] / counts[i]
-    return estimates
+with open(g.ldaDir + 'scatterData.json', 'r', encoding='utf-8') as f:
+    scatterData = json.loads(f.read())
+    kmeansData = []
+    idList = []
+    for k in scatterData:
+        idList.append(k)
+        kmeansData.append(scatterData[k])
+    kmeans = KMeans(n_clusters=9, random_state=0).fit(kmeansData)
+    classList = kmeans.labels_
+    idClassDict={}
+    for index,id in enumerate(idList):
+        point={"coord":scatterData[id],"topic":classList[index]}
+        idClassDict[id]=point
+    with open(g.ldaDir+'idKmeansClassDict.json','w', encoding='utf-8') as wf:
+        wf.write(json.dumps(idClassDict))
+
+        
+idLocationDict = None
+with open(g.dataPath + 'finalIDLocation.json', 'r', encoding='utf-8') as f:
+    idLocationDict = json.loads(f.read())
+
+idLdaDict = fetchIDLdaDict(g.ldaDir + 'idLdaDict.json')
+
+points = []
+for k in idLdaDict:
+    maxIndex, maxV = findMaxIndexAndValueForOneDoc(idLdaDict[k])
+    p = Point(k, idLocationDict[k][0], idLocationDict[k][1], maxV, maxIndex)
+    points.append(p)
+
+ratioList = []
+countList = []
+outputPoints = []
+
+for t in range(30):
+    c = 0.05
+    originalEstimates = getOriginalEstimates(copy.deepcopy(points), g.topicNumber)
+    saveBarChart(originalEstimates, g.ldaDir + 'original.png')
+
+    estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.05, c)
+    if estimates == None:
+        ratioList.append(None)
+        countList.append(None)
+        continue
+    samplingPoints = []
+    count = 0
+    randomCount = 0
+    for group in sampleGroups:
+        for p in group:
+            samplingPoints.append(p)
+            count += 1
+            if p.isDisk == False:
+                randomCount += 1
+    print(randomCount)
+    samplingEstimates = getOriginalEstimates(samplingPoints, g.topicNumber)
+    #print('samplingEstimates:' + str(samplingEstimates))
+    r1 = getRalationshipList(samplingEstimates)
+    # r1 = getRalationshipList(estimates)
+
+    r2 = getRalationshipList(originalEstimates)
+    print('originalEstimates:' + str(originalEstimates))
+
+    ratio = compareRelationshipList(r2, r1)
+    print('采了{0}个'.format(str(count)))
+
+    ratioList.append(ratio)
+    countList.append(count)
+
+    copyPoints = copy.deepcopy(points)
+    randomPoints = []
+    while len(randomPoints) < count:
+        randomPoint = copyPoints[random.randint(0, len(copyPoints) - 1)]
+        copyPoints.remove(randomPoint)
+        randomPoints.append(randomPoint)
+    randomEstimates = getOriginalEstimates(copy.deepcopy(randomPoints), g.topicNumber)
+    r3 = getRalationshipList(randomEstimates)
+    randomRatio = compareRelationshipList(r2, r3)
+    print('random:' + str(randomRatio))
+
+    for group in sampleGroups:
+        for p in group:
+            outputP = {"id": p.id, "r": p.r, "lat": p.lat, "lng": p.lng, "isDisk": p.isDisk}
+            outputPoints.append(outputP)
+
+    try:
+        os.mkdir(g.ldaDir + 'ldbrResult/')
+    except Exception as e:
+        pass
+
+    with open(g.ldaDir + 'ldbrResult/ldbrPoints-{0}-{1}.json'.format(count, ratio), 'w', encoding='utf-8') as f:
+        f.write(json.dumps(outputPoints))
+    with open('../client/public/ldbrPoints.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(outputPoints))
+
+    barData = {"original": originalEstimates, "sampling": samplingEstimates}
+
+    with open(g.ldaDir + 'ldbrResult/barData-{0}-{1}.json'.format(count, ratio), 'w', encoding='utf-8') as f:
+        f.write(json.dumps(barData))
+    with open('../client/public/barData.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(barData))
 
 
-if __name__ == '__main__':
-    tempTopicDict = {}
-    idLocationDict = None
-    latlngs = []
-    points = []
-    topicCount = 5
-    topicCountDict = {}
-    topicDict = {}
-    with open(g.dataPath + 'finalIDLocation.json', 'r', encoding='utf-8') as f:
-        idLocationDict = json.loads(f.read())
-        for k in idLocationDict:
-            latlngs.append(idLocationDict[k])
-    with open(g.dataPath + 'coordinate_dbs_dm_1_s_200_i_400_0.9_0.5.csv', 'r', encoding='utf-8') as f:
-        csvReader = csv.reader(f)
-        for line in islice(csvReader, 1, None):
-            x = float(line[0])
-            y = float(line[1])
-            topic = int(line[2])
-            if topic in tempTopicDict:
-                tempTopicDict[topic].append([x, y])
-            else:
-                tempTopicDict[topic] = [[x, y]]
-
-            if topic in topicCountDict:
-                topicCountDict[topic] += 1
-            else:
-                topicCountDict[topic] = 1
-        sortedEntries = sorted(topicCountDict.items(), key=lambda x: x[1], reverse=True)
-        for i in range(topicCount):
-            topicDict[i] = tempTopicDict[sortedEntries[i][0]]
-
-    for k in topicDict:
-        centerX = 0
-        centerY = 0
-        for p in topicDict[k]:
-            centerX += p[0]
-            centerY += p[1]
-        centerX /= len(topicDict[k])
-        centerY /= len(topicDict[k])
-        for p in topicDict[k]:
-            dis = math.sqrt(math.pow(centerX - p[0], 2) + math.pow(centerX - p[1], 2))
-            if len(latlngs) > 0:
-                point = Point(shortuuid.uuid(), latlngs[0][0], latlngs[0][1], dis, k)
-                points.append(point)
-                latlngs.pop(0)
-            else:
-                continue
-    min = 99999
-    max = -1
-    for p in points:
-        if p.value > max:
-            max = p.value
-        if p.value < min:
-            min = p.value
-    for p in points:
-        ratio = (p.value - min) / (max - min)
-        p.value = ratio * 1
-    ratioList = []
-    countList = []
-    for c in [0.2]:
-        estimates, sampleGroups = ldbr(copy.deepcopy(points), 100, topicCount, 0.05, c)
-        if (estimates == None):
-            print('fail')
-            continue
-        originalEstimates = getOriginalEstimates(copy.deepcopy(points), topicCount)
-        r1 = getRalationshipList(estimates)
-        r2 = getRalationshipList(originalEstimates)
-        ratio = compareRelationshipList(r1, r2)
-        count = 0
-        for g in sampleGroups:
-            for p in g:
-                count += 1
-        print(count)
-        ratioList.append(ratio)
-        countList.append(count)
-        print(str(ratioList))
-        print(str(countList))
+    print(str(ratioList))
+    print(str(countList))

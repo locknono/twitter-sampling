@@ -1,6 +1,4 @@
-interface ScatterData {
-  [id: string]: [number, number];
-}
+type ScatterData = [number, number][][];
 
 interface DocPrData {
   [id: string]: number[];
