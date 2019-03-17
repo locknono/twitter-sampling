@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as d3 from "d3";
 import { setData, SCATTER_DATA } from "../actions/setDataAction";
+import { setIfDrawCenters } from "../actions/setUIState";
 import { color, padding, scatterRadius, topicNumber } from "../constants";
 import { connect } from "react-redux";
 import { useWidthAndHeight } from "src/hooks/layoutHooks";
@@ -11,21 +12,23 @@ import * as v4 from "uuid/v4";
 
 interface Props {
   scatterData: ScatterData;
-  docPrData: DocPrData;
   curTopic: CurTopic;
   setData: typeof setData;
+  ifDrawScatterCenters: boolean;
+  setIfDrawCenters: typeof setIfDrawCenters;
 }
 
 const mapState = (state: any) => {
-  const { scatterData, docPrData } = state.dataTree;
-  const { curTopic } = state.uiState;
-  return { scatterData, docPrData, curTopic };
+  const { scatterData } = state.dataTree;
+  const { curTopic, ifDrawScatterCenters } = state.uiState;
+  return { scatterData, curTopic, ifDrawScatterCenters };
 };
 const mapDispatch = {
-  setData
+  setData,
+  setIfDrawCenters
 };
 function LdaScatterCanvasCanvas(props: Props) {
-  const { setData, scatterData, docPrData, curTopic } = props;
+  const { setData, scatterData, curTopic, ifDrawScatterCenters } = props;
 
   const [width, height] = useWidthAndHeight("scatter-canvas");
 
@@ -47,12 +50,11 @@ function LdaScatterCanvasCanvas(props: Props) {
 
   //background
   React.useEffect(() => {
-    if (!backgroudCtx || !docPrData || !scatterData) {
+    if (!backgroudCtx || !scatterData) {
       return;
     }
-    if (width && height && backgroudCtx && docPrData) {
+    if (width && height && backgroudCtx) {
       const [xScale, yScale] = getScale(scatterData, width, height);
-
       scatterData.map((e, i) => {
         const fiber = createFiber(() => {
           backgroudCtx.fillStyle = color.nineColors[i];
@@ -72,7 +74,7 @@ function LdaScatterCanvasCanvas(props: Props) {
       });
       updateQueue.flush();
     }
-  }, [scatterData, docPrData]);
+  }, [scatterData]);
 
   //click function
   React.useEffect(() => {
@@ -84,7 +86,6 @@ function LdaScatterCanvasCanvas(props: Props) {
 
     const fiber = createFiber(() => {
       ctx.fillStyle = "black";
-      console.log("curTopic: ", curTopic);
       for (let i = 0; i < scatterData[curTopic].length; i++) {
         ctx.beginPath();
         ctx.arc(
@@ -135,6 +136,38 @@ function LdaScatterCanvasCanvas(props: Props) {
       height * (1 - padding.scatterPadding / 2) + xScale.bandwidth() - 2.5
     );
   }, [backgroudCtx]);
+
+  //centers
+  React.useEffect(() => {
+    if (!ctx || !scatterData || ifDrawScatterCenters === false) {
+      return;
+    }
+    if (width && height && ctx) {
+      const [xScale, yScale] = getScale(scatterData, width, height);
+      (async function drawCenters() {
+        const res = await fetch("./scatterCenters.json");
+        const centers: [number, number][] = await res.json();
+        centers.map((e, i) => {
+          console.log("e: ", e);
+          console.log("Math.floor(xScale(e[0])): ", Math.floor(xScale(e[0])));
+          const fiber = createFiber(() => {
+            ctx.fillStyle = "black";
+            ctx.beginPath();
+            ctx.arc(
+              Math.floor(xScale(e[0])),
+              Math.floor(yScale(e[1])),
+              scatterRadius + 1,
+              0,
+              Math.PI * 2
+            );
+            ctx.fill();
+          }, 1);
+          updateQueue.push(fiber);
+        });
+        updateQueue.flush();
+      })();
+    }
+  }, [scatterData, ifDrawScatterCenters]);
 
   return (
     <div className="scatter-canvas-div">

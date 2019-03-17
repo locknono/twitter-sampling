@@ -24,6 +24,14 @@ if __name__ == '__main__':
     writeF = codecs.open(g.dataPath + 'cleanedData.txt', 'a+', encoding='utf-8')  # 文件对应
     for i in range(len(tweets) - 1, 0, -1):
         tweets[i][1] = re.sub('http.+', '', tweets[i][1])
+        tweets[i][1] = re.sub('ny[c]?', '', tweets[i][1])
+        tweets[i][1] = re.sub('york', '', tweets[i][1])
+        tweets[i][1] = re.sub('nj', '', tweets[i][1])
+        tweets[i][1] = re.sub('st', '', tweets[i][1])
+        tweets[i][1] = re.sub('de', '', tweets[i][1])
+        tweets[i][1] = re.sub('eb', '', tweets[i][1])
+        tweets[i][1] = re.sub('la', '', tweets[i][1])
+
         tweets[i][1] = re.sub(u'[\U0001F100-\U0001F1FF]', '', tweets[i][1])
         tweets[i][1] = re.sub(u'[\U0001F300-\U0001F5FF]', '', tweets[i][1])
         tweets[i][1] = re.sub(u'[\U0001F600-\U0001F64F]', '', tweets[i][1])

@@ -21,7 +21,7 @@ try:
 except Exception as e:
     print(e)
 
-ALPHA = 0.4
+ALPHA = 0.25
 
 parameterText = 'alpha={0}'.format(ALPHA)
 ldaDir = ''

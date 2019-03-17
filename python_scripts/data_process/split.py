@@ -1,6 +1,8 @@
 import g
 import time
 import codecs
+import shortuuid
+
 from multiprocessing import Pool
 import random
 import os
@@ -82,7 +84,7 @@ def extractFromSingleFile(filePath, latlngSet):
         for index, line in enumerate(f):
             try:
                 line = line.split('\t')
-                textID = line[0]
+                textID = shortuuid.ShortUUID().random(length=8)
                 if line[6] == 'true':
                     # line[6] == 'true'   =>  coordinate is a `Point`
                     # line[4] for lng
@@ -141,12 +143,6 @@ def extractFromSingleFile(filePath, latlngSet):
         truePointsFile.write(json.dumps(truePoints))
     print((time.time() - t1) / 60)
 
-
-def extractFromAllFiles():
-    pool = Pool()
-    pool.map(extractFromSingleFile, ['../data/2016-06-{0}.txt'.format(day) for day in range(10, 10 + g.dataDays)])
-
-
 def extractDataInNyc():
     with open(g.dataPath + 'extractedDataInAllAreaSingleThread.txt', 'r', encoding='utf-8', errors='ignore') as f:
         with open(g.dataPath + 'extractedData.txt', 'a', encoding='utf-8') as wf:
@@ -171,13 +167,12 @@ if __name__ == '__main__':
     cwd = os.getcwd()
     wd = os.path.split(cwd)[0]
     os.chdir(wd)
-# extractFromAllFiles()
 try:
     os.mkdir(g.dataPath)
 except Exception as e:
     print(e)
 latlngSet = set()
-for i in range(10, 10 + g.dataDays):
+for i in range(12, 12 + g.dataDays):
     extractFromSingleFile('../data/2016-06-{0}.txt'.format(i), latlngSet)
 extractDataInNyc()
 rowCount = 0

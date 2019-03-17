@@ -146,7 +146,7 @@ def ldbr(points: List[Point], k: int, r: float, delta: float, c: float):
     for p in points:
         setRadius(p, r, kde)
     A = []
-
+    print('set all radius')
     sampleGroups: List[List[Point]] = []
     for i in range(k):
         A.append(i)

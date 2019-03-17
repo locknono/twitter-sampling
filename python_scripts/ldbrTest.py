@@ -30,34 +30,49 @@ def getOriginalEstimates(points: List[Point], topicCount: int):
         estimates[i] = estimates[i] / counts[i]
     return estimates
 
-
-with open(g.ldaDir + 'scatterData.json', 'r', encoding='utf-8') as f:
-    scatterData = json.loads(f.read())
-    kmeansData = []
-    idList = []
-    for k in scatterData:
-        idList.append(k)
-        kmeansData.append(scatterData[k])
-    kmeans = KMeans(n_clusters=9, random_state=0).fit(kmeansData)
-    classList = kmeans.labels_
-    idClassDict = {}
-    for index, id in enumerate(idList):
-        point = {"coord": scatterData[id], "topic": classList[index]}
-        idClassDict[id] = point
-    with open(g.ldaDir + 'idKmeansClassDict.json', 'w', encoding='utf-8') as wf:
-        wf.write(json.dumps(idClassDict))
-
 idLocationDict = None
+scatterData = None
+scatterPoints = None
 with open(g.dataPath + 'finalIDLocation.json', 'r', encoding='utf-8') as f:
     idLocationDict = json.loads(f.read())
+with open(g.ldaDir + 'scatterData.json', 'r', encoding='utf-8') as f:
+    scatterData = json.loads(f.read())
+with open(g.ldaDir + 'scatterPoints.json', 'r', encoding='utf-8') as f:
+    scatterPoints = json.loads(f.read())
 
+centers = []
+for index, group in enumerate(scatterPoints):
+    centers.append([0, 0])
+    for p in group:
+        centers[index][0] += p[0]
+        centers[index][1] += p[1]
+    centers[index][0] = centers[index][0] / len(group)
+    centers[index][1] = centers[index][1] / len(group)
 idLdaDict = fetchIDLdaDict(g.ldaDir + 'idLdaDict.json')
+
+minDis = 999999
+maxDis = -1
+for k in idLdaDict:
+    topic, maxV = findMaxIndexAndValueForOneDoc(idLdaDict[k])
+    x = scatterData[k][0]
+    y = scatterData[k][1]
+    dis = math.sqrt(math.pow(x - centers[topic][0], 2) + math.pow(y - centers[topic][1], 2))
+    if dis < minDis:
+        minDis = dis
+    if dis > maxDis:
+        maxDis = dis
+
 
 points = []
 for k in idLdaDict:
-    maxIndex, maxV = findMaxIndexAndValueForOneDoc(idLdaDict[k])
-    p = Point(k, idLocationDict[k][0], idLocationDict[k][1], maxV, maxIndex)
+    topic, maxV = findMaxIndexAndValueForOneDoc(idLdaDict[k])
+    x = scatterData[k][0]
+    y = scatterData[k][1]
+    dis = math.sqrt(math.pow(x - centers[topic][0], 2) + math.pow(y - centers[topic][1], 2))
+    dis = (dis - minDis) / (maxDis - minDis)
+    p = Point(k, idLocationDict[k][0], idLocationDict[k][1], dis, topic)
     points.append(p)
+print('all points ready')
 
 ratioList = []
 countList = []

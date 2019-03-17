@@ -47,7 +47,6 @@ if __name__ == '__main__':
         for i, d in enumerate(wordCloudData):
             sortedKList = sortByWordFrequncy(d)
             allKList.append(sortedKList)
-            print(i)
 
         wordCount = 100
 

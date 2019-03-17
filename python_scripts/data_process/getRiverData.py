@@ -27,9 +27,11 @@ if __name__ == '__main__':
 
             topicTimeTuple = (maxIndex, time)
             if topicTimeTuple in topicTimeValueDict:
-                topicTimeValueDict[topicTimeTuple] += maxValue
+                # topicTimeValueDict[topicTimeTuple] += maxValue
+                topicTimeValueDict[topicTimeTuple] += 1
             else:
-                topicTimeValueDict[topicTimeTuple] = maxValue
+                # topicTimeValueDict[topicTimeTuple] = maxValue
+                topicTimeValueDict[topicTimeTuple] = 1
 
     riverData = []
     for i in range(0, g.topicNumber):

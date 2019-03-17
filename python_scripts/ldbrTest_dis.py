@@ -52,9 +52,21 @@ for id in idKmeansClassDict:
     centersX[topic] += x
     centersY[topic] += y
     centersCounts[topic] += 1
-for x, y, count in zip(centersX, centersY, centersCounts):
-    x /= count
-    y /= count
+for i in range(len(centersX)):
+    centersX[i] = centersX[i] / centersCounts[i]
+    centersY[i] = centersY[i] / centersCounts[i]
+
+minDis = 999999
+maxDis = -1
+for k in idKmeansClassDict:
+    x = idKmeansClassDict[k]['coord'][0]
+    y = idKmeansClassDict[k]['coord'][1]
+    topic = idKmeansClassDict[k]['topic']
+    dis = math.sqrt(math.pow(x - centersX[topic], 2) + math.pow(y - centersY[topic], 2))
+    if dis > maxDis:
+        maxDis = dis
+    if dis < minDis:
+        minDis = dis
 
 points = []
 for k in idLdaDict:
@@ -62,15 +74,20 @@ for k in idLdaDict:
     y = idKmeansClassDict[k]['coord'][1]
     topic = idKmeansClassDict[k]['topic']
     dis = math.sqrt(math.pow(x - centersX[topic], 2) + math.pow(y - centersY[topic], 2))
-    p = Point(k, idLocationDict[k][0], idLocationDict[k][1], dis, topic)
+    normDis = (dis - minDis) / (maxDis - minDis)
+    p = Point(k, idLocationDict[k][0], idLocationDict[k][1], normDis, topic)
     points.append(p)
 
 ratioList = []
 countList = []
-outputPoints = []
 
+centers = [[x, y] for x, y in zip(centersX, centersY)]
+with open('../client/public/scatterCenters.json', 'w', encoding='utf-8') as f:
+    f.write(json.dumps(centers))
+
+print('all points ready')
 for t in range(30):
-    c = 0.05
+    c = 0.07
     originalEstimates = getOriginalEstimates(copy.deepcopy(points), g.topicNumber)
     saveBarChart(originalEstimates, g.ldaDir + 'original.png')
 
@@ -88,7 +105,6 @@ for t in range(30):
             count += 1
             if p.isDisk == False:
                 randomCount += 1
-    print(randomCount)
     samplingEstimates = getOriginalEstimates(samplingPoints, g.topicNumber)
     # print('samplingEstimates:' + str(samplingEstimates))
     r1 = getRalationshipList(samplingEstimates)
@@ -114,6 +130,7 @@ for t in range(30):
     randomRatio = compareRelationshipList(r2, r3)
     print('random:' + str(randomRatio))
 
+    outputPoints = []
     for group in sampleGroups:
         for p in group:
             outputP = {"id": p.id, "r": p.r, "lat": p.lat, "lng": p.lng, "isDisk": p.isDisk}
