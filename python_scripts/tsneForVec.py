@@ -5,8 +5,9 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import os
 from shared.lda_op import findMaxIndexAndValueForOneDoc
+
 if __name__ == '__main__':
-    print('get tsne data')
+    print('run tsne')
     with open(g.ldaDir + 'idLdaDict.json'.format(g.topicNumber), 'r', encoding='utf-8') as f:
         idScatterData = {}
         tsneData = []
@@ -29,5 +30,3 @@ if __name__ == '__main__':
         f.write(json.dumps(idScatterData))
     with open('../client/public/scatterData.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(idScatterData))
-
-    os.system('python ./runKmeans.py')

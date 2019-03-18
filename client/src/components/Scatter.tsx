@@ -2,7 +2,13 @@ import * as React from "react";
 import * as d3 from "d3";
 import { setData, SCATTER_DATA } from "../actions/setDataAction";
 import { setIfDrawCenters } from "../actions/setUIState";
-import { color, padding, scatterRadius, topicNumber } from "../constants";
+import {
+  color,
+  padding,
+  scatterRadius,
+  topicNumber,
+  pythonServerURL
+} from "../constants";
 import { connect } from "react-redux";
 import { useWidthAndHeight } from "src/hooks/layoutHooks";
 import { useCtxWithRef } from "src/hooks/canvasHooks";
@@ -29,9 +35,11 @@ const mapDispatch = {
 };
 function LdaScatterCanvasCanvas(props: Props) {
   const { setData, scatterData, curTopic, ifDrawScatterCenters } = props;
+  const [o1, setO1] = React.useState<[number, number] | null>(null);
+  const [o2, setO2] = React.useState<[number, number] | null>(null);
+  const [selectFlag, setSelectFlag] = React.useState(false);
 
   const [width, height] = useWidthAndHeight("scatter-canvas");
-
   const [
     backgroudCtx,
     setBackgroundCtx
@@ -148,8 +156,6 @@ function LdaScatterCanvasCanvas(props: Props) {
         const res = await fetch("./scatterCenters.json");
         const centers: [number, number][] = await res.json();
         centers.map((e, i) => {
-          console.log("e: ", e);
-          console.log("Math.floor(xScale(e[0])): ", Math.floor(xScale(e[0])));
           const fiber = createFiber(() => {
             ctx.fillStyle = "black";
             ctx.beginPath();
@@ -169,6 +175,44 @@ function LdaScatterCanvasCanvas(props: Props) {
     }
   }, [scatterData, ifDrawScatterCenters]);
 
+  function handleMouseDown(e: any) {
+    const rect = e.target.getBoundingClientRect();
+    const x1 = e.clientX - rect.x;
+    const y1 = e.clientY - rect.y;
+    setO1([x1, y1]);
+    setO2(null);
+    setSelectFlag(true);
+  }
+  function handleMouseMove(e: any) {
+    const rect = e.target.getBoundingClientRect();
+    const x2 = e.clientX - rect.x;
+    const y2 = e.clientY - rect.y;
+    setO2([x2, y2]);
+  }
+  function handleMouseUp(e: any) {
+    const rect = e.target.getBoundingClientRect();
+    const x2 = e.clientX - rect.x;
+    const y2 = e.clientY - rect.y;
+    setO2([x2, y2]);
+    setSelectFlag(false);
+
+    console.log("fetch");
+    fetch(pythonServerURL + "selectArea", {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      body: JSON.stringify([o1, o2])
+    }).then(res => {
+      console.log("res: ", res);
+    });
+  }
+
+  React.useEffect(() => {
+    if (!ctx || !o1 || !o2 || !selectFlag || !width || !height) return;
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = color.selectAreaColoe;
+    ctx.fillRect(o1[0], o1[1], o2[0] - o1[0], o2[1] - o1[1]);
+  }, [o2]);
   return (
     <div className="scatter-canvas-div">
       <canvas
@@ -179,6 +223,9 @@ function LdaScatterCanvasCanvas(props: Props) {
       />
       <canvas
         id="scatter-canvas"
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
         ref={canvasRef}
         width={width}
         height={height}

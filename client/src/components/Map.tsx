@@ -70,7 +70,7 @@ function Map(props: Props) {
   //draw class points
   React.useEffect(() => {
     if (curTopic === undefined) return;
-    console.log("mapClassPoints: ", mapClassPoints);
+
     const layers: L.Layer[] = [];
     mapClassPoints[curTopic].map(e => {
       layers.push(

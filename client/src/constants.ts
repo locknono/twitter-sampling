@@ -28,8 +28,12 @@ export namespace color {
     "rgb(231, 150, 156)"
   ];
   export const mapPointColor = "blue";
+
+  export const selectAreaColoe = "rgba(233, 233, 233, 0.7)";
 }
 
 export const scatterRadius = 1.5;
 
-export const maxCloudWordSize = 80;
+export const maxCloudWordSize = 70;
+
+export const pythonServerURL = "http://localhost:8000/";

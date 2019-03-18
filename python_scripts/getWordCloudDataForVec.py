@@ -2,7 +2,7 @@ import json
 import os
 import g
 import sys
-from shared.lda_op import findMaxIndexAndValueForOneDoc
+
 
 cwd = os.getcwd()
 wd = os.path.split(cwd)[0]
@@ -14,15 +14,21 @@ def sortByWordFrequncy(wordDict):
     return sortedKList
 
 
-def getWordCloudData():
+if __name__ == '__main__':
+
+
     idLdaDict = None
+    idClassDict = None
     with open(g.ldaDir + 'idLdaDict.json', 'r', encoding='utf-8') as f1:
         idLdaDict = json.loads(f1.read())
+
+    with open(g.ldaDir + 'idClassDict.json', 'r', encoding='utf-8') as f1:
+        idClassDict = json.loads(f1.read())
 
     wordCloudData = []
     allCloudData = {}
     for k in idLdaDict:
-        for i in range(len(idLdaDict[k])):
+        for i in range(g.topicNumber):
             wordCloudData.append({})
         break
 
@@ -31,7 +37,7 @@ def getWordCloudData():
             line = line.strip('\t\n').split('\t')
             id = line[0]
             text = line[1]
-            maxIndex, maxValue = findMaxIndexAndValueForOneDoc(idLdaDict[id])
+            maxIndex = idClassDict[id]
             for word in text.split(' '):
                 if word in wordCloudData[maxIndex]:
                     wordCloudData[maxIndex][word] += 1
@@ -66,11 +72,8 @@ def getWordCloudData():
             if i > wordCount:
                 break
         renderData.append(allRenderData)
-    return renderData
-
-if __name__ == '__main__':
-    renderData = getWordCloudData()
-    with open('../client/public/allWordCloudData.json', 'w', encoding='utf-8') as wf:
+        with open('../client/public/allWordCloudData.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(renderData))
-    with open('../client/public/allWordCloudData.json', 'w', encoding='utf-8') as wf:
-        wf.write(json.dumps(renderData))
+
+        with open('../client/public/allWordCloudData.json', 'w', encoding='utf-8') as wf:
+            wf.write(json.dumps(renderData))

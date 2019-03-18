@@ -27,7 +27,6 @@ function River(props: Props) {
   const { riverData, curTopic, setData } = props;
   React.useEffect(() => {
     fetchJsonData("./riverData.json").then(data => {
-      console.log("data: ", data);
       setData(RIVER_DATA, data);
     });
   }, []);

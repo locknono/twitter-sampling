@@ -16,10 +16,11 @@ if __name__ == '__main__':
             words = text.split(' ')
             common_texts.append(words)
             ids.append(id)
+
     documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(common_texts)]
-    model = Doc2Vec(documents, vector_size=200, window=5, min_count=3, workers=4, epochs=200)
+    model = Doc2Vec(documents, vector_size=200, window=5, min_count=3, workers=4, epochs=400)
     model.delete_temporary_training_data(keep_doctags_vectors=True, keep_inference=True)
-    print('train finish')
+    print('doc2vec finish')
     try:
         idVectorDict = {}
         for i, v in enumerate(model):

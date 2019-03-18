@@ -33,34 +33,9 @@ def filter_stopwords(centence):
     else:
         return out_centence
 
-
-# 大写转小写
-def uptolow(centence):
-    return centence.lower()
-
-
-# 快速次干提取
-def porter(strin):
-    porter_stemmer = PorterStemmer()
-    print(porter_stemmer.stem(strin))
-
-
-# 精准次干提取
-def lancaster(strin):
-    lancaster_stemmer = LancasterStemmer()
-    print(lancaster_stemmer.stem(strin))
-
-
-# 效率次干提取
-def snowball(strin):
-    snowball_stemmer = SnowballStemmer("english")
-    print(snowball_stemmer.stem(strin))
-
-
 # 词形还原
 def lemmatizer(strin):
     wordnet_lemmatizer = WordNetLemmatizer()
-    # print(wordnet_lemmatizer.lemmatize(strin))
     return wordnet_lemmatizer.lemmatize(strin)
 
 
@@ -68,9 +43,9 @@ def lemmatizer(strin):
 def centence_change(centence):
     centence = centence.split(" ")
     out_centence = ""
-    for item in centence:
-        item = lemmatizer(item)
-        out_centence += item + " "
+    for word in centence:
+        word = lemmatizer(word)
+        out_centence += word + " "
     return out_centence.strip(" ")
 
 
@@ -105,7 +80,6 @@ if __name__ == '__main__':
     sum = 0
     for key in centence.keys():
         sum += 1
-        centence[key] = uptolow(centence[key])
         new_centence = filter_stopwords(centence[key])
         if new_centence == "1":
             sum -= 1

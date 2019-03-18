@@ -38,8 +38,7 @@ function WordCloud(props: Props) {
     (async function fetchData() {
       const res = await fetch("./allWordCloudData.json");
       const data: CloudData = await res.json();
-      console.log("data: ", data);
-      const logFunc = Math.log10;
+      const logFunc = Math.log2;
       for (let i = 0; i < data.length; i++) {
         const curTopicWords = data[i];
         let maxFre = -1;
@@ -85,15 +84,14 @@ function WordCloud(props: Props) {
        */
       .words(JSON.parse(JSON.stringify(cloudData[topicIndex])))
       .padding(0.5)
-      /* .rotate(function() {
+      .rotate(function() {
         return ~~(Math.random() * 2) * 90;
-      }) */
+      })
       .font("Impact")
       .fontSize(function(d) {
         return d.size as number;
       })
-      .on("end", function(words) {
-        console.log("words: ", words);
+      .on("end", function(words, extent) {
         setCloudLayout(layout);
         setLayoutWords(words);
       });
@@ -113,9 +111,10 @@ function WordCloud(props: Props) {
   }, [curTopic]);
 
   let renderWords;
+
   let renderGroup;
   if (layoutWords) {
-    console.log("layoutWords: ", layoutWords);
+    console.log("renderWords: ", renderWords);
     renderWords = layoutWords.map((e: any, i: number) => {
       return (
         <text

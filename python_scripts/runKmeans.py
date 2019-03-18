@@ -21,14 +21,18 @@ if __name__ == '__main__':
             kmeansData.append(scatterData[k])
         kmeans = KMeans(n_clusters=g.topicNumber, random_state=0).fit(kmeansData)
         classList = kmeans.labels_
+        idClassPointDict = {}
         idClassDict = {}
         for index, id in enumerate(idList):
             point = {"coord": [(scatterData[id][0]), (scatterData[id][1])], "topic": int(classList[index])}
             scatterPoints[int(classList[index])].append([(scatterData[id][0]), (scatterData[id][1])])
             mapPoints[int(classList[index])].append([idLocationDict[id][0], idLocationDict[id][1]])
-            idClassDict[id] = point
-        with open(g.ldaDir + 'idKmeansClassDict.json', 'w', encoding='utf-8') as wf:
+            idClassPointDict[id] = point
+            idClassDict[id] = int(classList[index])
+        with open(g.ldaDir + 'idClassDict.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(idClassDict))
+        with open(g.ldaDir + 'idKmeansClassDict.json', 'w', encoding='utf-8') as wf:
+            wf.write(json.dumps(idClassPointDict))
         with open(g.ldaDir + 'scatterPoints.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(scatterPoints))
         with open(g.ldaDir + 'mapClassPoints.json', 'w', encoding='utf-8') as wf:

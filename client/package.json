@@ -38,6 +38,5 @@
     "@types/react-dom": "^16.0.11",
     "eslint-plugin-react-hooks": "^1.0.1",
     "typescript": "^3.2.4"
-  },
-  "proxy": "http://localhost:8080"
+  }
 }

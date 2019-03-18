@@ -15,11 +15,7 @@ os.system('python ./getFinalLocationJsonFormat.py')
 
 os.chdir('../')
 os.system('python ./runDoc2vec.py')
-
-os.chdir('./data_process')
-os.system('python ./getTsneData.py')
-
-os.chdir('../')
+os.system('python ./tsneForVec.py')
 os.system('python ./runKmeans.py')
 
 """
