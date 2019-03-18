@@ -12,6 +12,7 @@ if __name__ == '__main__':
         kmeansData = []
         mapPoints = []
         scatterPoints = []
+
         for i in range(g.topicNumber):
             scatterPoints.append([])
             mapPoints.append([])
@@ -22,13 +23,19 @@ if __name__ == '__main__':
         kmeans = KMeans(n_clusters=g.topicNumber, random_state=0).fit(kmeansData)
         classList = kmeans.labels_
         idClassPointDict = {}
+        finalPoints = []
         idClassDict = {}
         for index, id in enumerate(idList):
-            point = {"coord": [(scatterData[id][0]), (scatterData[id][1])], "topic": int(classList[index])}
+            x = round(scatterData[id][0], 2)
+            y = round(scatterData[id][1], 2)
+            point = {"id": id, "x": x, "y": y, "topic": int(classList[index])}
+            finalPoint = {"id": id, "x": x, "y": y, "topic": int(classList[index])}
+            finalPoints.append(finalPoint)
             scatterPoints[int(classList[index])].append([(scatterData[id][0]), (scatterData[id][1])])
             mapPoints[int(classList[index])].append([idLocationDict[id][0], idLocationDict[id][1]])
             idClassPointDict[id] = point
             idClassDict[id] = int(classList[index])
+
         with open(g.ldaDir + 'idClassDict.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(idClassDict))
         with open(g.ldaDir + 'idKmeansClassDict.json', 'w', encoding='utf-8') as wf:
@@ -37,6 +44,11 @@ if __name__ == '__main__':
             wf.write(json.dumps(scatterPoints))
         with open(g.ldaDir + 'mapClassPoints.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(mapPoints))
+        with open(g.ldaDir + 'finalScatterPoints.json', 'w', encoding='utf-8') as wf:
+            wf.write(json.dumps(finalPoints))
+
+        with open('../client/public/finalScatterPoints.json', 'w', encoding='utf-8') as wf:
+            wf.write(json.dumps(finalPoints))
         with open('../client/public/mapClassPoints.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(mapPoints))
         with open('../client/public/scatterPoints.json', 'w', encoding='utf-8') as wf:

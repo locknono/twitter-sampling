@@ -1,5 +1,13 @@
 type ScatterData = [number, number][][];
 
+interface ScatterPoint {
+  id: string;
+  x: number;
+  y: number;
+  topic: number;
+}
+
+type ScatterPoints = ScatterPoint[];
 interface DocPrData {
   [id: string]: number[];
 }

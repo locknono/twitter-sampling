@@ -17,7 +17,7 @@ import createFiber from "../fiber/fiber";
 import * as v4 from "uuid/v4";
 
 interface Props {
-  scatterData: ScatterData;
+  scatterData: ScatterPoint[];
   curTopic: CurTopic;
   setData: typeof setData;
   ifDrawScatterCenters: boolean;
@@ -38,7 +38,13 @@ function LdaScatterCanvasCanvas(props: Props) {
   const [o1, setO1] = React.useState<[number, number] | null>(null);
   const [o2, setO2] = React.useState<[number, number] | null>(null);
   const [selectFlag, setSelectFlag] = React.useState(false);
+  const [scales, setScales] = React.useState<
+    d3.ScaleLinear<number, number>[]
+  >();
 
+  const [reverseScales, setReverseScales] = React.useState<
+    d3.ScaleLinear<number, number>[]
+  >();
   const [width, height] = useWidthAndHeight("scatter-canvas");
   const [
     backgroudCtx,
@@ -53,24 +59,46 @@ function LdaScatterCanvasCanvas(props: Props) {
   }, []);
 
   React.useEffect(() => {
-    fetchAndSetScatterData("./scatterPoints.json", setData);
+    fetchAndSetScatterData("./finalScatterPoints.json", setData);
   }, []);
+
+  React.useEffect(() => {
+    if (!scatterData || !width || !height) return;
+    const [xScale, yScale, reverseXScale, reverseYScale] = getScale(
+      scatterData,
+      width,
+      height
+    );
+    setScales([xScale, yScale]);
+    setReverseScales([reverseXScale, reverseYScale]);
+  }, [width, height, scatterData]);
 
   //background
   React.useEffect(() => {
-    if (!backgroudCtx || !scatterData) {
+    if (!backgroudCtx || !scatterData || !scales) {
       return;
     }
     if (width && height && backgroudCtx) {
-      const [xScale, yScale] = getScale(scatterData, width, height);
-      scatterData.map((e, i) => {
+      const [xScale, yScale] = scales;
+      const sliceCount = 50;
+      const slicePointsNumber = scatterData.length / sliceCount;
+      const sliceIndices = [];
+      for (let i = 0; i < sliceCount - 1; i++) {
+        sliceIndices.push([
+          Math.floor(i * slicePointsNumber),
+          Math.floor((i + 1) * slicePointsNumber)
+        ]);
+      }
+      console.log("sliceIndices: ", sliceIndices);
+      sliceIndices.map(indices => {
         const fiber = createFiber(() => {
-          backgroudCtx.fillStyle = color.nineColors[i];
-          for (let i = 0; i < e.length; i++) {
+          for (let i = indices[0]; i < indices[1]; i++) {
+            const e = scatterData[i];
+            backgroudCtx.fillStyle = color.nineColors[e.topic];
             backgroudCtx.beginPath();
             backgroudCtx.arc(
-              Math.floor(xScale(e[i][0])),
-              Math.floor(yScale(e[i][1])),
+              Math.floor(xScale(e.x)),
+              Math.floor(yScale(e.y)),
               scatterRadius,
               0,
               Math.PI * 2
@@ -82,23 +110,25 @@ function LdaScatterCanvasCanvas(props: Props) {
       });
       updateQueue.flush();
     }
-  }, [scatterData]);
+  }, [scatterData, scales]);
 
   //click function
   React.useEffect(() => {
-    if (curTopic === undefined || !ctx || !width || !height) return;
-
-    const [xScale, yScale] = getScale(scatterData, width, height);
-
+    if (curTopic === undefined || !ctx || !width || !height || !scales) return;
+    const [xScale, yScale] = scales;
     ctx.clearRect(0, 0, width, height);
 
+    const curTopicPoints: ScatterPoint[] = [];
+    scatterData.map(e => {
+      if (e.topic === curTopic) curTopicPoints.push(e);
+    });
     const fiber = createFiber(() => {
       ctx.fillStyle = "black";
-      for (let i = 0; i < scatterData[curTopic].length; i++) {
+      for (let i = 0; i < curTopicPoints.length; i++) {
         ctx.beginPath();
         ctx.arc(
-          Math.floor(xScale(scatterData[curTopic][i][0])),
-          Math.floor(yScale(scatterData[curTopic][i][1])),
+          Math.floor(xScale(curTopicPoints[i].x)),
+          Math.floor(yScale(curTopicPoints[i].y)),
           scatterRadius,
           0,
           Math.PI * 2
@@ -108,7 +138,7 @@ function LdaScatterCanvasCanvas(props: Props) {
     }, 1);
     updateQueue.push(fiber);
     updateQueue.flush();
-  }, [curTopic, backgroudCtx]);
+  }, [curTopic, backgroudCtx, scales]);
 
   //color bars
   React.useEffect(() => {
@@ -147,11 +177,11 @@ function LdaScatterCanvasCanvas(props: Props) {
 
   //centers
   React.useEffect(() => {
-    if (!ctx || !scatterData || ifDrawScatterCenters === false) {
+    if (!ctx || !scatterData || ifDrawScatterCenters === false || !scales) {
       return;
     }
     if (width && height && ctx) {
-      const [xScale, yScale] = getScale(scatterData, width, height);
+      const [xScale, yScale] = scales;
       (async function drawCenters() {
         const res = await fetch("./scatterCenters.json");
         const centers: [number, number][] = await res.json();
@@ -173,7 +203,7 @@ function LdaScatterCanvasCanvas(props: Props) {
         updateQueue.flush();
       })();
     }
-  }, [scatterData, ifDrawScatterCenters]);
+  }, [scatterData, ifDrawScatterCenters, scales]);
 
   function handleMouseDown(e: any) {
     const rect = e.target.getBoundingClientRect();
@@ -196,7 +226,6 @@ function LdaScatterCanvasCanvas(props: Props) {
     setO2([x2, y2]);
     setSelectFlag(false);
 
-    console.log("fetch");
     fetch(pythonServerURL + "selectArea", {
       method: "POST",
       mode: "cors",
@@ -246,32 +275,38 @@ export default connect(
   mapDispatch
 )(LdaScatterCanvasCanvas);
 
-function getScale(scatterData: ScatterData, width: number, height: number) {
-  const xMin = d3.min(scatterData, e => {
-    return d3.min(e, d => d[0]);
-  }) as number;
-  const yMin = d3.min(scatterData, e => {
-    return d3.min(e, d => d[1]);
-  }) as number;
-  const xMax = d3.max(scatterData, e => {
-    return d3.max(e, d => d[0]);
-  }) as number;
-  const yMax = d3.max(scatterData, e => {
-    return d3.max(e, d => d[1]);
-  }) as number;
+function getScale(scatterData: ScatterPoints, width: number, height: number) {
+  const xMin = d3.min(scatterData, e => e.x) as number;
+  const yMin = d3.min(scatterData, e => e.y) as number;
+  const xMax = d3.max(scatterData, e => e.x) as number;
+  const yMax = d3.max(scatterData, e => e.y) as number;
+  const xDomian = [xMin, xMax];
+  const xRange = [
+    width * padding.scatterPadding,
+    width * (1 - padding.scatterPadding)
+  ];
+  const yDomain = [yMin, yMax];
+  const yRange = [
+    height * padding.scatterPadding,
+    height * (1 - padding.scatterPadding)
+  ];
   const xScale = d3
     .scaleLinear()
-    .domain([xMin, xMax])
-    .range([
-      width * padding.scatterPadding,
-      width * (1 - padding.scatterPadding)
-    ]);
+    .domain(xDomian)
+    .range(xRange);
   const yScale = d3
     .scaleLinear()
-    .domain([yMin, yMax])
-    .range([
-      height * padding.scatterPadding,
-      height * (1 - padding.scatterPadding)
-    ]);
-  return [xScale, yScale];
+    .domain(yDomain)
+    .range(yRange);
+
+  const reverseXSacle = d3
+    .scaleLinear()
+    .domain(xRange)
+    .range(xDomian);
+  const reverseYSacle = d3
+    .scaleLinear()
+    .domain(yRange)
+    .range(yDomain);
+
+  return [xScale, yScale, reverseXSacle, reverseYSacle];
 }

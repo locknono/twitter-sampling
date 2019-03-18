@@ -75,13 +75,8 @@ function WordCloud(props: Props) {
     } else {
       topicIndex = curTopic;
     }
-
     const layout = cloud()
       .size([width, height])
-      /**
-       * the cloud layout would change the property of `words` we pass in,
-       * so pass a copy instead of passing the words
-       */
       .words(JSON.parse(JSON.stringify(cloudData[topicIndex])))
       .padding(0.5)
       .rotate(function() {
@@ -114,7 +109,7 @@ function WordCloud(props: Props) {
 
   let renderGroup;
   if (layoutWords) {
-    console.log("renderWords: ", renderWords);
+    console.log("layoutWords: ", layoutWords);
     renderWords = layoutWords.map((e: any, i: number) => {
       return (
         <text

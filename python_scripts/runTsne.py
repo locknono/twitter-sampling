@@ -5,12 +5,9 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import os
 from shared.lda_op import findMaxIndexAndValueForOneDoc
-if __name__ == '__main__':
-    print('get tsne data')
-    cwd = os.getcwd()
-    wd = os.path.split(cwd)[0]
-    os.chdir(wd)
 
+if __name__ == '__main__':
+    print('run tsne')
     with open(g.ldaDir + 'idLdaDict.json'.format(g.topicNumber), 'r', encoding='utf-8') as f:
         outputData = []
         idScatterData = {}

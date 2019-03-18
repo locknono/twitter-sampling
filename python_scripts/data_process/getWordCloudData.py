@@ -14,11 +14,16 @@ def sortByWordFrequncy(wordDict):
     return sortedKList
 
 
-def getWordCloudData():
+def getWordCloudData(ids):
+    if not ids:
+        areaFlag = False
+    else:
+        areaFlag = True
+
     idLdaDict = None
+
     with open(g.ldaDir + 'idLdaDict.json', 'r', encoding='utf-8') as f1:
         idLdaDict = json.loads(f1.read())
-
     wordCloudData = []
     allCloudData = {}
     for k in idLdaDict:
@@ -30,6 +35,9 @@ def getWordCloudData():
         for line in f2:
             line = line.strip('\t\n').split('\t')
             id = line[0]
+            if areaFlag == True:
+                if id not in ids:
+                    continue
             text = line[1]
             maxIndex, maxValue = findMaxIndexAndValueForOneDoc(idLdaDict[id])
             for word in text.split(' '):
