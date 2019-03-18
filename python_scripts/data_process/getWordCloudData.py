@@ -3,11 +3,11 @@ import os
 import g
 import sys
 from shared.lda_op import findMaxIndexAndValueForOneDoc
-
+"""
 cwd = os.getcwd()
 wd = os.path.split(cwd)[0]
 os.chdir(wd)
-
+"""
 
 def sortByWordFrequncy(wordDict):
     sortedKList = sorted(wordDict.items(), key=lambda item: item[1], reverse=True)

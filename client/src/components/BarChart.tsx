@@ -39,7 +39,7 @@ const mapDispatchToProps = {
   setCurTopic
 };
 
-class LdaBarChart extends React.Component<Props, State> {
+class BarChart extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -192,7 +192,7 @@ class LdaBarChart extends React.Component<Props, State> {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(LdaBarChart);
+)(BarChart);
 
 function getBars(
   data: number[],
@@ -207,17 +207,15 @@ function getBars(
         ? color.originalBarColor
         : color.brighterBarColor;
     return (
-      <g className="bars-group">
-        <rect
-          key={e}
-          x={xScale(i.toString())}
-          y={yScale(e)}
-          width={xScale.bandwidth()}
-          height={yScale(0) - yScale(e)}
-          fill={fillColor}
-          onClick={() => clickFunc(i)}
-        />
-      </g>
+      <rect
+        key={e}
+        x={xScale(i.toString())}
+        y={yScale(e)}
+        width={xScale.bandwidth()}
+        height={yScale(0) - yScale(e)}
+        fill={fillColor}
+        onClick={() => clickFunc(i)}
+      />
     );
   });
   return rects;

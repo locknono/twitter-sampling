@@ -4,6 +4,7 @@ import g
 import sys
 
 
+
 def sortByWordFrequncy(wordDict):
     sortedKList = sorted(wordDict.items(), key=lambda item: item[1], reverse=True)
     return sortedKList
@@ -71,6 +72,10 @@ def getWordCloudData(ids=None):
         renderData.append(allRenderData)
     return renderData
 if __name__ == '__main__':
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+
     renderData = getWordCloudData()
     with open('../client/public/allWordCloudData.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(renderData))

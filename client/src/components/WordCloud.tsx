@@ -64,6 +64,8 @@ function WordCloud(props: Props) {
         setCloudLayout(layout);
         setLayoutWords(words);
       });
+    console.log(Object.getPrototypeOf(layout));
+    console.log((layout as any).prototype);
     layout.start();
   }, [cloudData]);
 

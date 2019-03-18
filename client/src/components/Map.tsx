@@ -65,6 +65,7 @@ function Map(props: Props) {
       controlLayer.addOverlay(layerGroup, "selected points");
     })();
   }, [selectedIDs]);
+
   React.useEffect(() => {
     (async function addAllPoints() {
       const res = await fetch("./allPoints.json");
@@ -80,6 +81,12 @@ function Map(props: Props) {
       });
       const layerGroup = L.layerGroup(layers);
       controlLayer.addOverlay(layerGroup, "all points");
+      /*  fetchAndAddGroupLayer(
+        "./PA_data.json",
+        "pa_data",
+        L.circle,
+        controlLayer
+      ); */
       return layerGroup;
     })();
   }, []);

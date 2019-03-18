@@ -66,12 +66,7 @@ def centence_output(centence):
     return
 
 
-if __name__ == '__main__':
-
-    cwd = os.getcwd()
-    wd = os.path.split(cwd)[0]
-    os.chdir(wd)
-
+def process():
     url = g.dataPath + "cleanedData.txt"
     centence = centence_input(url)
     print("step1 success")
@@ -91,3 +86,11 @@ if __name__ == '__main__':
     print(sum)
     centence_output(out_centence)
     print("step3 success")
+
+if __name__ == '__main__':
+
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+
+    process()

@@ -2,12 +2,9 @@ import g
 import csv
 from itertools import islice
 import os
-if __name__ == '__main__':
-    
-    cwd = os.getcwd()
-    wd = os.path.split(cwd)[0]
-    os.chdir(wd)
 
+
+def getOverlapRate():
     with open(g.dataPath + 'finalIDLocation.csv', 'r', encoding='utf-8') as f:
         cf = csv.reader(f)
         cset = set()
@@ -18,4 +15,12 @@ if __name__ == '__main__':
             coor = (lat, lng)
             cset.add(coor)
             pcount += 1
-        print(len(cset) / pcount)
+        rate = len(cset) / pcount
+        print(rate)
+        return rate
+if __name__ == '__main__':
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+
+    getOverlapRate()

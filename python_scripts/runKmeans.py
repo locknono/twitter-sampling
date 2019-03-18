@@ -2,12 +2,13 @@ import json
 import g
 from sklearn.cluster import KMeans
 
-if __name__ == '__main__':
+
+def runKmeans():
     print('run kmeans')
     idLocationDict = None
     with open(g.dataPath + 'finalIDLocation.json', 'r', encoding='utf-8') as f:
         idLocationDict = json.loads(f.read())
-    with open(g.ldaDir + 'scatterData.json', 'r', encoding='utf-8') as f:
+    with open(g.docDir + 'scatterData.json', 'r', encoding='utf-8') as f:
         scatterData = json.loads(f.read())
         kmeansData = []
         mapPoints = []
@@ -36,15 +37,15 @@ if __name__ == '__main__':
             idClassPointDict[id] = point
             idClassDict[id] = int(classList[index])
 
-        with open(g.ldaDir + 'idClassDict.json', 'w', encoding='utf-8') as wf:
+        with open(g.docDir + 'idClassDict.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(idClassDict))
-        with open(g.ldaDir + 'idKmeansClassDict.json', 'w', encoding='utf-8') as wf:
+        with open(g.docDir + 'idKmeansClassDict.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(idClassPointDict))
-        with open(g.ldaDir + 'scatterPoints.json', 'w', encoding='utf-8') as wf:
+        with open(g.docDir + 'scatterPoints.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(scatterPoints))
-        with open(g.ldaDir + 'mapClassPoints.json', 'w', encoding='utf-8') as wf:
+        with open(g.docDir + 'mapClassPoints.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(mapPoints))
-        with open(g.ldaDir + 'finalScatterPoints.json', 'w', encoding='utf-8') as wf:
+        with open(g.docDir + 'finalScatterPoints.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(finalPoints))
 
         with open('../client/public/finalScatterPoints.json', 'w', encoding='utf-8') as wf:
@@ -53,3 +54,6 @@ if __name__ == '__main__':
             wf.write(json.dumps(mapPoints))
         with open('../client/public/scatterPoints.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(scatterPoints))
+
+if __name__ == '__main__':
+    runKmeans()

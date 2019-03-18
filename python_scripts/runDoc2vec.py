@@ -18,7 +18,7 @@ if __name__ == '__main__':
             ids.append(id)
 
     documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(common_texts)]
-    model = Doc2Vec(documents, vector_size=200, window=5, min_count=3, workers=4, epochs=400)
+    model = Doc2Vec(documents, vector_size=200, window=5, min_count=1, workers=4, epochs=400, negative=5, sample=1e-5)
     model.delete_temporary_training_data(keep_doctags_vectors=True, keep_inference=True)
     print('doc2vec finish')
     try:
@@ -29,11 +29,21 @@ if __name__ == '__main__':
             idVectorDict[id] = vector
     except Exception as e:
         pass
+
     try:
         os.mkdir(g.dataPath + 'LDA/')
+    except Exception as e:
+        print(e)
+
+    try:
         os.mkdir(g.ldaDir)
     except Exception as e:
         print(e)
 
-    with open(g.ldaDir + 'idLdaDict.json', 'w', encoding='utf-8') as f:
+    try:
+        os.mkdir(g.docDir)
+    except Exception as e:
+        print(e)
+
+    with open(g.docDir + 'idLdaDict.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(idVectorDict))

@@ -4,15 +4,9 @@ import re
 import g
 import os
 
-if __name__ == '__main__':
 
-    cwd = os.getcwd()
-    wd = os.path.split(cwd)[0]
-    os.chdir(wd)
-
+def clean():
     tweets = []
-
-    index = 0
     with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8', errors='ignore') as f:
         for line in f:
             try:
@@ -20,7 +14,6 @@ if __name__ == '__main__':
                 tweets.append(tweet)
             except:
                 pass
-
     writeF = codecs.open(g.dataPath + 'cleanedData.txt', 'w', encoding='utf-8')  # 文件对应
     for i in range(len(tweets) - 1, 0, -1):
         tweets[i][1] = tweets[i][1].lower()
@@ -93,11 +86,15 @@ if __name__ == '__main__':
         # 多空格换单空格
         tweets[i][1] = re.sub(" +", " ", tweets[i][1])
 
-
-
         tweets[i][1] = re.sub('im', '', tweets[i][1])
-
 
         writeF.write(
             tweets[i][0] + '\t' + tweets[i][1] + '\t' + tweets[i][2] + '\t' + tweets[i][3] + '\t' + tweets[i][4] +
             '\t\n')
+if __name__ == '__main__':
+
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+
+    clean()

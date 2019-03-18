@@ -88,6 +88,7 @@ if __name__ == '__main__':
         print(ratioList)
         print(randomRatioList)
         print('------------')
+
     """
     for m in range(100):
         kl = copy.deepcopy(kList)

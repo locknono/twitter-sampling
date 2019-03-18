@@ -4,12 +4,8 @@ import json
 import g
 import os
 
-if __name__ == '__main__':
 
-    cwd = os.getcwd()
-    wd = os.path.split(cwd)[0]
-    os.chdir(wd)
-
+def getLocationJson():
     with open(g.dataPath + 'finalIDLocation.csv', 'r', encoding='utf-8') as f:
         idLocationDict = {}
         points = []
@@ -26,7 +22,6 @@ if __name__ == '__main__':
         with open('../client/public/finalIDLocation.json', 'w', encoding='utf-8') as wf:
             wf.write(json.dumps(idLocationDict))
 
-
     pointCount = len(list(idLocationDict.keys()))
 
     print('点数:')
@@ -38,5 +33,15 @@ if __name__ == '__main__':
     print('不重叠点数:')
     print(len(locationSet))
 
+    with open(g.dataPath + 'allPoints.json', 'w', encoding='utf-8') as wf:
+        wf.write(json.dumps(list(pointsSet)))
+
     with open('../client/public/allPoints.json', 'w', encoding='utf-8') as wf:
         wf.write(json.dumps(list(pointsSet)))
+if __name__ == '__main__':
+
+    cwd = os.getcwd()
+    wd = os.path.split(cwd)[0]
+    os.chdir(wd)
+
+    getLocationJson()
