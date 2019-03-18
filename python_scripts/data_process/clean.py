@@ -93,6 +93,11 @@ if __name__ == '__main__':
         # 多空格换单空格
         tweets[i][1] = re.sub(" +", " ", tweets[i][1])
 
+
+
+        tweets[i][1] = re.sub('im', '', tweets[i][1])
+
+
         writeF.write(
             tweets[i][0] + '\t' + tweets[i][1] + '\t' + tweets[i][2] + '\t' + tweets[i][3] + '\t' + tweets[i][4] +
             '\t\n')

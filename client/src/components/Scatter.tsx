@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d3 from "d3";
-import { setData, SCATTER_DATA } from "../actions/setDataAction";
+import { setData, SCATTER_DATA, CLOUD_DATA } from "../actions/setDataAction";
 import { setIfDrawCenters } from "../actions/setUIState";
 import {
   color,
@@ -80,6 +80,7 @@ function LdaScatterCanvasCanvas(props: Props) {
     }
     if (width && height && backgroudCtx) {
       const [xScale, yScale] = scales;
+      //todo:move slice function to shared.ts
       const sliceCount = 50;
       const slicePointsNumber = scatterData.length / sliceCount;
       const sliceIndices = [];
@@ -89,7 +90,6 @@ function LdaScatterCanvasCanvas(props: Props) {
           Math.floor((i + 1) * slicePointsNumber)
         ]);
       }
-      console.log("sliceIndices: ", sliceIndices);
       sliceIndices.map(indices => {
         const fiber = createFiber(() => {
           for (let i = indices[0]; i < indices[1]; i++) {
@@ -220,20 +220,37 @@ function LdaScatterCanvasCanvas(props: Props) {
     setO2([x2, y2]);
   }
   function handleMouseUp(e: any) {
+    if (!scales || !o1) return;
     const rect = e.target.getBoundingClientRect();
     const x2 = e.clientX - rect.x;
     const y2 = e.clientY - rect.y;
+    const [x1, y1] = o1;
     setO2([x2, y2]);
     setSelectFlag(false);
+    const [xScale, yScale] = scales;
+
+    const ids = [];
+    for (let i = 0; i < scatterData.length; i++) {
+      const e = scatterData[i];
+      const x = Math.floor(xScale(e.x));
+      const y = Math.floor(yScale(e.y));
+      if (x > x1 && x < x2 && y > y1 && y < y2) {
+        ids.push(e.id);
+      }
+    }
+    console.log("ids: ", ids);
 
     fetch(pythonServerURL + "selectArea", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
-      body: JSON.stringify([o1, o2])
-    }).then(res => {
-      console.log("res: ", res);
-    });
+      body: JSON.stringify(ids)
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log("data: ", data);
+        setData(CLOUD_DATA, data);
+      });
   }
 
   React.useEffect(() => {

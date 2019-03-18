@@ -1,3 +1,6 @@
+import * as d3 from "d3";
+import { maxCloudWordSize } from "src/constants";
+
 import {
   SET_ORIGINAL_BARDATA,
   SET_SAMPLING_BARDATA,
@@ -33,7 +36,7 @@ export default function dataTree(state = initialState, action: any) {
       return { ...state, docPrData: action.data };
       break;
     case SET_CLOUD_DATA:
-      return { ...state, cloudData: action.data };
+      return { ...state, cloudData: normCloudSize(action.data) };
       break;
     case SET_RIVER_DATA:
       return { ...state, riverData: action.data };
@@ -43,4 +46,30 @@ export default function dataTree(state = initialState, action: any) {
     default:
       return state;
   }
+}
+
+function normCloudSize(cloudData: any) {
+  const logFunc = Math.floor;
+  for (let i = 0; i < cloudData.length; i++) {
+    const curTopicWords = cloudData[i];
+    let maxFre = -1;
+    let minFre = Number.MAX_SAFE_INTEGER;
+    for (let j = 0; j < curTopicWords.length; j++) {
+      if (logFunc(curTopicWords[j].fre) > maxFre) {
+        maxFre = logFunc(curTopicWords[j].fre);
+      }
+      if (logFunc(curTopicWords[j].fre) < minFre) {
+        minFre = logFunc(curTopicWords[j].fre);
+      }
+    }
+    const fontSizeScale = d3
+      .scaleLinear()
+      .domain([minFre, maxFre])
+      .range([0, maxCloudWordSize])
+      .clamp(true);
+    for (let j = 0; j < curTopicWords.length; j++) {
+      curTopicWords[j].size = fontSizeScale(logFunc(curTopicWords[j].fre));
+    }
+  }
+  return cloudData;
 }

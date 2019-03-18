@@ -4,11 +4,6 @@ import g
 import sys
 
 
-cwd = os.getcwd()
-wd = os.path.split(cwd)[0]
-os.chdir(wd)
-
-
 def sortByWordFrequncy(wordDict):
     sortedKList = sorted(wordDict.items(), key=lambda item: item[1], reverse=True)
     return sortedKList
@@ -22,6 +17,7 @@ def getWordCloudData(ids=None):
 
     idLdaDict = None
     idClassDict = None
+
     with open(g.ldaDir + 'idLdaDict.json', 'r', encoding='utf-8') as f1:
         idLdaDict = json.loads(f1.read())
     with open(g.ldaDir + 'idClassDict.json', 'r', encoding='utf-8') as f1:

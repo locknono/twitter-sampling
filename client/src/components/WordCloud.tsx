@@ -38,43 +38,17 @@ function WordCloud(props: Props) {
     (async function fetchData() {
       const res = await fetch("./allWordCloudData.json");
       const data: CloudData = await res.json();
-      const logFunc = Math.log2;
-      for (let i = 0; i < data.length; i++) {
-        const curTopicWords = data[i];
-        let maxFre = -1;
-        let minFre = Number.MAX_SAFE_INTEGER;
-        for (let j = 0; j < curTopicWords.length; j++) {
-          if (logFunc(curTopicWords[j].fre) > maxFre) {
-            maxFre = logFunc(curTopicWords[j].fre);
-          }
-          if (logFunc(curTopicWords[j].fre) < minFre) {
-            minFre = logFunc(curTopicWords[j].fre);
-          }
-        }
-        const fontSizeScale = d3
-          .scaleLinear()
-          .domain([minFre, maxFre])
-          .range([0, maxCloudWordSize])
-          .clamp(true);
-        for (let j = 0; j < curTopicWords.length; j++) {
-          curTopicWords[j].size = fontSizeScale(logFunc(curTopicWords[j].fre));
-        }
-      }
-
       setData(CLOUD_DATA, data);
     })();
   }, []);
 
   //initialize cloud layout
   React.useEffect(() => {
-    if (!width || !height) return;
-    if (cloudLayout !== undefined || !cloudData) return;
-    let topicIndex;
-    if (curTopic === undefined) {
-      topicIndex = topicNumber;
-    } else {
-      topicIndex = curTopic;
-    }
+    if (!width || !height || !cloudData) return;
+    console.log("cloudData: ", cloudData);
+    if (cloudLayout) return;
+    console.log("initialize");
+    let topicIndex = curTopic === undefined ? topicNumber : curTopic;
     const layout = cloud()
       .size([width, height])
       .words(JSON.parse(JSON.stringify(cloudData[topicIndex])))
@@ -86,24 +60,21 @@ function WordCloud(props: Props) {
       .fontSize(function(d) {
         return d.size as number;
       })
-      .on("end", function(words, extent) {
+      .on("end", function(words) {
+        console.log("words: ", words);
         setCloudLayout(layout);
         setLayoutWords(words);
       });
     layout.start();
-  });
+  }, [cloudData]);
 
+  //select a topic OR replace cloud data
   React.useEffect(() => {
-    let topicIndex;
-    if (curTopic === undefined) {
-      topicIndex = 10;
-    } else {
-      topicIndex = curTopic;
-    }
-    if (!cloudLayout || curTopic === undefined) return;
+    if (!cloudLayout) return;
+    let topicIndex = curTopic === undefined ? topicNumber : curTopic;
     cloudLayout.words(JSON.parse(JSON.stringify(cloudData[topicIndex])));
     cloudLayout.start();
-  }, [curTopic]);
+  }, [curTopic, cloudData, cloudLayout]);
 
   let renderWords;
 
