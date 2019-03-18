@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as d3 from "d3";
 import { setData, SCATTER_DATA, CLOUD_DATA } from "../actions/setDataAction";
-import { setIfDrawCenters } from "../actions/setUIState";
+import { setIfDrawCenters, setSelectedIDs } from "../actions/setUIState";
 import {
   color,
   padding,
@@ -22,6 +22,7 @@ interface Props {
   setData: typeof setData;
   ifDrawScatterCenters: boolean;
   setIfDrawCenters: typeof setIfDrawCenters;
+  setSelectedIDs: typeof setSelectedIDs;
 }
 
 const mapState = (state: any) => {
@@ -31,10 +32,17 @@ const mapState = (state: any) => {
 };
 const mapDispatch = {
   setData,
-  setIfDrawCenters
+  setIfDrawCenters,
+  setSelectedIDs
 };
 function LdaScatterCanvasCanvas(props: Props) {
-  const { setData, scatterData, curTopic, ifDrawScatterCenters } = props;
+  const {
+    setData,
+    scatterData,
+    curTopic,
+    ifDrawScatterCenters,
+    setSelectedIDs
+  } = props;
   const [o1, setO1] = React.useState<[number, number] | null>(null);
   const [o2, setO2] = React.useState<[number, number] | null>(null);
   const [selectFlag, setSelectFlag] = React.useState(false);
@@ -238,7 +246,7 @@ function LdaScatterCanvasCanvas(props: Props) {
         ids.push(e.id);
       }
     }
-    console.log("ids: ", ids);
+    setSelectedIDs(ids);
 
     fetch(pythonServerURL + "selectArea", {
       method: "POST",
@@ -248,7 +256,6 @@ function LdaScatterCanvasCanvas(props: Props) {
     })
       .then(res => res.json())
       .then(data => {
-        console.log("data: ", data);
         setData(CLOUD_DATA, data);
       });
   }

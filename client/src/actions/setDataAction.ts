@@ -14,7 +14,7 @@ export const SET_SCATTER_DATA = SET + SCATTER_DATA;
 export const SET_DOC_PR_DATA = SET + DOC_PR_DATA;
 export const SET_CLOUD_DATA = SET + CLOUD_DATA;
 export const SET_RIVER_DATA = SET + RIVER_DATA;
-export const SET_MAP_CLASS_POINTS = SET+MAP_CLASS_POINTS
+export const SET_MAP_CLASS_POINTS = SET + MAP_CLASS_POINTS;
 
 export function setData(dataName: string, data: any) {
   return {

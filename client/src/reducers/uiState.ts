@@ -1,13 +1,19 @@
-import { SET_CUR_TOPIC, IF_DRAW_SCATTER_CENTERS } from "../actions/setUIState";
+import {
+  SET_CUR_TOPIC,
+  IF_DRAW_SCATTER_CENTERS,
+  SET_SELECTED_IDS
+} from "../actions/setUIState";
 
 interface UIState {
   curTopic: CurTopic;
   ifDrawScatterCenters: boolean;
+  selectedIDs: string[];
 }
 
 const initialState: UIState = {
   curTopic: undefined,
-  ifDrawScatterCenters: false
+  ifDrawScatterCenters: false,
+  selectedIDs: []
 };
 
 export function uiState(state = initialState, action: any) {
@@ -17,6 +23,9 @@ export function uiState(state = initialState, action: any) {
       break;
     case IF_DRAW_SCATTER_CENTERS:
       return { ...state, ifDrawScatterCenters: action.flag };
+      break;
+    case SET_SELECTED_IDS:
+      return { ...state, selectedIDs: action.ids };
       break;
     default:
       return state;

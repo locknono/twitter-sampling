@@ -45,9 +45,9 @@ function WordCloud(props: Props) {
   //initialize cloud layout
   React.useEffect(() => {
     if (!width || !height || !cloudData) return;
-    console.log("cloudData: ", cloudData);
+
     if (cloudLayout) return;
-    console.log("initialize");
+
     let topicIndex = curTopic === undefined ? topicNumber : curTopic;
     const layout = cloud()
       .size([width, height])
@@ -61,7 +61,6 @@ function WordCloud(props: Props) {
         return d.size as number;
       })
       .on("end", function(words) {
-        console.log("words: ", words);
         setCloudLayout(layout);
         setLayoutWords(words);
       });
@@ -80,7 +79,6 @@ function WordCloud(props: Props) {
 
   let renderGroup;
   if (layoutWords) {
-    console.log("layoutWords: ", layoutWords);
     renderWords = layoutWords.map((e: any, i: number) => {
       return (
         <text

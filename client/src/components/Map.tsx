@@ -4,15 +4,15 @@ import * as d3 from "d3";
 import "leaflet.heat";
 /* import "leaflet-webgl-heatmap"; */
 import { fetchAndAddGroupLayer } from "../API/mapAPI";
-import { colorScale, color } from "../constants";
+import { colorScale, color, pythonServerURL } from "../constants";
 import { setData, MAP_CLASS_POINTS } from "../actions/setDataAction";
 import { connect } from "react-redux";
 import "leaflet.pm";
 
 const mapState = (state: any) => {
   const { mapClassPoints } = state.dataTree;
-  const { curTopic } = state.uiState;
-  return { mapClassPoints, curTopic };
+  const { curTopic, selectedIDs } = state.uiState;
+  return { mapClassPoints, curTopic, selectedIDs };
 };
 const mapDispatch = {
   setData
@@ -22,6 +22,7 @@ interface Props {
   mapClassPoints: [number, number][][];
   setData: typeof setData;
   curTopic: CurTopic;
+  selectedIDs: string[];
 }
 
 interface Map {
@@ -30,7 +31,7 @@ interface Map {
 }
 
 function Map(props: Props) {
-  const { mapClassPoints, setData, curTopic } = props;
+  const { mapClassPoints, setData, curTopic, selectedIDs } = props;
   const [map, setMap] = React.useState<L.Map | null>(null);
 
   const initialControlLayer = L.control.layers(undefined, undefined, {
@@ -40,6 +41,30 @@ function Map(props: Props) {
     initialControlLayer
   );
 
+  //draw selected ids
+  React.useEffect(() => {
+    if (!map) return;
+    (async function drawSelectedIDs() {
+      const res = await fetch(pythonServerURL + "getCoorsByIDs", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        body: JSON.stringify(selectedIDs)
+      });
+      const data = await res.json();
+      const layers: L.Layer[] = [];
+      data.map((e: any) => {
+        layers.push(
+          L.circle(e, {
+            radius: 5,
+            color: color.mapPointColor
+          })
+        );
+      });
+      const layerGroup = L.layerGroup(layers).addTo(map);
+      controlLayer.addOverlay(layerGroup, "selected points");
+    })();
+  }, [selectedIDs]);
   React.useEffect(() => {
     (async function addAllPoints() {
       const res = await fetch("./allPoints.json");
