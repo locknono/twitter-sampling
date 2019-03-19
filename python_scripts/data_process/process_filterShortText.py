@@ -14,6 +14,8 @@ def filterShortText():
     with open(g.dataPath + 'processedData.txt', 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip('\t\n').split('\t')
+            if len(line)==1:
+                continue
             if len(line[1].split(' ')) <= 3:
                 continue
             textSet.add(line[1])

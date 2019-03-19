@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d3 from "d3";
-import { padding, color } from "../constants";
+import { padding, color, url } from "../constants";
 import { setData } from "../actions/setDataAction";
 import { setCurTopic } from "../actions/setUIState";
 import { connect } from "react-redux";
@@ -56,7 +56,7 @@ class BarChart extends React.Component<Props, State> {
 
   componentDidMount() {
     const { setData } = this.props;
-    fetchJsonData("./barData.json").then((data: fetchedBarData) => {
+    fetchJsonData(url.barDataURL).then((data: fetchedBarData) => {
       setData("ORIGINAL_BARDATA", data.original);
       setData("SAMPLING_BARDATA", data.sampling);
     });

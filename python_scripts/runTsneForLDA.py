@@ -7,8 +7,8 @@ import os
 from shared.lda_op import findMaxIndexAndValueForOneDoc
 
 if __name__ == '__main__':
-    print('run tsne')
-    with open(g.ldaDir + 'idLdaDict.json'.format(g.topicNumber), 'r', encoding='utf-8') as f:
+    #with open(g.ldaDir + 'idLdaDict.json'.format(g.topicNumber), 'r', encoding='utf-8') as f:
+    with open('../data/yelp/idLdaDict.json'.format(g.topicNumber), 'r', encoding='utf-8') as f:
         outputData = []
         idScatterData = {}
         for i in range(g.topicNumber):

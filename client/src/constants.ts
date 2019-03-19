@@ -4,6 +4,7 @@ export const topicNumber = 9;
 /**nine categorical colors */
 export const colorScale = d3.scaleOrdinal(d3.schemeSet1);
 
+export const mapCircleRadius = 3;
 export namespace padding {
   export const barChartPadding = 0.1;
   export const scatterPadding = 0.08;
@@ -27,9 +28,19 @@ export namespace color {
     "rgb(132, 60, 57)",
     "rgb(231, 150, 156)"
   ];
-  export const mapPointColor = "blue";
+  export const mapPointColor = "black";
 
   export const selectAreaColoe = "rgba(233, 233, 233, 0.7)";
+}
+
+export namespace url {
+  export const mapPointsURL = "./finalMapPoints.json";
+  export const ldbrPointsURL = "./ldbrPoints.json";
+  export const riverDataURL = "./riverData.json";
+  export const scatterPointsURL = "./finalScatterPoints.json";
+  export const scatterCentersURL = "./scatterCenters.json";
+  export const wordCloudDataURL = "./allWordCloudData.json";
+  export const barDataURL = "./barData.json";
 }
 
 export const scatterRadius = 1.5;

@@ -4,22 +4,29 @@ import * as d3 from "d3";
 import "leaflet.heat";
 /* import "leaflet-webgl-heatmap"; */
 import { fetchAndAddGroupLayer } from "../API/mapAPI";
-import { colorScale, color, pythonServerURL } from "../constants";
-import { setData, MAP_CLASS_POINTS } from "../actions/setDataAction";
+import {
+  colorScale,
+  color,
+  pythonServerURL,
+  url,
+  topicNumber,
+  mapCircleRadius
+} from "../constants";
+import { setData, MAP_POINTS } from "../actions/setDataAction";
 import { connect } from "react-redux";
 import "leaflet.pm";
 
 const mapState = (state: any) => {
-  const { mapClassPoints } = state.dataTree;
+  const { mapPoints } = state.dataTree;
   const { curTopic, selectedIDs } = state.uiState;
-  return { mapClassPoints, curTopic, selectedIDs };
+  return { mapPoints, curTopic, selectedIDs };
 };
 const mapDispatch = {
   setData
 };
 
 interface Props {
-  mapClassPoints: [number, number][][];
+  mapPoints: MapPoints;
   setData: typeof setData;
   curTopic: CurTopic;
   selectedIDs: string[];
@@ -31,7 +38,7 @@ interface Map {
 }
 
 function Map(props: Props) {
-  const { mapClassPoints, setData, curTopic, selectedIDs } = props;
+  const { mapPoints, setData, curTopic, selectedIDs } = props;
   const [map, setMap] = React.useState<L.Map | null>(null);
 
   const initialControlLayer = L.control.layers(undefined, undefined, {
@@ -40,6 +47,15 @@ function Map(props: Props) {
   const [controlLayer, setControlLayer] = React.useState<L.Control.Layers>(
     initialControlLayer
   );
+
+  //set map points
+  React.useEffect(() => {
+    (async function setMapPoints() {
+      const res = await fetch(url.mapPointsURL);
+      const mapPoints = await res.json();
+      setData(MAP_POINTS, mapPoints);
+    })();
+  }, []);
 
   //draw selected ids
   React.useEffect(() => {
@@ -56,7 +72,7 @@ function Map(props: Props) {
       data.map((e: any) => {
         layers.push(
           L.circle(e, {
-            radius: 5,
+            radius: mapCircleRadius,
             color: color.mapPointColor
           })
         );
@@ -67,64 +83,68 @@ function Map(props: Props) {
   }, [selectedIDs]);
 
   React.useEffect(() => {
-    (async function addAllPoints() {
-      const res = await fetch("./allPoints.json");
-      const data = await res.json();
-      const layers: L.Layer[] = [];
-      data.map((e: any) => {
-        layers.push(
-          L.circle(e, {
-            radius: 5,
-            color: color.mapPointColor
-          })
-        );
-      });
-      const layerGroup = L.layerGroup(layers);
-      controlLayer.addOverlay(layerGroup, "all points");
-      /*  fetchAndAddGroupLayer(
-        "./PA_data.json",
-        "pa_data",
-        L.circle,
-        controlLayer
-      ); */
-      return layerGroup;
-    })();
-  }, []);
-
-  React.useEffect(() => {
-    (async function addAllPoints() {
-      const res = await fetch("./mapClassPoints.json");
-      const data = await res.json();
-      setData(MAP_CLASS_POINTS, data);
-    })();
-  }, []);
-
-  //draw class points
-  React.useEffect(() => {
-    if (curTopic === undefined) return;
-
-    const layers: L.Layer[] = [];
-    mapClassPoints[curTopic].map(e => {
-      layers.push(
+    if (!mapPoints) return;
+    const allPointsLayer: L.Layer[] = [];
+    mapPoints.map(e => {
+      allPointsLayer.push(
         L.circle(e, {
-          radius: 5,
-          color: color.nineColors[curTopic]
+          radius: mapCircleRadius,
+          color: color.mapPointColor
         })
       );
     });
-    const layerGroup = L.layerGroup(layers);
-    controlLayer.addOverlay(layerGroup, `points for topic${curTopic}`);
-  }, [curTopic]);
+    const layerGroup = L.layerGroup(allPointsLayer);
+    controlLayer.addOverlay(layerGroup, `all points`);
+  }, [mapPoints]);
+
+  React.useEffect(() => {
+    if (!mapPoints) return;
+    const allPointsLayer: L.Layer[] = [];
+    mapPoints.map(e => {
+      allPointsLayer.push(
+        L.circle(e, {
+          radius: mapCircleRadius,
+          color: color.nineColors[e.topic]
+        })
+      );
+    });
+    const layerGroup = L.layerGroup(allPointsLayer);
+    controlLayer.addOverlay(layerGroup, `all points with topic`);
+  }, [mapPoints]);
+
+  React.useEffect(() => {
+    if (!mapPoints) return;
+    const allTopicPoints: MapPoint[][] = [];
+    for (let i = 0; i < topicNumber; i++) {
+      allTopicPoints.push([]);
+    }
+    mapPoints.map(e => {
+      allTopicPoints[e.topic].push(e);
+    });
+    allTopicPoints.map((e, i) => {
+      const curTopicPointsLayer: L.Layer[] = [];
+      e.map(v => {
+        curTopicPointsLayer.push(
+          L.circle(v, {
+            radius: mapCircleRadius,
+            color: color.nineColors[i]
+          })
+        );
+      });
+      const layerGroup = L.layerGroup(curTopicPointsLayer);
+      controlLayer.addOverlay(layerGroup, `points for topic${i}`);
+    });
+  }, [mapPoints]);
 
   React.useEffect(() => {
     (async function addSamplingPoints() {
-      const res = await fetch("./ldbrPoints.json");
+      const res = await fetch(url.ldbrPointsURL);
       const data = await res.json();
       const layers: L.Layer[] = [];
       data.map((e: any) => {
         layers.push(
           L.circle(e, {
-            radius: 5,
+            radius: mapCircleRadius,
             color: color.mapPointColor
           })
         );
@@ -220,7 +240,16 @@ function Map(props: Props) {
       }
     };
     map.pm.addControls(options);
-    map.pm.enableDraw("Circle", drawOptions as any);
+    //map.pm.enableDraw("Circle", drawOptions as any);
+
+    map.on("pm:create", function(e1: any) {
+      const radius = e1.layer._radius;
+      const center: [number, number] = [
+        e1.layer._latlng.lat,
+        e1.layer._latlng.lng
+      ];
+      ifInside([110, 30], center, radius, map);
+    });
   }, []);
   return <div id="map" className="panel panel-default" />;
 }
@@ -231,3 +260,20 @@ export default connect(
 )(Map);
 
 async function fetchAndAddLayer() {}
+
+function ifInside(
+  p: [number, number],
+  c: [number, number],
+  r: number,
+  map: L.Map
+) {
+  const dis = Math.sqrt(
+    Math.pow(map.latLngToLayerPoint(p).x - map.latLngToLayerPoint(c).x, 2) +
+      Math.pow(map.latLngToLayerPoint(p).y - map.latLngToLayerPoint(c).y, 2)
+  );
+  if (dis <= r) {
+    return true;
+  } else {
+    return false;
+  }
+}

@@ -6,7 +6,7 @@ import Heading from "./Heading";
 import { setData, RIVER_DATA } from "../actions/setDataAction";
 import { connect } from "react-redux";
 import { fetchJsonData } from "src/shared";
-import { topicNumber } from "src/constants";
+import { topicNumber, url } from "src/constants";
 import { color } from "../constants";
 
 const mapState = (state: any) => {
@@ -26,7 +26,7 @@ interface Props {
 function River(props: Props) {
   const { riverData, curTopic, setData } = props;
   React.useEffect(() => {
-    fetchJsonData("./riverData.json").then(data => {
+    fetchJsonData(url.riverDataURL).then(data => {
       setData(RIVER_DATA, data);
     });
   }, []);

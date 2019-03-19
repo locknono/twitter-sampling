@@ -7,7 +7,8 @@ import {
   padding,
   scatterRadius,
   topicNumber,
-  pythonServerURL
+  pythonServerURL,
+  url
 } from "../constants";
 import { connect } from "react-redux";
 import { useWidthAndHeight } from "src/hooks/layoutHooks";
@@ -67,7 +68,7 @@ function LdaScatterCanvasCanvas(props: Props) {
   }, []);
 
   React.useEffect(() => {
-    fetchAndSetScatterData("./finalScatterPoints.json", setData);
+    fetchAndSetScatterData(url.scatterPointsURL, setData);
   }, []);
 
   React.useEffect(() => {
@@ -191,7 +192,7 @@ function LdaScatterCanvasCanvas(props: Props) {
     if (width && height && ctx) {
       const [xScale, yScale] = scales;
       (async function drawCenters() {
-        const res = await fetch("./scatterCenters.json");
+        const res = await fetch(url.scatterCentersURL);
         const centers: [number, number][] = await res.json();
         centers.map((e, i) => {
           const fiber = createFiber(() => {

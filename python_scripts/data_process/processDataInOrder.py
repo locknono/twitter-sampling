@@ -2,6 +2,7 @@ import os
 import time
 import g
 
+"""
 with open('./g.py', 'w', encoding='utf-8') as f:
     f.write('''
 import os
@@ -16,7 +17,7 @@ os.system('python ./split.py')
 os.system('python ./clean.py')
 os.system('python ./process.py')
 os.system('python ./process_filterShortText.py')
-
+"""
 os.system('python ./getLocation.py')
 os.system('python ./getFinalLocation.py')
 os.system('python ./getFinalLocationJsonFormat.py')
