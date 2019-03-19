@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import os
 from shared.lda_op import findMaxIndexAndValueForOneDoc
 
+
 if __name__ == '__main__':
     #with open(g.ldaDir + 'idLdaDict.json'.format(g.topicNumber), 'r', encoding='utf-8') as f:
     with open('../data/yelp/idLdaDict.json'.format(g.topicNumber), 'r', encoding='utf-8') as f:

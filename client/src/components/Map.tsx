@@ -85,6 +85,7 @@ function Map(props: Props) {
   React.useEffect(() => {
     if (!mapPoints) return;
     const allPointsLayer: L.Layer[] = [];
+    console.log("mapPoints: ", mapPoints);
     mapPoints.map(e => {
       allPointsLayer.push(
         L.circle(e, {

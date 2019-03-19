@@ -46,7 +46,6 @@ while True:
     else:
         doc_set.append(c[1])
 doc_set = [x.replace('\t\n', ' ').strip() for x in doc_set]
-print(len(doc_set))
 tokenizer = RegexpTokenizer(r'\w+')
 
 # create English stop words list
@@ -61,11 +60,9 @@ for i in extra_stopwords_file:
 en_stop_extra = [x.replace('\n', ' ').strip() for x in en_stop_extra]
 en_stop_extra = [x.replace("'", ' ').strip() for x in en_stop_extra]
 en_stop = en_stop + en_stop_extra
-print(en_stop)
 
 # Create p_stemmer of class PorterStemmer
 p_stemmer = PorterStemmer()
-print('stopwords is OK')
 '''# create sample documents
 doc_a = "Brocolli is good to eat. My brother likes to eat good brocolli, but not my mother."
 doc_b = "My mother spends a lot of time driving my brother around to baseball practice."
@@ -95,10 +92,8 @@ for j in doc_set:
 
 # turn our tokenized documents into a id <-> term dictionary
 dictionary = corpora.Dictionary(texts)
-print(len(texts))
 # convert tokenized documents into a document-term matrix
 corpus = [dictionary.doc2bow(text) for text in texts]
-print(len(corpus))
 # generate LDA model
 
 ldamodel = gensim.models.ldamodel.LdaModel(corpus, num_topics=g.topicNumber, alpha=ALPHA, eval_every=5,

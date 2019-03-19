@@ -41,7 +41,7 @@ vector_size={1}
 epochs={2}
         '''.format(fileSuffix, vertor_size, epochs))
         os.system('python ./runDoc2vec.py')
-        os.system('python ./runTsneForVec.py')
+        os.system('python ./runTsne.py')
         os.system('python ./runKmeans.py')
 
         """

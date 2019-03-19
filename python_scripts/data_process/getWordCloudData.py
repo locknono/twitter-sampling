@@ -3,18 +3,18 @@ import os
 import g
 import sys
 from shared.lda_op import findMaxIndexAndValueForOneDoc
-"""
+
 cwd = os.getcwd()
 wd = os.path.split(cwd)[0]
 os.chdir(wd)
-"""
+
 
 def sortByWordFrequncy(wordDict):
     sortedKList = sorted(wordDict.items(), key=lambda item: item[1], reverse=True)
     return sortedKList
 
 
-def getWordCloudData(ids):
+def getWordCloudData(ids=None):
     if not ids:
         areaFlag = False
     else:
@@ -38,6 +38,8 @@ def getWordCloudData(ids):
             if areaFlag == True:
                 if id not in ids:
                     continue
+            if len(line)<2:
+                continue
             text = line[1]
             maxIndex, maxValue = findMaxIndexAndValueForOneDoc(idLdaDict[id])
             for word in text.split(' '):

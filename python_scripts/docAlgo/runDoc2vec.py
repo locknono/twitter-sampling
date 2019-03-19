@@ -5,6 +5,25 @@ from gensim.test.utils import get_tmpfile
 import os
 import json
 
+
+# texts:string[][]
+# ids:string[]
+def runDoc2vec(texts, ids):
+    print('run doc2vec')
+    documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(texts)]
+    model = Doc2Vec(documents, vector_size=200, window=5, min_count=1, workers=4, epochs=400, negative=5, sample=1e-5)
+    model.delete_temporary_training_data(keep_doctags_vectors=True, keep_inference=True)
+    idVectorDict = {}
+    try:
+        for i, v in enumerate(model):
+            id = ids[i]
+            vector = v.tolist()
+            idVectorDict[id] = vector
+    except Exception as e:
+        pass
+    return idVectorDict
+
+
 if __name__ == '__main__':
     common_texts = []
     ids = []
@@ -17,18 +36,7 @@ if __name__ == '__main__':
             common_texts.append(words)
             ids.append(id)
 
-    documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(common_texts)]
-    model = Doc2Vec(documents, vector_size=200, window=5, min_count=1, workers=4, epochs=400, negative=5, sample=1e-5)
-    model.delete_temporary_training_data(keep_doctags_vectors=True, keep_inference=True)
-    print('doc2vec finish')
-    try:
-        idVectorDict = {}
-        for i, v in enumerate(model):
-            id = ids[i]
-            vector = v.tolist()
-            idVectorDict[id] = vector
-    except Exception as e:
-        pass
+    idVectorDict = runDoc2vec(texts=common_texts, ids=ids)
 
     try:
         os.mkdir(g.dataPath + 'LDA/')

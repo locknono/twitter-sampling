@@ -34,10 +34,10 @@ export namespace color {
 }
 
 export namespace url {
-  export const mapPointsURL = "./finalMapPoints.json";
+  export const mapPointsURL = "./mapPoints.json";
   export const ldbrPointsURL = "./ldbrPoints.json";
   export const riverDataURL = "./riverData.json";
-  export const scatterPointsURL = "./finalScatterPoints.json";
+  export const scatterPointsURL = "./scatterPoints.json";
   export const scatterCentersURL = "./scatterCenters.json";
   export const wordCloudDataURL = "./allWordCloudData.json";
   export const barDataURL = "./barData.json";
