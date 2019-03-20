@@ -21,10 +21,9 @@ def hello():
 @app.route("/selectArea", methods=['GET', 'POST'])
 def selectArea():
     ids = json.loads(request.data)
-    print(ids)
     renderData = getWordCloud(idTextDict, idClassDict, g.topicNumber, ids)
-    print(renderData)
     res = Response(json.dumps(renderData))
+    print(renderData)
     res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res
@@ -44,6 +43,15 @@ def getCoorsByIDs():
         res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
         return res
 
+
+@app.route("/getTextByID", methods=['GET', 'POST'])
+def getTextByID():
+    id = json.loads(request.data)
+    text = idTextDict[id]
+    res = Response(json.dumps(text))
+    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
+    return res
 
 if __name__ == '__main__':
     app.run(port=8000)

@@ -50,6 +50,11 @@ function Map(props: Props) {
     setSelectedIDs,
     systemName
   } = props;
+
+  const [
+    lastSelectedLayer,
+    setLastSelectedLayer
+  ] = React.useState<L.Layer | null>(null);
   const [map, setMap] = React.useState<L.Map | null>(null);
 
   const initialControlLayer = L.control.layers(undefined, undefined, {
@@ -90,27 +95,44 @@ function Map(props: Props) {
       });
       const layerGroup = L.layerGroup(layers).addTo(map);
       controlLayer.addOverlay(layerGroup, "selected points");
+      if (lastSelectedLayer) {
+        controlLayer.removeLayer(lastSelectedLayer);
+        map.removeLayer(lastSelectedLayer);
+      }
+      setLastSelectedLayer(layerGroup);
     })();
   }, [selectedIDs]);
 
   React.useEffect(() => {
     if (!mapPoints) return;
+    const allPoints: MapPoint[] = [];
+
     const pointsSet = new Set();
     mapPoints.map(e => {
-      pointsSet.add(`${e.lat}_${e.lng}`);
-    });
-    const allPoints: [number, number][] = [];
-    pointsSet.forEach(e => {
-      const lat = parseFloat(e.split("_")[0]);
-      const lng = parseFloat(e.split("_")[1]);
-      allPoints.push([lat, lng]);
+      const latlngStr = `${e.lat}_${e.lng}`;
+      if (pointsSet.has(latlngStr) === false) {
+        allPoints.push(e);
+        pointsSet.add(latlngStr);
+      }
     });
     const allPointsLayer: L.Layer[] = [];
     allPoints.map(e => {
+      const id = e.id;
       allPointsLayer.push(
         L.circle(e, {
           radius: mapCircleRadius,
           color: color.mapPointColor
+        }).on("mouseover", () => {
+          (async function fechText() {
+            const res = await fetch(pythonServerURL + "getTextByID", {
+              method: "POST",
+              mode: "cors",
+              cache: "no-cache",
+              body: JSON.stringify(id)
+            });
+            const text = await res.json();
+            //console.log("text: ", text);
+          })();
         })
       );
     });
@@ -186,7 +208,7 @@ function Map(props: Props) {
       heatmap.setData(data);
       controlLayer.addOverlay(heatmap, `heatmap-${i}`);
 
-     
+
       //const heatLayer = (L as any).heatLayer(data, { radius: 15 });
       //controlLayer.addOverlay(heatLayer, `heatmap-${i}`);
     });
@@ -210,9 +232,7 @@ function Map(props: Props) {
       map
     );
     setMap(map);
-    map.on("click", function(e) {
-      console.log("e: ", e);
-    });
+    map.on("click", function(e) {});
     controlLayer.addTo(map);
 
     const p1: [number, number] = [40.9328129198744, -74.32278448250146];
@@ -300,7 +320,6 @@ function Map(props: Props) {
   React.useEffect(() => {
     if (!map) return;
     if (systemName === "yelp") {
-      console.log("systemName: ", systemName);
       map.panTo([40.41433253092038, -79.9775848304853]);
     } else {
       map.panTo([40.74236688190866, -74.01489262003452]);
