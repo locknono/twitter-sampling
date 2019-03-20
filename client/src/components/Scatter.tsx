@@ -24,12 +24,13 @@ interface Props {
   ifDrawScatterCenters: boolean;
   setIfDrawCenters: typeof setIfDrawCenters;
   setSelectedIDs: typeof setSelectedIDs;
+  selectedIDs: string[];
 }
 
 const mapState = (state: any) => {
   const { scatterData } = state.dataTree;
-  const { curTopic, ifDrawScatterCenters } = state.uiState;
-  return { scatterData, curTopic, ifDrawScatterCenters };
+  const { curTopic, ifDrawScatterCenters, selectedIDs } = state.uiState;
+  return { scatterData, curTopic, ifDrawScatterCenters, selectedIDs };
 };
 const mapDispatch = {
   setData,
@@ -42,7 +43,8 @@ function LdaScatterCanvasCanvas(props: Props) {
     scatterData,
     curTopic,
     ifDrawScatterCenters,
-    setSelectedIDs
+    setSelectedIDs,
+    selectedIDs
   } = props;
   const [o1, setO1] = React.useState<[number, number] | null>(null);
   const [o2, setO2] = React.useState<[number, number] | null>(null);
@@ -213,6 +215,41 @@ function LdaScatterCanvasCanvas(props: Props) {
       })();
     }
   }, [scatterData, ifDrawScatterCenters, scales]);
+
+  //draw selected ids
+  React.useEffect(() => {
+    if (!ctx || !scatterData || !scales || selectedIDs.length === 0) {
+      return;
+    }
+    if (!width || !height) return;
+    const [xScale, yScale] = scales;
+    const selectedPoints: ScatterPoint[] = [];
+    selectedIDs.map(id => {
+      for (let i = 0; i < scatterData.length; i++) {
+        if (scatterData[i].id === id) {
+          selectedPoints.push(scatterData[i]);
+          break;
+        }
+      }
+    });
+    const fiber = createFiber(() => {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "black";
+      for (let i = 0; i < selectedPoints.length; i++) {
+        ctx.beginPath();
+        ctx.arc(
+          Math.floor(xScale(selectedPoints[i].x)),
+          Math.floor(yScale(selectedPoints[i].y)),
+          scatterRadius,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      }
+    }, 1);
+    updateQueue.push(fiber);
+    updateQueue.flush();
+  }, [selectedIDs]);
 
   function handleMouseDown(e: any) {
     const rect = e.target.getBoundingClientRect();

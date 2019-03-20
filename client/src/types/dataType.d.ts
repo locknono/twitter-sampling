@@ -29,3 +29,5 @@ interface CloudWord {
 }
 
 type CloudData = CloudWord[][];
+
+type SystemName = "yelp" | "twitter";

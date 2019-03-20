@@ -19,8 +19,8 @@ import { setSelectedIDs } from "../actions/setUIState";
 
 const mapState = (state: any) => {
   const { mapPoints } = state.dataTree;
-  const { curTopic, selectedIDs } = state.uiState;
-  return { mapPoints, curTopic, selectedIDs };
+  const { curTopic, selectedIDs, systemName } = state.uiState;
+  return { mapPoints, curTopic, selectedIDs, systemName };
 };
 const mapDispatch = {
   setData,
@@ -33,6 +33,7 @@ interface Props {
   curTopic: CurTopic;
   selectedIDs: string[];
   setSelectedIDs: typeof setSelectedIDs;
+  systemName: SystemName;
 }
 
 interface Map {
@@ -41,8 +42,14 @@ interface Map {
 }
 
 function Map(props: Props) {
-  const { mapPoints, setData, curTopic, selectedIDs, setSelectedIDs } = props;
-  console.log("mapPoints: ", mapPoints);
+  const {
+    mapPoints,
+    setData,
+    curTopic,
+    selectedIDs,
+    setSelectedIDs,
+    systemName
+  } = props;
   const [map, setMap] = React.useState<L.Map | null>(null);
 
   const initialControlLayer = L.control.layers(undefined, undefined, {
@@ -88,8 +95,18 @@ function Map(props: Props) {
 
   React.useEffect(() => {
     if (!mapPoints) return;
-    const allPointsLayer: L.Layer[] = [];
+    const pointsSet = new Set();
     mapPoints.map(e => {
+      pointsSet.add(`${e.lat}_${e.lng}`);
+    });
+    const allPoints: [number, number][] = [];
+    pointsSet.forEach(e => {
+      const lat = parseFloat(e.split("_")[0]);
+      const lng = parseFloat(e.split("_")[1]);
+      allPoints.push([lat, lng]);
+    });
+    const allPointsLayer: L.Layer[] = [];
+    allPoints.map(e => {
       allPointsLayer.push(
         L.circle(e, {
           radius: mapCircleRadius,
@@ -193,7 +210,9 @@ function Map(props: Props) {
       map
     );
     setMap(map);
-
+    map.on("click", function(e) {
+      console.log("e: ", e);
+    });
     controlLayer.addTo(map);
 
     const p1: [number, number] = [40.9328129198744, -74.32278448250146];
@@ -277,6 +296,16 @@ function Map(props: Props) {
       })(ids);
     });
   }, [mapPoints]);
+
+  React.useEffect(() => {
+    if (!map) return;
+    if (systemName === "yelp") {
+      console.log("systemName: ", systemName);
+      map.panTo([40.41433253092038, -79.9775848304853]);
+    } else {
+      map.panTo([40.74236688190866, -74.01489262003452]);
+    }
+  }, [systemName]);
   return <div id="map" className="panel panel-default" />;
 }
 

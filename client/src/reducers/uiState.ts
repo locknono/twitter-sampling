@@ -1,7 +1,9 @@
 import {
   SET_CUR_TOPIC,
   IF_DRAW_SCATTER_CENTERS,
-  SET_SELECTED_IDS
+  SET_SELECTED_IDS,
+  setCurSystem,
+  SET_CUR_SYSTEM
 } from "../actions/setUIState";
 
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
@@ -10,12 +12,14 @@ interface UIState {
   curTopic: CurTopic;
   ifDrawScatterCenters: boolean;
   selectedIDs: string[];
+  systemName: SystemName;
 }
 
 const initialState: UIState = {
   curTopic: undefined,
   ifDrawScatterCenters: false,
-  selectedIDs: []
+  selectedIDs: [],
+  systemName: "yelp"
 };
 
 export function uiState(state = initialState, action: any) {
@@ -28,6 +32,9 @@ export function uiState(state = initialState, action: any) {
       break;
     case SET_SELECTED_IDS:
       return { ...state, selectedIDs: action.ids };
+      break;
+    case SET_CUR_SYSTEM:
+      return { ...state, systemName: action.name };
       break;
     default:
       return state;
