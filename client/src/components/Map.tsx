@@ -12,9 +12,10 @@ import {
   topicNumber,
   mapCircleRadius
 } from "../constants";
-import { setData, MAP_POINTS } from "../actions/setDataAction";
+import { setData, MAP_POINTS, CLOUD_DATA } from "../actions/setDataAction";
 import { connect } from "react-redux";
 import "leaflet.pm";
+import { setSelectedIDs } from "../actions/setUIState";
 
 const mapState = (state: any) => {
   const { mapPoints } = state.dataTree;
@@ -22,7 +23,8 @@ const mapState = (state: any) => {
   return { mapPoints, curTopic, selectedIDs };
 };
 const mapDispatch = {
-  setData
+  setData,
+  setSelectedIDs
 };
 
 interface Props {
@@ -30,6 +32,7 @@ interface Props {
   setData: typeof setData;
   curTopic: CurTopic;
   selectedIDs: string[];
+  setSelectedIDs: typeof setSelectedIDs;
 }
 
 interface Map {
@@ -38,7 +41,8 @@ interface Map {
 }
 
 function Map(props: Props) {
-  const { mapPoints, setData, curTopic, selectedIDs } = props;
+  const { mapPoints, setData, curTopic, selectedIDs, setSelectedIDs } = props;
+  console.log("mapPoints: ", mapPoints);
   const [map, setMap] = React.useState<L.Map | null>(null);
 
   const initialControlLayer = L.control.layers(undefined, undefined, {
@@ -85,7 +89,6 @@ function Map(props: Props) {
   React.useEffect(() => {
     if (!mapPoints) return;
     const allPointsLayer: L.Layer[] = [];
-    console.log("mapPoints: ", mapPoints);
     mapPoints.map(e => {
       allPointsLayer.push(
         L.circle(e, {
@@ -242,16 +245,38 @@ function Map(props: Props) {
     };
     map.pm.addControls(options);
     //map.pm.enableDraw("Circle", drawOptions as any);
+  }, []);
 
+  React.useEffect(() => {
+    if (!map) return;
     map.on("pm:create", function(e1: any) {
+      if (!mapPoints) return;
       const radius = e1.layer._radius;
       const center: [number, number] = [
         e1.layer._latlng.lat,
         e1.layer._latlng.lng
       ];
-      ifInside([110, 30], center, radius, map);
+      const ids: string[] = [];
+      mapPoints.map(e => {
+        if (ifInside([e.lat, e.lng], center, radius, map)) {
+          ids.push(e.id);
+        }
+      });
+      setSelectedIDs(ids);
+
+      (async function setWordCloudDataWithSelectedIDs(ids: string[]) {
+        if (ids.length === 0) return;
+        const res = await fetch(pythonServerURL + "selectArea", {
+          method: "POST",
+          mode: "cors",
+          cache: "no-cache",
+          body: JSON.stringify(ids)
+        });
+        const data = await res.json();
+        setData(CLOUD_DATA, data);
+      })(ids);
     });
-  }, []);
+  }, [mapPoints]);
   return <div id="map" className="panel panel-default" />;
 }
 

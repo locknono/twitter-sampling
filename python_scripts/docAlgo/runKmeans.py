@@ -3,14 +3,14 @@ import g
 from sklearn.cluster import KMeans
 
 
-def runKmeans(idScatterData):
+def runKmeans(idScatterData,classCount):
     print('run kmeans')
     kmeansData = []
     idList = []
     for k in idScatterData:
         idList.append(k)
         kmeansData.append(idScatterData[k])
-    kmeans = KMeans(n_clusters=g.topicNumber, random_state=0).fit(kmeansData)
+    kmeans = KMeans(n_clusters=classCount, random_state=0).fit(kmeansData)
     classList = kmeans.labels_
 
     idClassDict = {}

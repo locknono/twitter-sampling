@@ -4,6 +4,8 @@ import {
   SET_SELECTED_IDS
 } from "../actions/setUIState";
 
+import { setData, CLOUD_DATA } from "../actions/setDataAction";
+import { pythonServerURL } from "../constants";
 interface UIState {
   curTopic: CurTopic;
   ifDrawScatterCenters: boolean;

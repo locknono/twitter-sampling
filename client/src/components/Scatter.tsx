@@ -249,16 +249,17 @@ function LdaScatterCanvasCanvas(props: Props) {
     }
     setSelectedIDs(ids);
 
-    fetch(pythonServerURL + "selectArea", {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      body: JSON.stringify(ids)
-    })
-      .then(res => res.json())
-      .then(data => {
-        setData(CLOUD_DATA, data);
+    (async function setWordCloudDataWithSelectedIDs(ids: string[]) {
+      if (ids.length === 0) return;
+      const res = await fetch(pythonServerURL + "selectArea", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        body: JSON.stringify(ids)
       });
+      const data = await res.json();
+      setData(CLOUD_DATA, data);
+    })(ids);
   }
 
   React.useEffect(() => {

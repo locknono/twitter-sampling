@@ -39,16 +39,20 @@ def sortByWordFrequncy(wordDict):
 
 
 # texts:string[]
-def getWordCloud(idTextDict, idClassDict, topicCount):
+def getWordCloud(idTextDict, idClassDict, topicCount, ids=None):
+    areaFlag = True
+    if ids == None:
+        areaFlag = False
     wordCloudData = []
     allCloudData = {}
     for i in range(topicCount):
         wordCloudData.append({})
-
-    for id in idTextDict:
-        text = idTextDict[id]
-        topic = idClassDict[id]
-
+    for tid in idTextDict:
+        if areaFlag == True:
+            if tid not in ids:
+                continue
+        text = idTextDict[tid]
+        topic = idClassDict[tid]
         for word in text.split(' '):
             if word in wordCloudData[topic]:
                 wordCloudData[topic][word] += 1

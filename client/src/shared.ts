@@ -1,3 +1,4 @@
+import { pythonServerURL } from "./constants";
 export async function fetchJsonData(url: string) {
   const res = await fetch(url);
   const data = await res.json();

@@ -4,14 +4,15 @@ from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from gensim.test.utils import get_tmpfile
 import os
 import json
-
+import logging
 
 # texts:string[][]
 # ids:string[]
-def runDoc2vec(texts, ids):
+def runDoc2vec(texts, ids,vectorSize,epochs):
     print('run doc2vec')
+    logging.basicConfig(format='%(asctime)s:%(levelname)s: %(message)s', level=logging.INFO)
     documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(texts)]
-    model = Doc2Vec(documents, vector_size=200, window=5, min_count=1, workers=4, epochs=400, negative=5, sample=1e-5)
+    model = Doc2Vec(documents, vector_size=vectorSize, window=5, min_count=1, workers=4, epochs=epochs, negative=5, sample=1e-5)
     model.delete_temporary_training_data(keep_doctags_vectors=True, keep_inference=True)
     idVectorDict = {}
     try:
