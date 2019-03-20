@@ -23,7 +23,6 @@ def selectArea():
     ids = json.loads(request.data)
     renderData = getWordCloud(idTextDict, idClassDict, g.topicNumber, ids)
     res = Response(json.dumps(renderData))
-    print(renderData)
     res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res

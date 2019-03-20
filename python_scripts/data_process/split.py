@@ -48,7 +48,6 @@ if __name__ == '__main__':
     cwd = os.getcwd()
     wd = os.path.split(cwd)[0]
     os.chdir(wd)
-
     try:
         os.mkdir(g.dataPath)
     except Exception as e:

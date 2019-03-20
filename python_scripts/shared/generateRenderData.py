@@ -25,11 +25,14 @@ def getScatterPoints(idScatterData, idClassDict):
 def getMapPoints(idLocationDict, idClassDict):
     points = []
     for id in idLocationDict:
-        lat = idLocationDict[id][0]
-        lng = idLocationDict[id][1]
-        topic = idClassDict[id]
-        point = {"id": id, "lat": lat, "lng": lng, "topic": topic}
-        points.append(point)
+        try:
+            lat = idLocationDict[id][0]
+            lng = idLocationDict[id][1]
+            topic = idClassDict[id]
+            point = {"id": id, "lat": lat, "lng": lng, "topic": topic}
+            points.append(point)
+        except Exception as e:
+            pass
     return points
 
 
@@ -52,18 +55,21 @@ def getWordCloud(idTextDict, idClassDict, topicCount, ids=None):
             if tid not in ids:
                 continue
         text = idTextDict[tid]
-        topic = idClassDict[tid]
-        for word in text.split(' '):
-            if word in wordCloudData[topic]:
-                wordCloudData[topic][word] += 1
-            else:
-                wordCloudData[topic][word] = 1
+        try:
+            topic = idClassDict[tid]
 
-            if word in allCloudData:
-                allCloudData[word] += 1
-            else:
-                allCloudData[word] = 1
+            for word in text.split(' '):
+                if word in wordCloudData[topic]:
+                    wordCloudData[topic][word] += 1
+                else:
+                    wordCloudData[topic][word] = 1
 
+                if word in allCloudData:
+                    allCloudData[word] += 1
+                else:
+                    allCloudData[word] = 1
+        except:
+            pass
     allKList = []
     for i, d in enumerate(wordCloudData):
         sortedKList = sortByWordFrequncy(d)

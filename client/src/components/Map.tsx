@@ -50,7 +50,6 @@ function Map(props: Props) {
     setSelectedIDs,
     systemName
   } = props;
-
   const [
     lastSelectedLayer,
     setLastSelectedLayer
@@ -76,6 +75,7 @@ function Map(props: Props) {
   //draw selected ids
   React.useEffect(() => {
     if (!map) return;
+
     (async function drawSelectedIDs() {
       const res = await fetch(pythonServerURL + "getCoorsByIDs", {
         method: "POST",

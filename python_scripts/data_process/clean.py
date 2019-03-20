@@ -16,7 +16,22 @@ def clean():
                 pass
     writeF = codecs.open(g.dataPath + 'cleanedData.txt', 'w', encoding='utf-8')  # 文件对应
     for i in range(len(tweets) - 1, 0, -1):
+
+
+        #repeat hashtag
+        tagPattern = r'#.+\s'
+        matches = re.findall(tagPattern, tweets[i][1])
+        if len(matches) > 0:
+            texts = matches[0]
+            words = texts.split(' ')
+            for word in words:
+                if word.startswith('#'):
+                    for i in range(5):
+                        tweets[i][1] += word.strip('#') + ' '
+
+
         tweets[i][1] = tweets[i][1].lower()
+
         tweets[i][1] = re.sub('http.+', '', tweets[i][1])
 
         tweets[i][1] = re.sub('new', '', tweets[i][1])

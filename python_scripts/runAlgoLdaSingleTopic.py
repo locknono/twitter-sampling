@@ -4,7 +4,7 @@ import re
 from docAlgo.runDoc2vec import runDoc2vec
 from docAlgo.runTsne import runTsne
 from docAlgo.runKmeans import runKmeans
-from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud
+from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud,readJsonFile
 
 if __name__ == '__main__':
     common_texts = []
@@ -34,18 +34,8 @@ if __name__ == '__main__':
     idScatterData = runTsne(idVectorDict)
     writeToJsonFile(idScatterData, g.dataPath + 'idScatterData.json')
     """
-    idClassDict = {}
-    with open(g.dataPath + 'LDALDA_document_to_topic_largest_NY_9(2).txt', 'r', encoding='utf-8') as f:
-        for line in f:
-            line = re.sub(', ', ',', line).strip('\n')
-            line = line.split('\t')
-            topic = json.loads(line[0])[0]
-            pro=json.loads(line[0])[1]
-            if pro <0.5:
-                continue
-            id = line[1]
-            idClassDict[id] = topic
 
+    idClassDict=readJsonFile(g.dataPath+ 'idClassDict.json')
     mapPoints = getMapPoints(idLocationDict, idClassDict)
     writeToJsonFile(mapPoints, g.dataPath + 'mapPoints.json')
     writeToJsonFile(mapPoints, '../client/public/mapPoints.json')
