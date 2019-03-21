@@ -16,21 +16,19 @@ def ifInNYC(lat, lng):
 
 
 def extractFromSingleFile(filePath):
-    truePoints = []
     with open(filePath, 'r', encoding='utf-8') as f:
-        writeF = codecs.open(g.dataPath + "extractedData.txt", 'a', encoding='utf-8')
-        for index, line in enumerate(f):
+        writeF = codecs.open(g.dataPath + "extractedData.txt", 'w', encoding='utf-8')
+        for index,line in enumerate(f):
             try:
                 line = line.split('\t')
-                textID = shortuuid.ShortUUID().random(length=8)
-                if line[6] !='true':
+                if line[6] != 'true':
                     continue
                 lat = float(line[5])
                 lng = float(line[4])
                 if (ifInNYC(lat, lng) == False):
                     continue
+                textID = shortuuid.ShortUUID().random(length=8)
                 trueFlag = True
-                truePoints.append([lat, lng])
                 text = line[1]
                 timeStamp = int(line[2][:10])
                 localTime = time.localtime(timeStamp)
@@ -48,6 +46,7 @@ if __name__ == '__main__':
     cwd = os.getcwd()
     wd = os.path.split(cwd)[0]
     os.chdir(wd)
+
     try:
         os.mkdir(g.dataPath)
     except Exception as e:

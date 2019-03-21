@@ -1,6 +1,7 @@
 
 import os
 import time
+
 dataDays = 1  # 15 + 1
 topicNumber = 9
 dataPath = '../data/vec/'

@@ -8,6 +8,7 @@ from nltk.stem import WordNetLemmatizer
 import g
 import os
 
+
 # 停用词获取
 def stopwords_get():
     stopwords = []
@@ -32,6 +33,7 @@ def filter_stopwords(centence):
         return "1"
     else:
         return out_centence
+
 
 # 词形还原
 def lemmatizer(strin):
@@ -87,8 +89,8 @@ def process():
     centence_output(out_centence)
     print("step3 success")
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     cwd = os.getcwd()
     wd = os.path.split(cwd)[0]
     os.chdir(wd)

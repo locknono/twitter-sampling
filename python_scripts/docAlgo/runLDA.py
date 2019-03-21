@@ -1,5 +1,5 @@
 from nltk.tokenize import RegexpTokenizer
-from nltk.corpus import stopwords
+from nltk.corpus import stopwords as nltkStopWords
 from nltk.stem.porter import PorterStemmer
 import gensim
 from gensim import corpora
@@ -12,13 +12,12 @@ import time
 import json
 import matplotlib.pyplot as plt
 
-print(stopwords)
 
 
 # texts:string[]
 # stopWords:string[]
 def runLDA(texts, ids):
-    stopwords = stopwords.words('english')
+    stopwords = nltkStopWords.words('english')
     extraStopWords = ['cant', 'im', 'ya', 'yall', 'dont', 'shit', 'ass', 'fuck', 'us', 'maybe', 'today', 'much', 'lol',
                       'omg', 'thank', 'love', 'ye', 'oh', 'u', 'lmao', 'yell', 'your', 'little', 'better', 'good',
                       'those',
@@ -28,7 +27,6 @@ def runLDA(texts, ids):
                       'se', 'por']
     for word in extraStopWords:
         stopwords.append(word)
-    print(stopwords)
 
     texts = [x.replace('\t\n', ' ').strip() for x in texts]
     tokenizer = RegexpTokenizer(r'\w+')
@@ -64,7 +62,12 @@ def runLDA(texts, ids):
     f = ldamodel.get_document_topics(corpus)
     idVectorDict = {}
     for index, item in enumerate(f):
+        vectorList = []
+        for i in range(g.topicNumber):
+            vectorList.append(0)
         id = ids[index]
         ldaList = json.loads(str(item).replace('(', '[').replace(')', ']'))
-        idVectorDict[id] = ldaList
+        for item in ldaList:
+            vectorList[item[0]] = item[1]
+        idVectorDict[id] = vectorList
     return idVectorDict

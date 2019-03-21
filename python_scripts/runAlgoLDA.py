@@ -13,7 +13,6 @@ if __name__ == '__main__':
     idTextDict = {}
 
     idLocationDict = readJsonFile(g.dataPath + 'finalIDLocation.json')
-    idVectorDict = readJsonFile(g.dataPath + 'idLdaDict.json')
 
     with open(g.dataPath + 'finalText.txt', 'r', encoding='utf-8')as f:
         for line in f:
@@ -32,7 +31,7 @@ if __name__ == '__main__':
     idScatterData = runTsne(idVectorDict)
     writeToJsonFile(idScatterData, g.dataPath + 'idScatterData.json')
 
-    idClassDict = runKmeans(idScatterData)
+    idClassDict = runKmeans(idScatterData,g.topicNumber)
     writeToJsonFile(idClassDict, g.dataPath + 'idClassDict.json')
 
     scatterPoints = getScatterPoints(idScatterData, idClassDict)

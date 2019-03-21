@@ -16,9 +16,8 @@ def clean():
                 pass
     writeF = codecs.open(g.dataPath + 'cleanedData.txt', 'w', encoding='utf-8')  # 文件对应
     for i in range(len(tweets) - 1, 0, -1):
-
-
         #repeat hashtag
+        """
         tagPattern = r'#.+\s'
         matches = re.findall(tagPattern, tweets[i][1])
         if len(matches) > 0:
@@ -26,21 +25,23 @@ def clean():
             words = texts.split(' ')
             for word in words:
                 if word.startswith('#'):
-                    for i in range(5):
-                        tweets[i][1] += word.strip('#') + ' '
-
+                    tweets[i][1] += ' '
+                    for i in range(3):
+                        appendWord = word + ' '
+                        tweets[i][1] += appendWord
+        """
 
         tweets[i][1] = tweets[i][1].lower()
 
         tweets[i][1] = re.sub('http.+', '', tweets[i][1])
 
-        tweets[i][1] = re.sub('new', '', tweets[i][1])
-        tweets[i][1] = re.sub('nyc?', '', tweets[i][1])
-        tweets[i][1] = re.sub('york', '', tweets[i][1])
-        tweets[i][1] = re.sub('nj', '', tweets[i][1])
-        tweets[i][1] = re.sub('de', '', tweets[i][1])
-        tweets[i][1] = re.sub('eb', '', tweets[i][1])
-        tweets[i][1] = re.sub('la', '', tweets[i][1])
+        tweets[i][1] = re.sub('new ', '', tweets[i][1])
+        tweets[i][1] = re.sub('nyc? ', '', tweets[i][1])
+        tweets[i][1] = re.sub('york ', '', tweets[i][1])
+        tweets[i][1] = re.sub('nj ', '', tweets[i][1])
+        tweets[i][1] = re.sub('de ', '', tweets[i][1])
+        tweets[i][1] = re.sub('eb ', '', tweets[i][1])
+        tweets[i][1] = re.sub('la ', '', tweets[i][1])
 
         tweets[i][1] = re.sub(u'[\U0001F100-\U0001F1FF]', '', tweets[i][1])
         tweets[i][1] = re.sub(u'[\U0001F300-\U0001F5FF]', '', tweets[i][1])
@@ -101,7 +102,7 @@ def clean():
         # 多空格换单空格
         tweets[i][1] = re.sub(" +", " ", tweets[i][1])
 
-        tweets[i][1] = re.sub('im', '', tweets[i][1])
+        tweets[i][1] = re.sub('im\s', '', tweets[i][1])
 
         writeF.write(
             tweets[i][0] + '\t' + tweets[i][1] + '\t' + tweets[i][2] + '\t' + tweets[i][3] + '\t' + tweets[i][4] +

@@ -13,7 +13,7 @@ os.system('python ./getFinalLocation.py')
 os.system('python ./getFinalLocationJsonFormat.py')
 
 os.chdir('../')
-os.system('python ./runAlgo.py')
+os.system('python ./runAlgoLDA.py')
 
 
 """
