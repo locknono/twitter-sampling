@@ -33,6 +33,10 @@ export namespace color {
   export const selectAreaColoe = "rgba(233, 233, 233, 0.7)";
 
   export const matrixBorderColor = "rgba(233, 233, 233, 0.5)";
+
+  export const matrixSameColor = "rgb(70,140,200)";
+
+  export const matrixDiffColor = "rgb(238,172,87)";
 }
 
 export namespace url {

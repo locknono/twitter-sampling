@@ -74,11 +74,17 @@ class Matrix extends React.Component<Props, State> {
     console.log("original: ", original);
 
     let matrixRects = [];
+    let topBars;
+    let leftBars;
     if (svgWidth && svgHeight && sampling.length > 0 && original.length > 0) {
-      const matriXStart = svgWidth * 0.3;
-      const matrixYStart = svgHeight * 0.3;
-      const matriXEnd = svgWidth * (1 - padding.barChartPadding / 0.2);
-      const matrixYEnd = svgHeight * (1 - padding.barChartPadding / 0.2);
+      const matriXStart = svgWidth * 0.2;
+      const matrixYStart = svgHeight * 0.2;
+      const matriXEnd = svgWidth * (1 - padding.barChartPadding / 2);
+      const matrixYEnd = svgHeight * (1 - padding.barChartPadding / 2);
+
+      const topBarStart = svgHeight * 0.05;
+      const leftBarStart = svgWidth * 0.05;
+
       const xStart = svgWidth * padding.barChartPadding;
       const xEnd = svgWidth * (1 - padding.barChartPadding);
       const y1Start = (svgHeight * padding.barChartPadding) / 2;
@@ -88,12 +94,40 @@ class Matrix extends React.Component<Props, State> {
       const xScale = d3
         .scaleBand()
         .domain(original.map((e, i) => i.toString()))
-        .range([matriXStart, matriXEnd]);
+        .range([matriXStart, matriXEnd])
+        .paddingInner(0.2);
 
       const yScale = d3
         .scaleBand()
         .domain(original.map((e, i) => i.toString()))
-        .range([matrixYStart, matrixYEnd]);
+        .range([matrixYStart, matrixYEnd])
+        .paddingInner(0.2);
+
+      const topBarScale = d3
+        .scaleLinear()
+        .domain([0, Math.max(...original)])
+        .range([matrixYStart, topBarStart]);
+
+      const leftBarScale = d3
+        .scaleLinear()
+        .domain([0, Math.max(...sampling)])
+        .range([matriXStart, leftBarStart]);
+
+      topBars = getBars(
+        original,
+        xScale,
+        topBarScale,
+        curTopic,
+        this.handleClick
+      );
+
+      leftBars = getLeftBars(
+        sampling,
+        leftBarScale,
+        yScale,
+        curTopic,
+        this.handleClick
+      );
 
       const r1 = getRelationList(original);
       const r2 = getRelationList(sampling);
@@ -101,7 +135,8 @@ class Matrix extends React.Component<Props, State> {
       for (let i = 0; i < r1.length; i++) {
         for (let j = 0; j < r1[i].length; j++) {
           const equalFlag = r1[i][j] === r2[i][j] ? true : false;
-          const fillColor = equalFlag === true ? "blue" : "red";
+          const fillColor =
+            equalFlag === true ? color.matrixSameColor : color.matrixDiffColor;
           const x = xScale(i.toString());
           const y = yScale(j.toString());
           matrixRects.push(
@@ -114,6 +149,8 @@ class Matrix extends React.Component<Props, State> {
               fill={fillColor}
               stroke={color.matrixBorderColor}
               strokeWidth={1}
+              rx={3}
+              ry={3}
             />
           );
         }
@@ -124,7 +161,13 @@ class Matrix extends React.Component<Props, State> {
         .range([y2End, y2Start]);
     }
 
-    return <svg id="matrix-svg">{matrixRects}</svg>;
+    return (
+      <svg id="matrix-svg">
+        {topBars}
+        {leftBars}
+        {matrixRects}
+      </svg>
+    );
   }
 }
 
@@ -148,6 +191,63 @@ function getRelationList(list: number[]) {
       }
     }
   }
-  console.log("ralationList: ", ralationList);
   return ralationList;
+}
+
+function getBars(
+  data: number[],
+  xScale: d3.ScaleBand<string>,
+  yScale: d3.ScaleLinear<number, number>,
+  curTopic: CurTopic,
+  clickFunc: Function
+) {
+  const rects = data.map((e, i) => {
+    const fillColor =
+      curTopic === undefined || curTopic !== i
+        ? color.originalBarColor
+        : color.brighterBarColor;
+    return (
+      <rect
+        key={e}
+        x={xScale(i.toString())}
+        y={yScale(e)}
+        width={xScale.bandwidth()}
+        height={yScale(0) - yScale(e)}
+        fill={fillColor}
+        onClick={() => clickFunc(i)}
+        rx={3}
+        ry={3}
+      />
+    );
+  });
+  return rects;
+}
+
+function getLeftBars(
+  data: number[],
+  xScale: d3.ScaleLinear<number, number>,
+  yScale: d3.ScaleBand<string>,
+  curTopic: CurTopic,
+  clickFunc: Function
+) {
+  const rects = data.map((e, i) => {
+    const fillColor =
+      curTopic === undefined || curTopic !== i
+        ? color.originalBarColor
+        : color.brighterBarColor;
+    return (
+      <rect
+        key={e}
+        x={xScale(e)}
+        y={yScale(i.toString())}
+        width={xScale(0) - xScale(e)}
+        height={yScale.bandwidth()}
+        fill={fillColor}
+        onClick={() => clickFunc(i)}
+        rx={3}
+        ry={3}
+      />
+    );
+  });
+  return rects;
 }
