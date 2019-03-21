@@ -84,11 +84,11 @@ countList = []
 outputPoints = []
 
 for t in range(30):
-    c = 0.05
+    c = 0.07
     originalEstimates = getOriginalEstimates(copy.deepcopy(points), g.topicNumber)
     saveBarChart(originalEstimates, g.dataPath + 'original.png')
 
-    estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.05, c, 0.001)
+    estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.05, c, 0.0005)
     if estimates == None:
         ratioList.append(None)
         countList.append(None)
@@ -104,9 +104,8 @@ for t in range(30):
                 randomCount += 1
     print(randomCount)
     samplingEstimates = getOriginalEstimates(samplingPoints, g.topicNumber)
-    # print('samplingEstimates:' + str(samplingEstimates))
+
     r1 = getRalationshipList(samplingEstimates)
-    # r1 = getRalationshipList(estimates)
 
     r2 = getRalationshipList(originalEstimates)
     print('originalEstimates:' + str(originalEstimates))

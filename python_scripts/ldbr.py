@@ -21,6 +21,7 @@ class Point:
         self.r = None
         self.timeR = None
         self.isDisk = False
+        self.isTimeDisk = False
         self.count = 0
         self.sampled = False
         self.diskIndices = []
@@ -69,7 +70,7 @@ def setRadius(point: Point, r: float, kde):
 
 def setTimeRadius(point: Point, r: float, kde):
     radius = r / kde(point.time)
-    print(radius)
+    # print(radius)
     point.timeR = radius
 
 
@@ -88,14 +89,19 @@ def drawOneSampleForOneGroup(points: List[Point], topic: int):
         randomTime += 1
         randomPoint = allFitsPoints[random.randint(0, len(allFitsPoints) - 1)]
         for p in points:
-            if p == randomPoint or p.isDisk == False:
+            if p == randomPoint or p.isDisk == False or p.isTimeDisk == False:
                 continue
             dis = getGeoDistance(p, randomPoint)
             if dis <= p.r or dis <= randomPoint.r:
                 break
+
+            timeDis = math.fabs(p.time - randomPoint.time)
+            if timeDis < p.timeR or timeDis <= randomPoint.timeR:
+                break
         else:
             randomPoint.sampled = True
             randomPoint.isDisk = True
+            randomPoint.isTimeDisk = True
             samplePoint = randomPoint
             return samplePoint
         if randomTime >= 3:

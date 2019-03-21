@@ -28,7 +28,7 @@ def clean():
             if tag in tagDict:
                 tagDict[tag] += 1
             else:
-                tagDict[tag] = 0
+                tagDict[tag] = 1
 
             tweets[i][1] += ' '
             for time in range(10):
@@ -115,7 +115,7 @@ def clean():
             '\t\n')
 
     with open(g.dataPath + 'tags.json', 'w', encoding='utf-8') as tagF:
-        tagF.write(json.dumps(list(tagDict)))
+        tagF.write(json.dumps(tagDict))
 if __name__ == '__main__':
     print('clean text')
     cwd = os.getcwd()
