@@ -43,7 +43,6 @@ def saveProbablityBarChart(topicProbabilityDict, fileName):
         *xpos* indicates which side to place the text w.r.t. the center of
         the bar. It can be one of the following {'center', 'right', 'left'}.
         """
-
         xpos = xpos.lower()  # normalize the case of the parameter
         ha = {'center': 'center', 'right': 'left', 'left': 'right'}
         offset = {'center': 0.5, 'right': 0.57, 'left': 0.43}  # x_txt = x + w*off

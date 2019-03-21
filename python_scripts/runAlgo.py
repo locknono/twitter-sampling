@@ -3,7 +3,8 @@ import g
 from docAlgo.runDoc2vec import runDoc2vec
 from docAlgo.runTsne import runTsne
 from docAlgo.runKmeans import runKmeans
-from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile
+from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile, \
+    getHexes
 import os
 
 if __name__ == '__main__':
@@ -57,3 +58,8 @@ if __name__ == '__main__':
     cloudData = getWordCloud(idTextDict, idClassDict, g.topicNumber)
     writeToJsonFile(cloudData, docResultDir + 'allWordCloudData.json')
     writeToJsonFile(cloudData, '../client/public/allWordCloudData.json')
+
+    oneDimensionHexes = getHexes([[40.9328129198744, -74.32278448250146], [40.49040846908216, -73.73446653597058]],
+                                 idLocationDict)
+    writeToJsonFile(oneDimensionHexes, g.dataPath + 'hex.json')
+    writeToJsonFile(oneDimensionHexes, '../client/public/hex.json')

@@ -325,6 +325,41 @@ function Map(props: Props) {
       map.panTo([40.74236688190866, -74.01489262003452]);
     }
   }, [systemName]);
+
+  React.useEffect(() => {
+    (async function addSamplingPoints() {
+      const res = await fetch(url.hexURL);
+      const data = await res.json();
+      const layers: L.Layer[] = [];
+      const minvalue = d3.min(data, function(e: any) {
+        return e.value as number;
+      }) as number;
+      console.log("minvalue: ", minvalue);
+      const maxValue = d3.max(data, function(e: any) {
+        return e.value as number;
+      }) as number;
+      const logFunc = Math.floor;
+      const valueScale = d3
+        .scaleLinear()
+        .domain([logFunc(minvalue), logFunc(maxValue)])
+        .range([0, 1]);
+
+      data.map((e: any) => {
+        if (e.value === 0) {
+          return;
+        }
+        layers.push(
+          L.polygon(e.path, {
+            stroke: false,
+            fillColor: color.hexColorScale(valueScale(logFunc(e.value))),
+            fillOpacity: 0.8
+          })
+        );
+      });
+      const layerGroup = L.layerGroup(layers);
+      controlLayer.addOverlay(layerGroup, "original hex");
+    })();
+  }, []);
   return <div id="map" className="panel panel-default" />;
 }
 

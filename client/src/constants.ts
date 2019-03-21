@@ -37,6 +37,8 @@ export namespace color {
   export const matrixSameColor = "rgb(70,140,200)";
 
   export const matrixDiffColor = "rgb(238,172,87)";
+
+  export const hexColorScale = d3.interpolateYlOrRd;
 }
 
 export namespace url {
@@ -47,6 +49,7 @@ export namespace url {
   export const scatterCentersURL = "./scatterCenters.json";
   export const wordCloudDataURL = "./allWordCloudData.json";
   export const barDataURL = "./barData.json";
+  export const hexURL = "./hex.json";
 }
 
 export const scatterRadius = 1.5;

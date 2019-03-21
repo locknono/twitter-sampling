@@ -16,7 +16,7 @@ def clean():
                 pass
     writeF = codecs.open(g.dataPath + 'cleanedData.txt', 'w', encoding='utf-8')  # 文件对应
 
-    tagSet = set()
+    tagDict = {}
     tagPattern = re.compile(r'#.+?\s')
     for i in range(len(tweets) - 1, -1, -1):
         tweets[i][1] = tweets[i][1].lower()
@@ -25,20 +25,16 @@ def clean():
 
 
         for tag in matches:
-            tagSet.add(tag)
+            if tag in tagDict:
+                tagDict[tag] += 1
+            else:
+                tagDict[tag] = 0
+
             tweets[i][1] += ' '
             for time in range(10):
                 tweets[i][1] += tag
 
         tweets[i][1] = re.sub('http.+', ' ', tweets[i][1])
-
-        tweets[i][1] = re.sub('new ', ' ', tweets[i][1])
-        tweets[i][1] = re.sub('nyc? ', ' ', tweets[i][1])
-        tweets[i][1] = re.sub('york ', ' ', tweets[i][1])
-        tweets[i][1] = re.sub('nj ', ' ', tweets[i][1])
-        tweets[i][1] = re.sub('de ', ' ', tweets[i][1])
-        tweets[i][1] = re.sub('eb ', ' ', tweets[i][1])
-        tweets[i][1] = re.sub('la ', ' ', tweets[i][1])
 
         tweets[i][1] = re.sub(u'[\U0001F100-\U0001F1FF]', '', tweets[i][1])
         tweets[i][1] = re.sub(u'[\U0001F300-\U0001F5FF]', '', tweets[i][1])
@@ -99,15 +95,27 @@ def clean():
 
         tweets[i][1] = re.sub('im\s', ' ', tweets[i][1])
 
+        tweets[i][1] = re.sub('new ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('nyc? ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('york ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('nj ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('de ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('eb ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('la ', ' ', tweets[i][1])
+
         # 多空格换单空格
         tweets[i][1] = re.sub(" +", " ", tweets[i][1])
+
+        tweets[i][1] = re.sub('ny ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('york ', ' ', tweets[i][1])
+
 
         writeF.write(
             tweets[i][0] + '\t' + tweets[i][1] + '\t' + tweets[i][2] + '\t' + tweets[i][3] + '\t' + tweets[i][4] +
             '\t\n')
 
     with open(g.dataPath + 'tags.json', 'w', encoding='utf-8') as tagF:
-        tagF.write(json.dumps(list(tagSet)))
+        tagF.write(json.dumps(list(tagDict)))
 if __name__ == '__main__':
 
     cwd = os.getcwd()
