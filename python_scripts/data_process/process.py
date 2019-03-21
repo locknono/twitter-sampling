@@ -91,6 +91,7 @@ def process():
 
 
 if __name__ == '__main__':
+    print('process text')
     cwd = os.getcwd()
     wd = os.path.split(cwd)[0]
     os.chdir(wd)

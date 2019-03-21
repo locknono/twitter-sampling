@@ -117,7 +117,7 @@ def clean():
     with open(g.dataPath + 'tags.json', 'w', encoding='utf-8') as tagF:
         tagF.write(json.dumps(list(tagDict)))
 if __name__ == '__main__':
-
+    print('clean text')
     cwd = os.getcwd()
     wd = os.path.split(cwd)[0]
     os.chdir(wd)

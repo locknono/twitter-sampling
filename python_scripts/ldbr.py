@@ -9,12 +9,13 @@ import json
 # one sample for one disk ,starts from the fewest count
 
 class Point:
-    def __init__(self, id, lat, lng, value, topic):
+    def __init__(self, id, lat, lng, value, topic, time):
         self.id = id
         self.lat = lat
         self.lng = lng
         self.value = value
         self.topic = topic
+        self.time = time
         self.kdeValue = None
         self.covered = False
         self.r = None
@@ -52,8 +53,30 @@ def getKDE(points: List[Point]):
     return kde
 
 
+def getTimeKDE(points: List[Point]):
+    timeCountDict = {}
+    for p in points:
+        if p.time in timeCountDict:
+            timeCountDict[p.time] += 1
+        else:
+            timeCountDict = 1
+    allTime = []
+    allValue = []
+    for k in timeCountDict:
+        allTime.append(k)
+        allValue.append(timeCountDict[k])
+    dataForKDE = np.vstack([allTime, allValue])
+    kde = stats.gaussian_kde(dataForKDE)
+    return kde
+
+
 def setRadius(point: Point, r: float, kde):
     radius = r / kde([point.lat, point.lng])[0]
+    point.r = radius
+
+
+def setTimeRadius(point: Point, r: float, kde):
+    radius = r / kde([point.time, 1])[0]
     point.r = radius
 
 
@@ -141,10 +164,12 @@ def ifActive(estimates: List[float], topic: int, epsilon: float, A: List[int]):
     """
 
 
-def ldbr(points: List[Point], k: int, r: float, delta: float, c: float):
+def ldbr(points: List[Point], k: int, r: float, delta: float, c: float, timeR: float):
+    timeKDE = getTimeKDE(points)
     kde = getKDE(points)
     for p in points:
         setRadius(p, r, kde)
+        setTimeRadius(p, timeR, timeKDE)
     A = []
     print('set all radius')
     sampleGroups: List[List[Point]] = []

@@ -11,6 +11,7 @@ import random
 from blueRapidEstimate import getRalationshipList, compareRelationshipList
 import copy
 from shared.lda_op import fetchIDLdaDict, findMaxIndexAndValueForOneDoc, showBarChart, saveBarChart
+from shared.generateRenderData import readJsonFile, writeToJsonFile
 import g
 import os
 from sklearn.cluster import KMeans
@@ -30,47 +31,51 @@ def getOriginalEstimates(points: List[Point], topicCount: int):
         estimates[i] = estimates[i] / counts[i]
     return estimates
 
+
 idLocationDict = None
 scatterData = None
 scatterPoints = None
 with open(g.dataPath + 'finalIDLocation.json', 'r', encoding='utf-8') as f:
     idLocationDict = json.loads(f.read())
-with open(g.ldaDir + 'scatterData.json', 'r', encoding='utf-8') as f:
-    scatterData = json.loads(f.read())
-with open(g.ldaDir + 'scatterPoints.json', 'r', encoding='utf-8') as f:
+with open(g.dataPath + 'scatterPoints.json', 'r', encoding='utf-8') as f:
     scatterPoints = json.loads(f.read())
 
-centers = []
-for index, group in enumerate(scatterPoints):
-    centers.append([0, 0])
-    for p in group:
-        centers[index][0] += p[0]
-        centers[index][1] += p[1]
-    centers[index][0] = centers[index][0] / len(group)
-    centers[index][1] = centers[index][1] / len(group)
-idLdaDict = fetchIDLdaDict(g.ldaDir + 'idLdaDict.json')
+centers = [[0, 0] for i in range(g.topicNumber)]
+topicCounts = [0 for i in range(g.topicNumber)]
+for index, p in enumerate(scatterPoints):
+    topic = p['topic']
+    centers[topic][0] += p['x']
+    centers[topic][1] += p['y']
+    topicCounts[topic] += 1
+for i in range(g.topicNumber):
+    centers[i][0] = centers[i][0] / topicCounts[i]
+    centers[i][1] = centers[i][1] / topicCounts[i]
+
+idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
+idTimeDict = readJsonFile(g.dataPath + 'idTimeDict.json')
 
 minDis = 999999
 maxDis = -1
-for k in idLdaDict:
-    topic, maxV = findMaxIndexAndValueForOneDoc(idLdaDict[k])
-    x = scatterData[k][0]
-    y = scatterData[k][1]
+for p in scatterPoints:
+    topic = p['topic']
+    x = p['x']
+    y = p['y']
     dis = math.sqrt(math.pow(x - centers[topic][0], 2) + math.pow(y - centers[topic][1], 2))
     if dis < minDis:
         minDis = dis
     if dis > maxDis:
         maxDis = dis
 
-
 points = []
-for k in idLdaDict:
-    topic, maxV = findMaxIndexAndValueForOneDoc(idLdaDict[k])
-    x = scatterData[k][0]
-    y = scatterData[k][1]
+for p in scatterPoints:
+    id = p['id']
+    time = idTimeDict[id]
+    topic = p['topic']
+    x = p['x']
+    y = p['y']
     dis = math.sqrt(math.pow(x - centers[topic][0], 2) + math.pow(y - centers[topic][1], 2))
     dis = (dis - minDis) / (maxDis - minDis)
-    p = Point(k, idLocationDict[k][0], idLocationDict[k][1], dis, topic)
+    p = Point(p['id'], idLocationDict[p['id']][0], idLocationDict[p['id']][1], dis, topic, time)
     points.append(p)
 print('all points ready')
 
@@ -81,9 +86,9 @@ outputPoints = []
 for t in range(30):
     c = 0.05
     originalEstimates = getOriginalEstimates(copy.deepcopy(points), g.topicNumber)
-    saveBarChart(originalEstimates, g.ldaDir + 'original.png')
+    saveBarChart(originalEstimates, g.dataPath + 'original.png')
 
-    estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.05, c)
+    estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.05, c,5)
     if estimates == None:
         ratioList.append(None)
         countList.append(None)
@@ -129,18 +134,18 @@ for t in range(30):
             outputPoints.append(outputP)
 
     try:
-        os.mkdir(g.ldaDir + 'ldbrResult/')
+        os.mkdir(g.dataPath + 'ldbrResult/')
     except Exception as e:
         pass
 
-    with open(g.ldaDir + 'ldbrResult/ldbrPoints-{0}-{1}.json'.format(count, ratio), 'w', encoding='utf-8') as f:
+    with open(g.dataPath + 'ldbrResult/ldbrPoints-{0}-{1}.json'.format(count, ratio), 'w', encoding='utf-8') as f:
         f.write(json.dumps(outputPoints))
     with open('../client/public/ldbrPoints.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(outputPoints))
 
     barData = {"original": originalEstimates, "sampling": samplingEstimates}
 
-    with open(g.ldaDir + 'ldbrResult/barData-{0}-{1}.json'.format(count, ratio), 'w', encoding='utf-8') as f:
+    with open(g.dataPath + 'ldbrResult/barData-{0}-{1}.json'.format(count, ratio), 'w', encoding='utf-8') as f:
         f.write(json.dumps(barData))
     with open('../client/public/barData.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(barData))

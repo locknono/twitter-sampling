@@ -6,6 +6,8 @@ from multiprocessing import Pool
 import random
 import os
 import json
+import math
+
 
 def ifInNYC(lat, lng):
     if lng < -74.21813964843751 or lng > -73.73446653597058:
@@ -18,7 +20,7 @@ def ifInNYC(lat, lng):
 def extractFromSingleFile(filePath):
     with open(filePath, 'r', encoding='utf-8') as f:
         writeF = codecs.open(g.dataPath + "extractedData.txt", 'w', encoding='utf-8')
-        for index,line in enumerate(f):
+        for index, line in enumerate(f):
             try:
                 line = line.split('\t')
                 if line[6] != 'true':
@@ -30,12 +32,16 @@ def extractFromSingleFile(filePath):
                 textID = shortuuid.ShortUUID().random(length=8)
                 trueFlag = True
                 text = line[1]
+                fullTimeStamp = line[2]
+                minuteTime = line[2][:7]
+
                 timeStamp = int(line[2][:10])
                 localTime = time.localtime(timeStamp)
                 formatedTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)
+                minute = math.floor(timeStamp / 60)
                 writeF.write(
                     textID + '\t' + text + '\t' + formatedTime + '\t' + str(lat) + '\t' + str(lng) + '\t' +
-                    str(trueFlag) + '\t\n')
+                    str(minute) + '\t\n')
             except IndexError as indexErr:
                 pass
             except ValueError as valueErr:
