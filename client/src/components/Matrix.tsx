@@ -139,11 +139,14 @@ class Matrix extends React.Component<Props, State> {
             equalFlag === true ? color.matrixSameColor : color.matrixDiffColor;
           const x = xScale(i.toString());
           const y = yScale(j.toString());
+          const width = xScale.bandwidth();
+          const height = yScale.bandwidth();
           matrixRects.push(
             <rect
+              className="matrix-rects"
               key={`${x}-${y}-${fillColor}`}
-              width={xScale.bandwidth()}
-              height={yScale.bandwidth()}
+              width={width}
+              height={height}
               x={x}
               y={y}
               fill={fillColor}
