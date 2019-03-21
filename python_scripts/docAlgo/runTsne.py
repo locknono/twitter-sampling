@@ -8,7 +8,6 @@ from shared.lda_op import findMaxIndexAndValueForOneDoc
 
 
 def runTsne(idVectorDict):
-    print(idVectorDict)
     print('run tsne')
     idScatterData = {}
     tsneData = []
@@ -20,6 +19,7 @@ def runTsne(idVectorDict):
     X_embedded = TSNE(n_components=2).fit_transform(X)
     for i, v in enumerate(X_embedded):
         idScatterData[ids[i]] = v.tolist()
+    plt.figure(figsize=(15, 15))
     plt.scatter(X_embedded[:, 0], X_embedded[:, 1])
     plt.savefig(g.dataPath + 'scatter.png')
     plt.savefig('../client/public/scatter.png')
@@ -28,6 +28,7 @@ def runTsne(idVectorDict):
 
 
 if __name__ == '__main__':
+
     with open(g.docDir + 'idLdaDict.json'.format(g.topicNumber), 'r', encoding='utf-8') as f:
         idLdaDict = json.loads(f.read())
         idScatterData = runTsne(idLdaDict)

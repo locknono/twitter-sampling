@@ -8,7 +8,7 @@ import Scatter from "./components/Scatter";
 import WordCloud from "./components/WordCloud";
 import River from "./components/River";
 import BarChart from "./components/BarChart";
-
+import Matrix from "./components/Matrix";
 class App extends React.Component {
   public render() {
     return (
@@ -32,7 +32,7 @@ class App extends React.Component {
 
           <div className="barchart-div panel panel-default">
             <Heading title="LDA" />
-            <BarChart />
+            <Matrix />
           </div>
         </div>
       </div>

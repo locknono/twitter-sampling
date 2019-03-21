@@ -61,8 +61,8 @@ class Matrix extends React.Component<Props, State> {
       setData("SAMPLING_BARDATA", data.sampling);
     });
 
-    const svgWidth = parseFloat(d3.select("#barchart-svg").style("width"));
-    const svgHeight = parseFloat(d3.select("#barchart-svg").style("height"));
+    const svgWidth = parseFloat(d3.select("#matrix-svg").style("width"));
+    const svgHeight = parseFloat(d3.select("#matrix-svg").style("height"));
 
     this.setState({ svgWidth, svgHeight });
   }
@@ -70,11 +70,15 @@ class Matrix extends React.Component<Props, State> {
   render() {
     const { svgHeight, svgWidth } = this.state;
     const { original, sampling, curTopic } = this.props;
+    console.log("sampling: ", sampling);
+    console.log("original: ", original);
 
-    let originalBars = null,
-      samplingBars = null;
-
-    if (svgWidth && svgHeight) {
+    let matrixRects = [];
+    if (svgWidth && svgHeight && sampling.length > 0 && original.length > 0) {
+      const matriXStart = svgWidth * 0.3;
+      const matrixYStart = svgHeight * 0.3;
+      const matriXEnd = svgWidth * (1 - padding.barChartPadding / 0.2);
+      const matrixYEnd = svgHeight * (1 - padding.barChartPadding / 0.2);
       const xStart = svgWidth * padding.barChartPadding;
       const xEnd = svgWidth * (1 - padding.barChartPadding);
       const y1Start = (svgHeight * padding.barChartPadding) / 2;
@@ -84,26 +88,43 @@ class Matrix extends React.Component<Props, State> {
       const xScale = d3
         .scaleBand()
         .domain(original.map((e, i) => i.toString()))
-        .range([xStart, xEnd])
-        .paddingInner(0.3);
+        .range([matriXStart, matriXEnd]);
 
       const yScale = d3
-        .scaleLinear()
-        .domain([0, Math.max(...original)])
-        .range([y1End, y1Start]);
+        .scaleBand()
+        .domain(original.map((e, i) => i.toString()))
+        .range([matrixYStart, matrixYEnd]);
 
+      const r1 = getRelationList(original);
+      const r2 = getRelationList(sampling);
+
+      for (let i = 0; i < r1.length; i++) {
+        for (let j = 0; j < r1[i].length; j++) {
+          const equalFlag = r1[i][j] === r2[i][j] ? true : false;
+          const fillColor = equalFlag === true ? "blue" : "red";
+          const x = xScale(i.toString());
+          const y = yScale(j.toString());
+          matrixRects.push(
+            <rect
+              key={`${x}-${y}-${fillColor}`}
+              width={xScale.bandwidth()}
+              height={yScale.bandwidth()}
+              x={x}
+              y={y}
+              fill={fillColor}
+              stroke={color.matrixBorderColor}
+              strokeWidth={1}
+            />
+          );
+        }
+      }
       const yScaleForSampling = d3
         .scaleLinear()
         .domain([0, Math.max(...sampling)])
         .range([y2End, y2Start]);
     }
 
-    return (
-      <svg id="matrix-svg">
-        {originalBars}
-        {samplingBars}
-      </svg>
-    );
+    return <svg id="matrix-svg">{matrixRects}</svg>;
   }
 }
 
@@ -111,3 +132,22 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(Matrix);
+
+function getRelationList(list: number[]) {
+  const ralationList: number[][] = [];
+  for (let i = 0; i < list.length; i++) {
+    ralationList.push([]);
+    for (let j = 0; j < list.length; j++) {
+      if (list[i] > list[j]) {
+        ralationList[i][j] = 1;
+      } else if (list[i] === list[j]) {
+        ralationList[i][j] = 0;
+      }
+      if (list[i] < list[j]) {
+        ralationList[i][j] = -1;
+      }
+    }
+  }
+  console.log("ralationList: ", ralationList);
+  return ralationList;
+}

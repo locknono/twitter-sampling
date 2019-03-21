@@ -116,6 +116,9 @@
 #barchart-svg {
   flex: 1 1 auto;
 }
+#matrix-svg {
+  flex: 1 1 auto;
+}
 @keyframes slideIn {
   from {
     height: 0%;

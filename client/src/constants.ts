@@ -31,6 +31,8 @@ export namespace color {
   export const mapPointColor = "black";
 
   export const selectAreaColoe = "rgba(233, 233, 233, 0.7)";
+
+  export const matrixBorderColor = "rgba(233, 233, 233, 0.5)";
 }
 
 export namespace url {

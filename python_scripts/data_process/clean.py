@@ -3,7 +3,7 @@ import codecs
 import re
 import g
 import os
-
+import json
 
 def clean():
     tweets = []
@@ -15,33 +15,30 @@ def clean():
             except:
                 pass
     writeF = codecs.open(g.dataPath + 'cleanedData.txt', 'w', encoding='utf-8')  # 文件对应
-    for i in range(len(tweets) - 1, 0, -1):
-        #repeat hashtag
-        """
-        tagPattern = r'#.+\s'
-        matches = re.findall(tagPattern, tweets[i][1])
-        if len(matches) > 0:
-            texts = matches[0]
-            words = texts.split(' ')
-            for word in words:
-                if word.startswith('#'):
-                    tweets[i][1] += ' '
-                    for i in range(3):
-                        appendWord = word + ' '
-                        tweets[i][1] += appendWord
-        """
 
+    tagSet = set()
+    tagPattern = re.compile(r'#.+?\s')
+    for i in range(len(tweets) - 1, -1, -1):
         tweets[i][1] = tweets[i][1].lower()
+        #repeat hashtag
+        matches = re.findall(tagPattern, tweets[i][1])
 
-        tweets[i][1] = re.sub('http.+', '', tweets[i][1])
 
-        tweets[i][1] = re.sub('new ', '', tweets[i][1])
-        tweets[i][1] = re.sub('nyc? ', '', tweets[i][1])
-        tweets[i][1] = re.sub('york ', '', tweets[i][1])
-        tweets[i][1] = re.sub('nj ', '', tweets[i][1])
-        tweets[i][1] = re.sub('de ', '', tweets[i][1])
-        tweets[i][1] = re.sub('eb ', '', tweets[i][1])
-        tweets[i][1] = re.sub('la ', '', tweets[i][1])
+        for tag in matches:
+            tagSet.add(tag)
+            tweets[i][1] += ' '
+            for time in range(10):
+                tweets[i][1] += tag
+
+        tweets[i][1] = re.sub('http.+', ' ', tweets[i][1])
+
+        tweets[i][1] = re.sub('new ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('nyc? ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('york ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('nj ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('de ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('eb ', ' ', tweets[i][1])
+        tweets[i][1] = re.sub('la ', ' ', tweets[i][1])
 
         tweets[i][1] = re.sub(u'[\U0001F100-\U0001F1FF]', '', tweets[i][1])
         tweets[i][1] = re.sub(u'[\U0001F300-\U0001F5FF]', '', tweets[i][1])
@@ -68,9 +65,9 @@ def clean():
         tweets[i][1] = re.sub(u'[\U00001100-\U000011FF]', '', tweets[i][1])
         tweets[i][1] = re.sub(u'[\U00003130-\U0000318F]', '', tweets[i][1])
         # 阿拉伯语
-        tweets[i][1] = re.sub(u'[\U00000600-\U000006FF]', '', tweets[i][1])
+        tweets[i][1] = re.sub(u'[\U00000600-\U000006FF]', ' ', tweets[i][1])
         # 西语
-        tweets[i][1] = re.sub(u'[\U00000080-\U000000FF]', '', tweets[i][1])
+        tweets[i][1] = re.sub(u'[\U00000080-\U000000FF]', ' ', tweets[i][1])
         # 过滤标点符号
         tweets[i][1] = re.sub("[\sa-zA-Z0-9’!$%&\(〜)*+,./／:;；十：（<=>?@，。?★、…【】）《＜＞》？“”‘’！[\\]^_`{|}~～＂「—]@", " ",
                               tweets[i][1])
@@ -94,19 +91,23 @@ def clean():
         # 梵文
         tweets[i][1] = re.sub(u'[\U00000900-\U0000097F]', '', tweets[i][1])
         # @没去掉重新去一哈
-        tweets[i][1] = re.sub(u'[\U00000040]', '', tweets[i][1])
+        tweets[i][1] = re.sub(u'[\U00000040]', ' ', tweets[i][1])
         # -换单空格
         tweets[i][1] = re.sub(u'[\U0000002D]', ' ', tweets[i][1])
         # '换空格
-        tweets[i][1] = re.sub(u'[\U00000027]', '', tweets[i][1])
+        tweets[i][1] = re.sub(u'[\U00000027]', ' ', tweets[i][1])
+
+        tweets[i][1] = re.sub('im\s', ' ', tweets[i][1])
+
         # 多空格换单空格
         tweets[i][1] = re.sub(" +", " ", tweets[i][1])
-
-        tweets[i][1] = re.sub('im\s', '', tweets[i][1])
 
         writeF.write(
             tweets[i][0] + '\t' + tweets[i][1] + '\t' + tweets[i][2] + '\t' + tweets[i][3] + '\t' + tweets[i][4] +
             '\t\n')
+
+    with open(g.dataPath + 'tags.json', 'w', encoding='utf-8') as tagF:
+        tagF.write(json.dumps(list(tagSet)))
 if __name__ == '__main__':
 
     cwd = os.getcwd()

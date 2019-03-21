@@ -3,7 +3,7 @@ import time
 import g
 
 
-os.system('python ./split.py')
+#os.system('python ./split.py')
 os.system('python ./clean.py')
 os.system('python ./process.py')
 os.system('python ./process_filterShortText.py')
