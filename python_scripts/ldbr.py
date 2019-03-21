@@ -19,6 +19,7 @@ class Point:
         self.kdeValue = None
         self.covered = False
         self.r = None
+        self.timeR = None
         self.isDisk = False
         self.count = 0
         self.sampled = False
@@ -54,19 +55,10 @@ def getKDE(points: List[Point]):
 
 
 def getTimeKDE(points: List[Point]):
-    timeCountDict = {}
-    for p in points:
-        if p.time in timeCountDict:
-            timeCountDict[p.time] += 1
-        else:
-            timeCountDict = 1
     allTime = []
-    allValue = []
-    for k in timeCountDict:
-        allTime.append(k)
-        allValue.append(timeCountDict[k])
-    dataForKDE = np.vstack([allTime, allValue])
-    kde = stats.gaussian_kde(dataForKDE)
+    for p in points:
+        allTime.append(p.time)
+    kde = stats.gaussian_kde(allTime)
     return kde
 
 
@@ -76,8 +68,9 @@ def setRadius(point: Point, r: float, kde):
 
 
 def setTimeRadius(point: Point, r: float, kde):
-    radius = r / kde([point.time, 1])[0]
-    point.r = radius
+    radius = r / kde(point.time)
+    print(radius)
+    point.timeR = radius
 
 
 def drawOneSampleForOneGroup(points: List[Point], topic: int):
@@ -168,8 +161,8 @@ def ldbr(points: List[Point], k: int, r: float, delta: float, c: float, timeR: f
     timeKDE = getTimeKDE(points)
     kde = getKDE(points)
     for p in points:
-        setRadius(p, r, kde)
         setTimeRadius(p, timeR, timeKDE)
+        setRadius(p, r, kde)
     A = []
     print('set all radius')
     sampleGroups: List[List[Point]] = []

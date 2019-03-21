@@ -15,11 +15,6 @@ for id in idTimeDict:
 kdeData = []
 for minute in timeCountDict:
     kdeData.append([minute, timeCountDict[minute]])
-allLat = []
-allLng = []
-for p in [[1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [-2, 1], [-3, -2], [1, 1], [2, 1], [2, 1], [2, 1], [2, 1],
-          [2, 1], [2, 1], [2, 1], [2, 1], [2, 1], [2, 1], [3, 2]]:
-    allLat.append(p[0])
-    allLng.append(p[1])
-dataForKDE = np.vstack([allLat, allLng])
-kde = stats.gaussian_kde(dataForKDE)
+
+kde = stats.gaussian_kde([1,1,1,1,3,5,1,2])
+

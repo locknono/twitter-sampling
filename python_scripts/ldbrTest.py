@@ -88,7 +88,7 @@ for t in range(30):
     originalEstimates = getOriginalEstimates(copy.deepcopy(points), g.topicNumber)
     saveBarChart(originalEstimates, g.dataPath + 'original.png')
 
-    estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.05, c,5)
+    estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.05, c, 0.001)
     if estimates == None:
         ratioList.append(None)
         countList.append(None)
