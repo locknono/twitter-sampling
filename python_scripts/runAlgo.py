@@ -6,6 +6,8 @@ from docAlgo.runKmeans import runKmeans
 from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile, \
     getHexes
 import os
+from ldbr import ldbr
+from shared.getLdbrData import getLdbrPoints
 
 if __name__ == '__main__':
 
@@ -13,6 +15,7 @@ if __name__ == '__main__':
     ids = []
     idLocationDict = None
     idTextDict = {}
+    idTimeDict = readJsonFile(g.dataPath + 'idTimeDict.json')
     with open(g.dataPath + 'finalText.txt', 'r', encoding='utf-8')as f:
         for line in f:
             line = line.strip('\t\n').split('\t')
@@ -26,25 +29,24 @@ if __name__ == '__main__':
     with open(g.dataPath + 'finalIDLocation.json', 'r', encoding='utf-8')as f:
         idLocationDict = json.loads(f.read())
 
-    #docResultDir = g.dataPath + 'v={0}_epochs={1}/'.format(vectorSize, epochs)
+    # docResultDir = g.dataPath + 'v={0}_epochs={1}/'.format(vectorSize, epochs)
     docResultDir = g.dataPath
 
     try:
         os.mkdir(docResultDir)
     except Exception as e:
         pass
-    """
+
     idVectorDict = runDoc2vec(texts=common_texts, ids=ids, vectorSize=vectorSize, epochs=epochs)
     writeToJsonFile(idVectorDict, docResultDir + 'idVectorDict.json')
 
     idScatterData = runTsne(idVectorDict)
     writeToJsonFile(idScatterData, docResultDir + 'idScatterData.json')
-    
-    idScatterData=readJsonFile(docResultDir+ 'idScatterData.json')
-    """
 
-    idClassDict=readJsonFile(docResultDir+ 'idClassDict.json')
-    #idClassDict = runKmeans(idScatterData, 3)
+    # idScatterData = readJsonFile(docResultDir + 'idScatterData.json')
+
+    idClassDict = readJsonFile(docResultDir + 'idClassDict.json')
+    # idClassDict = runKmeans(idScatterData, 3)
     writeToJsonFile(idClassDict, docResultDir + 'idClassDict.json')
 
     scatterPoints = getScatterPoints(idScatterData, idClassDict)

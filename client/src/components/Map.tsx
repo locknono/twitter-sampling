@@ -157,18 +157,13 @@ function Map(props: Props) {
 
   React.useEffect(() => {
     if (!mapPoints) return;
-    const allTopicPoints: MapPoint[][] = [];
+
     for (let i = 0; i < topicNumber; i++) {
-      allTopicPoints.push([]);
-    }
-    mapPoints.map(e => {
-      allTopicPoints[e.topic].push(e);
-    });
-    allTopicPoints.map((e, i) => {
+      const curTopicPoints = mapPoints.filter(e => e.topic === i);
       const curTopicPointsLayer: L.Layer[] = [];
-      e.map(v => {
+      curTopicPoints.map(e => {
         curTopicPointsLayer.push(
-          L.circle(v, {
+          L.circle(e, {
             radius: mapCircleRadius,
             color: color.nineColors[i]
           })
@@ -176,7 +171,7 @@ function Map(props: Props) {
       });
       const layerGroup = L.layerGroup(curTopicPointsLayer);
       controlLayer.addOverlay(layerGroup, `points for topic${i}`);
-    });
+    }
   }, [mapPoints]);
 
   React.useEffect(() => {

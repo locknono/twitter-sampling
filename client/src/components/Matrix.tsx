@@ -82,8 +82,8 @@ class Matrix extends React.Component<Props, State> {
       const matriXEnd = svgWidth * (1 - padding.barChartPadding / 2);
       const matrixYEnd = svgHeight * (1 - padding.barChartPadding / 2);
 
-      const topBarStart = svgHeight * 0.05;
-      const leftBarStart = svgWidth * 0.05;
+      const topBarStart = svgHeight * 0.03;
+      const leftBarStart = svgWidth * 0.03;
 
       const xStart = svgWidth * padding.barChartPadding;
       const xEnd = svgWidth * (1 - padding.barChartPadding);
@@ -106,12 +106,12 @@ class Matrix extends React.Component<Props, State> {
       const topBarScale = d3
         .scaleLinear()
         .domain([0, Math.max(...original)])
-        .range([matrixYStart, topBarStart]);
+        .range([matrixYStart - 5, topBarStart]);
 
       const leftBarScale = d3
         .scaleLinear()
         .domain([0, Math.max(...sampling)])
-        .range([matriXStart, leftBarStart]);
+        .range([matriXStart - 5, leftBarStart]);
 
       topBars = getBars(
         original,

@@ -2,7 +2,6 @@ import os
 import time
 import g
 
-
 os.system('python ./split.py')
 os.system('python ./clean.py')
 os.system('python ./process.py')
@@ -15,11 +14,11 @@ os.system('python ./getFinalLocationJsonFormat.py')
 os.chdir('../')
 os.system('python ./runAlgoLDA.py')
 
+os.chdir('./data_process')
+os.system('python ./getRiverData.py')
 
 """
-os.chdir('./data_process')
 os.system('python ./getWordCloudDataForVec.py')
-os.system('python ./getRiverDataForVec.py')
 """
 
 """

@@ -33,7 +33,7 @@ def filterShortText():
             line = line.strip('\t\n').split('\t')
             if len(line)==1:
                 continue
-            if len(line[1].split(' ')) <= 5:
+            if len(line[1].split(' ')) <= 3:
                 continue
             textSet.add(line[1])
             textIDDict[line[1]] = line[0]

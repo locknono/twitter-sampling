@@ -1,0 +1,62 @@
+import json
+import g
+from docAlgo.runDoc2vec import runDoc2vec
+from docAlgo.runTsne import runTsne
+from docAlgo.runKmeans import runKmeans
+from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile, \
+    getHexes
+import os
+from ldbr import Point
+import math
+
+
+def getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict):
+    centers = getCenters(idScatterData, idClassDict)
+    minDis, maxDis = getMinMaxDis(idScatterData, centers, idClassDict)
+    points = []
+    print(idScatterData)
+    for id in idScatterData:
+        p = idScatterData[id]
+        topic = idClassDict[id]
+        x = p[0]
+        y = p[1]
+        dis = math.sqrt(math.pow(x - centers[topic][0], 2) + math.pow(y - centers[topic][1], 2))
+        dis = (dis - minDis) / (maxDis - minDis)
+        time = idTimeDict[id]
+        p = Point(id, idLocationDict[id][0], idLocationDict[id][1], dis, topic, time)
+        points.append(p)
+    return points
+
+
+def getMinMaxDis(idScatterData, centers, idClassDict):
+    minDis = 999999
+    maxDis = -1
+    for id in idScatterData:
+        p = idScatterData[id]
+        topic = idClassDict[id]
+        x = p[0]
+        y = p[1]
+        dis = math.sqrt(math.pow(x - centers[topic][0], 2) + math.pow(y - centers[topic][1], 2))
+        if dis < minDis:
+            minDis = dis
+        if dis > maxDis:
+            maxDis = dis
+    return [minDis, maxDis]
+
+
+def getCenters(idScatterData, idClassDict):
+    centers = [[0, 0] for i in range(g.topicNumber)]
+    topicCounts = [0 for i in range(g.topicNumber)]
+    for id in idScatterData:
+        p = idScatterData[id]
+        topic = idClassDict[id]
+        centers[topic][0] += p[0]
+        centers[topic][1] += p[1]
+        topicCounts[topic] += 1
+    for i in range(g.topicNumber):
+        centers[i][0] = centers[i][0] / topicCounts[i]
+        centers[i][1] = centers[i][1] / topicCounts[i]
+    return centers
+
+def saveLdbrData(estimates,sampleGroups):
+

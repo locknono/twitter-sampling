@@ -5,9 +5,10 @@ import sys
 
 from shared.lda_op import findMaxIndexAndValueForOneDoc
 
-idTimeDict = {}
-topicTimeValueDict = {}
+
 if __name__ == '__main__':
+    idTimeDict = {}
+    topicTimeValueDict = {}
     cwd = os.getcwd()
     wd = os.path.split(cwd)[0]
     os.chdir(wd)
@@ -18,11 +19,10 @@ if __name__ == '__main__':
             time = line[2].split(' ')[0].replace('-', '/')
             id = line[0]
             idTimeDict[id] = time
-
-    with open(g.ldaDir + 'idLdaDict.json', 'r', encoding='utf-8') as f:
-        idLdaDict = json.loads(f.read())
-        for id in idLdaDict:
-            maxIndex, maxValue = findMaxIndexAndValueForOneDoc(idLdaDict[id])
+    with open(g.dataPath + 'idClassDict.json', 'r', encoding='utf-8') as f:
+        idClassDict = json.loads(f.read())
+        for id in idClassDict:
+            maxIndex = idClassDict[id]
             time = idTimeDict[id]
 
             topicTimeTuple = (maxIndex, time)

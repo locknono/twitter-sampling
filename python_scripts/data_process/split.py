@@ -59,7 +59,7 @@ if __name__ == '__main__':
         print(e)
 
     for i in range(12, 12 + g.dataDays):
-        print('day:' + str(i))
+        print(i)
         extractFromSingleFile('../data/2016-06-{0}.txt'.format(i))
 
     rowCount = 0

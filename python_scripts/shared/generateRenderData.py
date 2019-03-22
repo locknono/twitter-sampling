@@ -143,4 +143,5 @@ def getHexes(bound, idLocationDict, sideLength=None):
         oneDimensionHexes = reduce(operator.add, hexes)
     return oneDimensionHexes
 
-
+def getRiver():
+    pass
