@@ -5,6 +5,7 @@ from docAlgo.runTsne import runTsne
 from docAlgo.runKmeans import runKmeans
 from docAlgo.runLDA import runLDA
 from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile
+from docAlgo.getClass import getIDClassDict
 
 if __name__ == '__main__':
     common_texts = []
@@ -28,9 +29,13 @@ if __name__ == '__main__':
     idScatterData = runTsne(idVectorDict)
     writeToJsonFile(idScatterData, g.dataPath + 'idScatterData.json')
 
-    idClassDict = runKmeans(idScatterData,g.topicNumber)
+    idClassDict = getIDClassDict(idVectorDict)
     writeToJsonFile(idClassDict, g.dataPath + 'idClassDict.json')
 
+    """
+    idClassDict = runKmeans(idScatterData,g.topicNumber)
+    writeToJsonFile(idClassDict, g.dataPath + 'idClassDict.json')
+    """
     scatterPoints = getScatterPoints(idScatterData, idClassDict)
     writeToJsonFile(scatterPoints, g.dataPath + 'scatterPoints.json')
     writeToJsonFile(scatterPoints, '../client/public/scatterPoints.json')

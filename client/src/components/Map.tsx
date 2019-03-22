@@ -131,7 +131,7 @@ function Map(props: Props) {
               body: JSON.stringify(id)
             });
             const text = await res.json();
-            //console.log("text: ", text);
+            console.log("text: ", text);
           })();
         })
       );
