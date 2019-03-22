@@ -11,8 +11,8 @@ import { color } from "../constants";
 
 const mapState = (state: any) => {
   const { riverData } = state.dataTree;
-  const { curTopic } = state.uiState;
-  return { riverData, curTopic };
+  const { curTopic, samplingFlag } = state.uiState;
+  return { riverData, curTopic, samplingFlag };
 };
 const mapDispatch = {
   setData
@@ -22,14 +22,17 @@ interface Props {
   riverData: [string, number, string][];
   curTopic: CurTopic;
   setData: typeof setData;
+  samplingFlag: boolean;
 }
 function River(props: Props) {
-  const { riverData, curTopic, setData } = props;
+  const { riverData, curTopic, setData, samplingFlag } = props;
   React.useEffect(() => {
-    fetchJsonData(url.riverDataURL).then(data => {
+    const fetchURL =
+      samplingFlag === true ? url.samplingRiverDataURL : url.riverDataURL;
+    fetchJsonData(fetchURL).then(data => {
       setData(RIVER_DATA, data);
     });
-  }, []);
+  }, [samplingFlag]);
   React.useEffect(() => {
     if (!riverData) return;
     const myChart = echarts.init(document.getElementById(
@@ -89,7 +92,7 @@ function River(props: Props) {
     };
     myChart.on("click", function() {});
     myChart.setOption(option as any);
-  });
+  }, [riverData]);
 
   return (
     <div className="river-view panel panel-default">

@@ -1,5 +1,6 @@
 import json
 import math
+import g
 
 
 def readJsonFile(path):
@@ -49,21 +50,16 @@ def sortByWordFrequncy(wordDict):
 
 # texts:string[]
 def getWordCloud(idTextDict, idClassDict, topicCount, ids=None):
-    areaFlag = True
     if ids == None:
-        areaFlag = False
+        ids = idTextDict.keys()
     wordCloudData = []
     allCloudData = {}
     for i in range(topicCount):
         wordCloudData.append({})
-    for tid in idTextDict:
-        if areaFlag == True:
-            if tid not in ids:
-                continue
+    for tid in ids:
         text = idTextDict[tid]
         try:
             topic = idClassDict[tid]
-
             for word in text.split(' '):
                 if word in wordCloudData[topic]:
                     wordCloudData[topic][word] += 1
@@ -106,7 +102,9 @@ def getWordCloud(idTextDict, idClassDict, topicCount, ids=None):
 
 # bound:[[top,left],[bottom,right]]
 # points:{[id:string]:[number,number]}
-def getHexes(bound, idLocationDict, sideLength=None):
+def getHexes(bound, idLocationDict, ids=None, sideLength=None):
+    if ids==None:
+        ids=idLocationDict.keys()
     top, left = bound[0]
     bottom, right = bound[1]
     if not sideLength:
@@ -137,7 +135,7 @@ def getHexes(bound, idLocationDict, sideLength=None):
             path = [p1, p2, p3, p4, p5, p6, p1]
             hex = {"path": path, "value": 0}
             hexes[i][j] = hex
-    for k in idLocationDict:
+    for k in ids:
         lat = idLocationDict[k][0]
         lng = idLocationDict[k][1]
         j = round((top - lat) / (1.5 * sideLength))
@@ -150,5 +148,28 @@ def getHexes(bound, idLocationDict, sideLength=None):
     return oneDimensionHexes
 
 
-def getRiver():
-    pass
+def getRiverData(idTimeDict, idClassDict, ids=None):
+    if ids == None:
+        ids = idClassDict.keys()
+    topicTimeValueDict = {}
+    for id in ids:
+        maxIndex = idClassDict[id]
+        time = idTimeDict[id]
+        topicTimeTuple = (maxIndex, time)
+        if topicTimeTuple in topicTimeValueDict:
+            # topicTimeValueDict[topicTimeTuple] += maxValue
+            topicTimeValueDict[topicTimeTuple] += 1
+        else:
+            # topicTimeValueDict[topicTimeTuple] = maxValue
+            topicTimeValueDict[topicTimeTuple] = 1
+    riverData = []
+    for i in range(0, g.topicNumber):
+        for k in topicTimeValueDict:
+            topic = k[0]
+            if topic != i:
+                continue
+            time = k[1]
+            value = topicTimeValueDict[k]
+            singleList = [time, value, str(topic)]
+            riverData.append(singleList)
+    return riverData

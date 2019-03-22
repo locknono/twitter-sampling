@@ -45,10 +45,12 @@ export namespace url {
   export const mapPointsURL = "./mapPoints.json";
   export const ldbrPointsURL = "./samplingMapPoints.json";
   export const riverDataURL = "./riverData.json";
+  export const samplingRiverDataURL="./samplingRiverData.json";
   export const scatterPointsURL = "./scatterPoints.json";
   export const samplingScatterPointsURL = "./samplingScatterPoints.json";
   export const scatterCentersURL = "./scatterCenters.json";
   export const wordCloudDataURL = "./allWordCloudData.json";
+  export const samplingCloudDataURL = "./samplingCloudData.json";
   export const barDataURL = "./barData.json";
   export const hexURL = "./hex.json";
 }

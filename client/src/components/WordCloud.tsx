@@ -13,11 +13,12 @@ interface Props {
   curTopic: CurTopic;
   setData: typeof setData;
   setCurTopic: typeof setCurTopic;
+  samplingFlag: boolean;
 }
 const mapState = (state: any) => {
   const { cloudData } = state.dataTree;
-  const { curTopic } = state.uiState;
-  return { cloudData, curTopic };
+  const { curTopic, samplingFlag } = state.uiState;
+  return { cloudData, curTopic, samplingFlag };
 };
 const mapDispatch = {
   setData,
@@ -25,7 +26,7 @@ const mapDispatch = {
 };
 
 function WordCloud(props: Props) {
-  const { cloudData, curTopic, setData, setCurTopic } = props;
+  const { cloudData, curTopic, setData, setCurTopic, samplingFlag } = props;
   const [width, height] = useWidthAndHeight("cloud-svg");
   const [cloudLayout, setCloudLayout] = React.useState<any | undefined>(
     undefined
@@ -36,18 +37,17 @@ function WordCloud(props: Props) {
 
   React.useEffect(() => {
     (async function fetchData() {
-      const res = await fetch(url.wordCloudDataURL);
+      let fetchURL =
+        samplingFlag === true ? url.samplingCloudDataURL : url.wordCloudDataURL;
+      const res = await fetch(fetchURL);
       const data: CloudData = await res.json();
       setData(CLOUD_DATA, data);
     })();
-  }, []);
+  }, [samplingFlag]);
 
   //initialize cloud layout
   React.useEffect(() => {
     if (!width || !height || !cloudData) return;
-
-    if (cloudLayout) return;
-
     let topicIndex = curTopic === undefined ? topicNumber : curTopic;
     const layout = cloud()
       .size([width, height])
