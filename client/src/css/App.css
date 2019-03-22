@@ -14,11 +14,13 @@
   flex-direction: column;
 }
 .left-side {
+  display: flex;
+  flex-direction: column;
   height: 700px;
   width: 280px;
 }
 .data-description-div {
-  height: 240px;
+  height: 210px;
   width: 280px;
   padding-bottom: 0;
   margin-bottom: 0;
@@ -28,7 +30,7 @@
   display: flex;
   flex-direction: column;
   width: 280px;
-  height: 240px;
+  height: 210px;
   padding-bottom: 0;
   margin-bottom: 0;
   margin-right: 0;
@@ -42,29 +44,36 @@
   align-items: center;
 }
 .word-cloud-div {
-  width: 280px;
-  height: 220px;
+  width: 340px;
+  height: 280px;
   padding-bottom: 0;
   margin-right: 0;
   margin-bottom: 0;
   display: flex;
   flex-direction: column;
 }
-.middle {
-  height: 700px;
-  width: 800px;
+.whole-right {
+  display: flex;
+  flex-direction: column;
+}
+.above-div {
+  height: 420px;
+  width: 1140px;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: row;
 }
 #map {
   top: 0;
   width: 800px;
-  height: 480px;
+  height: 420px;
   padding-bottom: 0;
   margin-bottom: 0;
   margin-right: 0;
 }
 .river-view {
-  width: 800px;
-  height: 220px;
+  height: 280px;
+  width: 860px;
   padding-bottom: 0;
   margin-right: 0;
   margin-bottom: 0;
@@ -76,17 +85,11 @@
   height: 100%;
 }
 .right-side {
-  height: 700px;
-  width: 380px;
-}
-.scatter-div {
-  height: 380px;
-  margin-bottom: 0;
-  display: flex;
-  flex-direction: column;
+  height: 420px;
+  width: 340px;
 }
 .barchart-div {
-  height: 320px;
+  height: 420px;
   margin-bottom: 0;
   display: flex;
   flex-direction: column;
@@ -116,15 +119,26 @@
   top: 0;
   left: 0;
 }
+.scatter-div {
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  height: 280px;
+}
 .scatter-canvas-div {
-  position: relative;
   flex: 1 1 auto;
+  position: relative;
 }
 #cloud-svg {
   flex: 1 1 auto;
 }
 #barchart-svg {
   flex: 1 1 auto;
+}
+.matrix-div {
+  display: flex;
+  flex: 1 1 auto;
+  width: 100%;
 }
 #matrix-svg {
   flex: 1 1 auto;
@@ -150,4 +164,10 @@
 }
 .matrix-rects:hover {
   transform: scale(1.03, 1.03);
+}
+.bottom-div {
+  width: 1140px;
+  height: 280px;
+  display: flex;
+  float: left;
 }

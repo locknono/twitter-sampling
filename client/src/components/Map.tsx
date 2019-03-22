@@ -155,9 +155,8 @@ function Map(props: Props) {
     controlLayer.addOverlay(layerGroup, `all points with topic`);
   }, [mapPoints]);
 
-  React.useEffect(() => {
+  /* React.useEffect(() => {
     if (!mapPoints) return;
-
     for (let i = 0; i < topicNumber; i++) {
       const curTopicPoints = mapPoints.filter(e => e.topic === i);
       const curTopicPointsLayer: L.Layer[] = [];
@@ -172,7 +171,7 @@ function Map(props: Props) {
       const layerGroup = L.layerGroup(curTopicPointsLayer);
       controlLayer.addOverlay(layerGroup, `points for topic${i}`);
     }
-  }, [mapPoints]);
+  }, [mapPoints]); */
 
   React.useEffect(() => {
     (async function addSamplingPoints() {

@@ -22,6 +22,8 @@ def extractFromSingleFile(filePath):
         writeF = codecs.open(g.dataPath + "extractedData.txt", 'a', encoding='utf-8')
         for index, line in enumerate(f):
             try:
+                if index>200000:
+                    break
                 line = line.split('\t')
                 if line[6] != 'true':
                     continue

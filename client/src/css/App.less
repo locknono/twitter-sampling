@@ -2,9 +2,9 @@
 
 @leftSideWidth: 280px;
 @middileWidth: 800px;
-@rightSideWidth: 380px;
+@rightSideWidth: 340px;
 
-@mapHeight: 480px;
+@mapHeight: 420px;
 
 @height: 700px;
 
@@ -14,7 +14,7 @@
 
 @wordCloudHeight: @height - @dataHeight - @controlPanelHeight;
 
-@scatterDivHeight: @rightSideWidth;
+@scatterDivHeight: @height - @dataHeight - @controlPanelHeight;
 
 @barchartdivheight: @height - @scatterDivHeight;
 
@@ -37,6 +37,8 @@
 }
 
 .left-side {
+  display: flex;
+  flex-direction: column;
   height: @height;
   width: @leftSideWidth;
 }
@@ -65,15 +67,21 @@
 }
 
 .word-cloud-div {
-  width: @leftSideWidth;
+  width: @rightSideWidth;
   height: @wordCloudHeight;
   .panel-margin();
   .view-div();
 }
-
-.middle {
-  height: @height;
-  width: @middileWidth;
+.whole-right {
+  display: flex;
+  flex-direction: column;
+}
+.above-div {
+  height: @height - @scatterDivHeight;
+  width: @middileWidth + @rightSideWidth;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: row;
 }
 
 #map {
@@ -84,8 +92,8 @@
 }
 
 .river-view {
-  width: @middileWidth;
   height: @height - @mapHeight;
+  width: @middileWidth - @scatterDivHeight + @rightSideWidth;
   .panel-margin();
   .view-div();
 }
@@ -95,13 +103,8 @@
 }
 
 .right-side {
-  height: @height;
+  height: @height - @scatterDivHeight;
   width: @rightSideWidth;
-}
-
-.scatter-div {
-  height: @scatterDivHeight;
-  .view-div();
 }
 
 .barchart-div {
@@ -138,9 +141,15 @@
   left: 0;
 }
 
+.scatter-div {
+  display: flex;
+  flex-direction: column;
+  width: @scatterDivHeight;
+  height: @scatterDivHeight;
+}
 .scatter-canvas-div {
-  position: relative;
   flex: 1 1 auto;
+  position: relative;
 }
 
 #cloud-svg {
@@ -151,6 +160,11 @@
   flex: 1 1 auto;
 }
 
+.matrix-div {
+  display: flex;
+  flex: 1 1 auto;
+  width: 100%;
+}
 #matrix-svg {
   flex: 1 1 auto;
 }
@@ -180,4 +194,11 @@
 
 .matrix-rects:hover {
   transform: scale(1.03, 1.03);
+}
+
+.bottom-div {
+  width: @middileWidth + @rightSideWidth;
+  height: @scatterDivHeight;
+  display: flex;
+  float: left;
 }

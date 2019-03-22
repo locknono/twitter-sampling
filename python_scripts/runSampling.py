@@ -33,7 +33,7 @@ if __name__ == '__main__':
     idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
 
     points = getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict)
-    c = 0.05
+    c = 0.03
     estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.05, c, 0.0005)
 
     if estimates != None or sampleGroups != None:
@@ -66,6 +66,5 @@ if __name__ == '__main__':
         writeToJsonFile(samplingRiverData, '../client/public/samplingRiverData.json')
         writeToJsonFile(samplingRiverData, g.dataPath + 'samplingRiverData.json')
 
-        samplingHex = getHexes(nyBound, idClassDict, samplingIDs)
-        writeToJsonFile(samplingRiverData, '../client/public/samplingRiverData.json')
-        writeToJsonFile(samplingRiverData, g.dataPath + 'samplingRiverData.json')
+    else:
+        print('sampling fail')

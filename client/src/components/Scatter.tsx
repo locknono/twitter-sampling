@@ -16,7 +16,7 @@ import { useCtxWithRef } from "src/hooks/canvasHooks";
 import { updateQueue } from "../fiber/updateQueue";
 import createFiber from "../fiber/fiber";
 import * as v4 from "uuid/v4";
-
+import Heading from "../components/Heading";
 interface Props {
   scatterData: ScatterPoint[];
   curTopic: CurTopic;
@@ -323,22 +323,25 @@ function LdaScatterCanvasCanvas(props: Props) {
     ctx.fillRect(o1[0], o1[1], o2[0] - o1[0], o2[1] - o1[1]);
   }, [o2]);
   return (
-    <div className="scatter-canvas-div">
-      <canvas
-        id="scatter-canvas-background"
-        ref={backgroundCanvasRef}
-        width={width}
-        height={height}
-      />
-      <canvas
-        id="scatter-canvas"
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-        ref={canvasRef}
-        width={width}
-        height={height}
-      />
+    <div className="scatter-div panel panel-default">
+      <Heading title="Projection View" />
+      <div className="scatter-canvas-div">
+        <canvas
+          id="scatter-canvas-background"
+          ref={backgroundCanvasRef}
+          width={width}
+          height={height}
+        />
+        <canvas
+          id="scatter-canvas"
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          ref={canvasRef}
+          width={width}
+          height={height}
+        />
+      </div>
     </div>
   );
 }

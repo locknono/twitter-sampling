@@ -77,8 +77,8 @@ class Matrix extends React.Component<Props, State> {
     let topBars;
     let leftBars;
     if (svgWidth && svgHeight && sampling.length > 0 && original.length > 0) {
-      const matriXStart = svgWidth * 0.2;
-      const matrixYStart = svgHeight * 0.2;
+      const matriXStart = (svgWidth * 0.1) / 2;
+      const matrixYStart = (svgHeight * 0.1) / 2;
       const matriXEnd = svgWidth * (1 - padding.barChartPadding / 2);
       const matrixYEnd = svgHeight * (1 - padding.barChartPadding / 2);
 
@@ -165,11 +165,13 @@ class Matrix extends React.Component<Props, State> {
     }
 
     return (
-      <svg id="matrix-svg">
-        {topBars}
-        {leftBars}
-        {matrixRects}
-      </svg>
+      <div className="matrix-div">
+        <svg id="matrix-svg">
+          {/*  {topBars}
+          {leftBars} */}
+          {matrixRects}
+        </svg>
+      </div>
     );
   }
 }

@@ -25,6 +25,7 @@ if __name__ == '__main__':
             idTextDict[id] = text
 
     idVectorDict = runLDA(texts, ids)
+    writeToJsonFile(idVectorDict, g.dataPath + 'idVectorDict.json')
 
     idScatterData = runTsne(idVectorDict)
     writeToJsonFile(idScatterData, g.dataPath + 'idScatterData.json')

@@ -17,6 +17,9 @@ os.system('python ./runAlgoLDA.py')
 os.chdir('./data_process')
 os.system('python ./getRiverData.py')
 
+os.chdir('../')
+os.system('python ./runSampling.py')
+
 """
 os.system('python ./getWordCloudDataForVec.py')
 """
