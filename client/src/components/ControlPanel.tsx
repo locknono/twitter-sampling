@@ -6,11 +6,13 @@ import { setData } from "src/actions/setDataAction";
 import {
   setIfDrawCenters,
   setSelectedIDs,
-  setCurSystem
+  setCurSystem,
+  setSamplingFlag
 } from "../actions/setUIState";
 
 interface Props {
   setCurSystem: typeof setCurSystem;
+  setSamplingFlag: typeof setSamplingFlag;
 }
 const mapState = (state: any) => {
   /* const { scatterData } = state.dataTree;
@@ -19,27 +21,44 @@ const mapState = (state: any) => {
   return {};
 };
 const mapDispatch = {
-  setCurSystem
+  setCurSystem,
+  setSamplingFlag
 };
 
 function ControlPanel(props: Props) {
-  const { setCurSystem } = props;
-  function handleTwitterClick() {
-    setCurSystem("twitter");
+  const { setCurSystem, setSamplingFlag } = props;
+
+  function handleSystemNameClick(name: "twitter" | "yelp") {
+    setCurSystem(name);
   }
-  function handleYelpClick() {
-    setCurSystem("yelp");
+
+  function handleSamplingClick(flag: boolean) {
+    setSamplingFlag(flag);
   }
   return (
     <div className="panel panel-default control-panel-div">
       <Heading title="Control Panel" />
-      <p> </p>
-      <button id="twitter" onClick={handleTwitterClick}>
-        twitter
-      </button>
-      <button id="yelp" onClick={handleYelpClick}>
-        yelp
-      </button>
+      <div className="control-panel-content-div">
+        <div>
+          <button
+            id="twitter"
+            onClick={handleSystemNameClick.bind(null, "twitter")}
+          >
+            twitter
+          </button>
+          <button id="yelp" onClick={handleSystemNameClick.bind(null, "yelp")}>
+            yelp
+          </button>
+        </div>
+        <div>
+          <button id="original" onClick={handleSamplingClick.bind(null, false)}>
+            original
+          </button>
+          <button id="sampling" onClick={handleSamplingClick.bind(null, true)}>
+            sampling
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

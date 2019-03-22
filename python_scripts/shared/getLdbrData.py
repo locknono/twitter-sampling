@@ -8,13 +8,13 @@ from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapP
 import os
 from ldbr import Point
 import math
+from typing import List
 
 
 def getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict):
     centers = getCenters(idScatterData, idClassDict)
     minDis, maxDis = getMinMaxDis(idScatterData, centers, idClassDict)
     points = []
-    print(idScatterData)
     for id in idScatterData:
         p = idScatterData[id]
         topic = idClassDict[id]
@@ -58,5 +58,24 @@ def getCenters(idScatterData, idClassDict):
         centers[i][1] = centers[i][1] / topicCounts[i]
     return centers
 
-def saveLdbrData(estimates,sampleGroups):
 
+def getSamplingIDs(sampleGroups):
+    samplingIDs = []
+    for group in sampleGroups:
+        for p in group:
+            samplingIDs.append(p.id)
+    return samplingIDs
+
+
+def getOriginalEstimates(points: List[Point], topicCount=g.topicNumber):
+    estimates = []
+    counts = []
+    for i in range(topicCount):
+        estimates.append(0)
+        counts.append(0)
+    for p in points:
+        estimates[p.topic] += p.value
+        counts[p.topic] += 1
+    for i in range(len(estimates)):
+        estimates[i] = estimates[i] / counts[i]
+    return estimates

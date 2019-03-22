@@ -25,12 +25,24 @@ interface Props {
   setIfDrawCenters: typeof setIfDrawCenters;
   setSelectedIDs: typeof setSelectedIDs;
   selectedIDs: string[];
+  samplingFlag: boolean;
 }
 
 const mapState = (state: any) => {
   const { scatterData } = state.dataTree;
-  const { curTopic, ifDrawScatterCenters, selectedIDs } = state.uiState;
-  return { scatterData, curTopic, ifDrawScatterCenters, selectedIDs };
+  const {
+    curTopic,
+    ifDrawScatterCenters,
+    selectedIDs,
+    samplingFlag
+  } = state.uiState;
+  return {
+    scatterData,
+    curTopic,
+    ifDrawScatterCenters,
+    selectedIDs,
+    samplingFlag
+  };
 };
 const mapDispatch = {
   setData,
@@ -44,7 +56,8 @@ function LdaScatterCanvasCanvas(props: Props) {
     curTopic,
     ifDrawScatterCenters,
     setSelectedIDs,
-    selectedIDs
+    selectedIDs,
+    samplingFlag
   } = props;
   const [o1, setO1] = React.useState<[number, number] | null>(null);
   const [o2, setO2] = React.useState<[number, number] | null>(null);
@@ -70,8 +83,12 @@ function LdaScatterCanvasCanvas(props: Props) {
   }, []);
 
   React.useEffect(() => {
-    fetchAndSetScatterData(url.scatterPointsURL, setData);
-  }, []);
+    if (samplingFlag === true) {
+      fetchAndSetScatterData(url.samplingScatterPointsURL, setData);
+    } else {
+      fetchAndSetScatterData(url.scatterPointsURL, setData);
+    }
+  }, [samplingFlag]);
 
   React.useEffect(() => {
     if (!scatterData || !width || !height) return;
@@ -86,42 +103,42 @@ function LdaScatterCanvasCanvas(props: Props) {
 
   //background
   React.useEffect(() => {
-    if (!backgroudCtx || !scatterData || !scales) {
+    if (!backgroudCtx || !scatterData || !scales || !width || !height) {
       return;
     }
-    if (width && height && backgroudCtx) {
-      const [xScale, yScale] = scales;
-      //todo:move slice function to shared.ts
-      const sliceCount = 50;
-      const slicePointsNumber = scatterData.length / sliceCount;
-      const sliceIndices = [];
-      for (let i = 0; i < sliceCount - 1; i++) {
-        sliceIndices.push([
-          Math.floor(i * slicePointsNumber),
-          Math.floor((i + 1) * slicePointsNumber)
-        ]);
-      }
-      sliceIndices.map(indices => {
-        const fiber = createFiber(() => {
-          for (let i = indices[0]; i < indices[1]; i++) {
-            const e = scatterData[i];
-            backgroudCtx.fillStyle = color.nineColors[e.topic];
-            backgroudCtx.beginPath();
-            backgroudCtx.arc(
-              Math.floor(xScale(e.x)),
-              Math.floor(yScale(e.y)),
-              scatterRadius,
-              0,
-              Math.PI * 2
-            );
-            backgroudCtx.fill();
-          }
-        }, 1);
-        updateQueue.push(fiber);
-      });
-      updateQueue.flush();
+    console.log("scatterData: ", scatterData);
+    backgroudCtx.clearRect(0, 0, width, height);
+    const [xScale, yScale] = scales;
+    //todo:move slice function to shared.ts
+    const sliceCount = 50;
+    const slicePointsNumber = scatterData.length / sliceCount;
+    const sliceIndices = [];
+    for (let i = 0; i < sliceCount - 1; i++) {
+      sliceIndices.push([
+        Math.floor(i * slicePointsNumber),
+        Math.floor((i + 1) * slicePointsNumber)
+      ]);
     }
-  }, [scatterData, scales]);
+    sliceIndices.map(indices => {
+      const fiber = createFiber(() => {
+        for (let i = indices[0]; i < indices[1]; i++) {
+          const e = scatterData[i];
+          backgroudCtx.fillStyle = color.nineColors[e.topic];
+          backgroudCtx.beginPath();
+          backgroudCtx.arc(
+            Math.floor(xScale(e.x)),
+            Math.floor(yScale(e.y)),
+            scatterRadius,
+            0,
+            Math.PI * 2
+          );
+          backgroudCtx.fill();
+        }
+      }, 1);
+      updateQueue.push(fiber);
+    });
+    updateQueue.flush();
+  }, [scales]);
 
   //click function
   React.useEffect(() => {
@@ -184,7 +201,7 @@ function LdaScatterCanvasCanvas(props: Props) {
       (xScale((topicNumber - 1).toString()) as number) + xScale.bandwidth() + 1,
       height * (1 - padding.scatterPadding / 2) + xScale.bandwidth() - 2.5
     );
-  }, [backgroudCtx]);
+  }, [backgroudCtx, scales]);
 
   //centers
   React.useEffect(() => {

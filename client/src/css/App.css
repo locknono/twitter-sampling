@@ -25,11 +25,21 @@
   margin-right: 0;
 }
 .control-panel-div {
+  display: flex;
+  flex-direction: column;
   width: 280px;
   height: 240px;
   padding-bottom: 0;
   margin-bottom: 0;
   margin-right: 0;
+}
+.control-panel-content-div {
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
 }
 .word-cloud-div {
   width: 280px;

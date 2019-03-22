@@ -1,19 +1,23 @@
 import json
 import math
 
+
 def readJsonFile(path):
     with open(path, 'r', encoding='utf-8') as f:
-        data=json.loads(f.read())
+        data = json.loads(f.read())
         return data
+
 
 def writeToJsonFile(jsonData, path):
     with open(path, 'w', encoding='utf-8') as f:
         f.write(json.dumps(jsonData))
 
 
-def getScatterPoints(idScatterData, idClassDict):
+def getScatterPoints(idScatterData, idClassDict, ids=None):
+    if ids == None:
+        ids = idScatterData.keys()
     points = []
-    for id in idScatterData:
+    for id in ids:
         x = idScatterData[id][0]
         y = idScatterData[id][1]
         topic = idClassDict[id]
@@ -22,9 +26,11 @@ def getScatterPoints(idScatterData, idClassDict):
     return points
 
 
-def getMapPoints(idLocationDict, idClassDict):
+def getMapPoints(idLocationDict, idClassDict, ids=None):
+    if ids == None:
+        ids = idLocationDict.keys()
     points = []
-    for id in idLocationDict:
+    for id in ids:
         try:
             lat = idLocationDict[id][0]
             lng = idLocationDict[id][1]
@@ -142,6 +148,7 @@ def getHexes(bound, idLocationDict, sideLength=None):
         hexes[i][j]['value'] += 1
         oneDimensionHexes = reduce(operator.add, hexes)
     return oneDimensionHexes
+
 
 def getRiver():
     pass

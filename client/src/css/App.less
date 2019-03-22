@@ -48,9 +48,20 @@
 }
 
 .control-panel-div {
+  display: flex;
+  flex-direction: column;
   width: @leftSideWidth;
   height: @controlPanelHeight;
   .panel-margin();
+}
+
+.control-panel-content-div {
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .word-cloud-div {

@@ -3,7 +3,8 @@ import {
   IF_DRAW_SCATTER_CENTERS,
   SET_SELECTED_IDS,
   setCurSystem,
-  SET_CUR_SYSTEM
+  SET_CUR_SYSTEM,
+  SET_SAMPLING_FLAG
 } from "../actions/setUIState";
 
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
@@ -13,13 +14,15 @@ interface UIState {
   ifDrawScatterCenters: boolean;
   selectedIDs: string[];
   systemName: SystemName;
+  samplingFlag: boolean;
 }
 
 const initialState: UIState = {
   curTopic: undefined,
   ifDrawScatterCenters: false,
   selectedIDs: [],
-  systemName: "yelp"
+  systemName: "yelp",
+  samplingFlag: false
 };
 
 export function uiState(state = initialState, action: any) {
@@ -35,6 +38,9 @@ export function uiState(state = initialState, action: any) {
       break;
     case SET_CUR_SYSTEM:
       return { ...state, systemName: action.name };
+      break;
+    case SET_SAMPLING_FLAG:
+      return { ...state, samplingFlag: action.flag };
       break;
     default:
       return state;
