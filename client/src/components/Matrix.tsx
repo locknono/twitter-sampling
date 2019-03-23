@@ -6,6 +6,8 @@ import { setCurTopic } from "../actions/setUIState";
 import { connect } from "react-redux";
 import { fetchJsonData } from "../shared";
 import { updateQueue } from "src/fiber/updateQueue";
+import Heading from "../components/Heading";
+
 interface Props {}
 
 interface State {
@@ -70,8 +72,6 @@ class Matrix extends React.Component<Props, State> {
   render() {
     const { svgHeight, svgWidth } = this.state;
     const { original, sampling, curTopic } = this.props;
-    console.log("sampling: ", sampling);
-    console.log("original: ", original);
 
     let matrixRects = [];
     let topBars;
@@ -165,12 +165,9 @@ class Matrix extends React.Component<Props, State> {
     }
 
     return (
-      <div className="matrix-div">
-        <svg id="matrix-svg">
-          {/*  {topBars}
-          {leftBars} */}
-          {matrixRects}
-        </svg>
+      <div className="matrix-div panel panel-default">
+        <Heading title="LDA Matrix" />
+        <svg id="matrix-svg">{matrixRects}</svg>
       </div>
     );
   }

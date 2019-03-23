@@ -44,6 +44,7 @@
   align-items: center;
 }
 .word-cloud-div {
+  box-sizing: border-box;
   width: 340px;
   height: 280px;
   padding-bottom: 0;
@@ -57,6 +58,7 @@
   flex-direction: column;
 }
 .above-div {
+  box-sizing: border-box;
   height: 420px;
   width: 1140px;
   margin-bottom: 0;
@@ -85,10 +87,12 @@
   height: 100%;
 }
 .right-side {
+  box-sizing: border-box;
   height: 420px;
   width: 340px;
 }
 .barchart-div {
+  width: 340px;
   height: 420px;
   margin-bottom: 0;
   display: flex;
@@ -137,8 +141,13 @@
 }
 .matrix-div {
   display: flex;
+  flex-direction: column;
   flex: 1 1 auto;
   width: 100%;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 #matrix-svg {
   flex: 1 1 auto;
@@ -170,4 +179,18 @@
   height: 280px;
   display: flex;
   float: left;
+}
+.groupbar-div {
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+  width: 100%;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+#texts-div {
+  height: 60px;
+  width: 100%;
 }

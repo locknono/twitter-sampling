@@ -67,6 +67,7 @@
 }
 
 .word-cloud-div {
+  box-sizing: border-box;
   width: @rightSideWidth;
   height: @wordCloudHeight;
   .panel-margin();
@@ -77,6 +78,7 @@
   flex-direction: column;
 }
 .above-div {
+  box-sizing: border-box;
   height: @height - @scatterDivHeight;
   width: @middileWidth + @rightSideWidth;
   margin-bottom: 0;
@@ -103,11 +105,13 @@
 }
 
 .right-side {
+  box-sizing: border-box;
   height: @height - @scatterDivHeight;
   width: @rightSideWidth;
 }
 
 .barchart-div {
+  width: @rightSideWidth;
   height: @barchartdivheight;
   .view-div();
 }
@@ -162,8 +166,13 @@
 
 .matrix-div {
   display: flex;
+  flex-direction: column;
   flex: 1 1 auto;
   width: 100%;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 #matrix-svg {
   flex: 1 1 auto;
@@ -201,4 +210,20 @@
   height: @scatterDivHeight;
   display: flex;
   float: left;
+}
+
+.groupbar-div {
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+  width: 100%;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#texts-div {
+  height: @rightSideWidth - @wordCloudHeight;
+  width: 100%;
 }

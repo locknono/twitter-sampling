@@ -39,13 +39,17 @@ export namespace color {
   export const matrixDiffColor = "rgb(238,172,87)";
 
   export const hexColorScale = d3.interpolateYlOrRd;
+
+  export const originalColor = "rgb(70,140,200)";
+
+  export const samplingColor = "rgb(238,172,87)";
 }
 
 export namespace url {
   export const mapPointsURL = "./mapPoints.json";
   export const ldbrPointsURL = "./samplingMapPoints.json";
   export const riverDataURL = "./riverData.json";
-  export const samplingRiverDataURL="./samplingRiverData.json";
+  export const samplingRiverDataURL = "./samplingRiverData.json";
   export const scatterPointsURL = "./scatterPoints.json";
   export const samplingScatterPointsURL = "./samplingScatterPoints.json";
   export const scatterCentersURL = "./scatterCenters.json";

@@ -131,7 +131,7 @@ function Map(props: Props) {
               body: JSON.stringify(id)
             });
             const text = await res.json();
-            console.log("text: ", text);
+            
           })();
         })
       );
@@ -328,7 +328,7 @@ function Map(props: Props) {
       const minvalue = d3.min(data, function(e: any) {
         return e.value as number;
       }) as number;
-      console.log("minvalue: ", minvalue);
+      
       const maxValue = d3.max(data, function(e: any) {
         return e.value as number;
       }) as number;

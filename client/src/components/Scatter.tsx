@@ -106,7 +106,7 @@ function LdaScatterCanvasCanvas(props: Props) {
     if (!backgroudCtx || !scatterData || !scales || !width || !height) {
       return;
     }
-    console.log("scatterData: ", scatterData);
+    
     backgroudCtx.clearRect(0, 0, width, height);
     const [xScale, yScale] = scales;
     //todo:move slice function to shared.ts

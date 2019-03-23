@@ -42,19 +42,32 @@ function ControlPanel(props: Props) {
         <div>
           <button
             id="twitter"
+            className="btn btn-default"
             onClick={handleSystemNameClick.bind(null, "twitter")}
           >
             twitter
           </button>
-          <button id="yelp" onClick={handleSystemNameClick.bind(null, "yelp")}>
+          <button
+            id="yelp"
+            onClick={handleSystemNameClick.bind(null, "yelp")}
+            className="btn btn-default"
+          >
             yelp
           </button>
         </div>
         <div>
-          <button id="original" onClick={handleSamplingClick.bind(null, false)}>
+          <button
+            id="original"
+            onClick={handleSamplingClick.bind(null, false)}
+            className="btn btn-default"
+          >
             original
           </button>
-          <button id="sampling" onClick={handleSamplingClick.bind(null, true)}>
+          <button
+            id="sampling"
+            onClick={handleSamplingClick.bind(null, true)}
+            className="btn btn-default"
+          >
             sampling
           </button>
         </div>
