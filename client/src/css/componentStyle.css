@@ -43,3 +43,7 @@
 .list-group-item {
   padding: 2px 2px 2px 4px;
 }
+.list-group {
+  overflow: auto;
+  text-align: start;
+}

@@ -83,14 +83,17 @@ function Texts(props: Props) {
 
   let renderTexts;
   renderTexts = texts.map(e => {
-    return <li className="list-group-item">{e}</li>;
+    return (
+      <a href="#" className="list-group-item">
+        {e}
+      </a>
+    );
   });
   return (
     <div className="view-div panel panel-default" id="texts-div">
-      <Heading title="texts" />
-      <div className="texts-content-div">
-        <ul className="list-group texts-ul">{renderTexts}</ul>
-      </div>
+      <Heading title="Texts" />
+      <div className="texts-content-div"> </div>
+      <div className="list-group"> {renderTexts}</div>
     </div>
   );
 }
