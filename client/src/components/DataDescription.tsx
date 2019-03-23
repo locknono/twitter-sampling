@@ -42,8 +42,10 @@ function DataDescription(props: Props) {
   return (
     <div className="panel panel-default data-description-div ">
       <Heading title="Data" />
-      {allTweetsCountDOM}
-      {samplingCountDOM}
+      <div className='data-description-content-div'>
+        {allTweetsCountDOM}
+        {samplingCountDOM}
+      </div>
     </div>
   );
 }

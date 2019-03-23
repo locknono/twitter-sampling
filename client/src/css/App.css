@@ -22,6 +22,8 @@
 .data-description-div {
   height: 210px;
   width: 280px;
+  display: flex;
+  flex-direction: column;
   padding-bottom: 0;
   margin-bottom: 0;
   margin-right: 0;
@@ -41,12 +43,12 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  align-items: center;
+  align-items: flex-start;
 }
 .word-cloud-div {
   box-sizing: border-box;
   width: 340px;
-  height: 280px;
+  height: 210px;
   padding-bottom: 0;
   margin-right: 0;
   margin-bottom: 0;
@@ -191,6 +193,13 @@
   padding-right: 0;
 }
 #texts-div {
-  height: 60px;
+  height: 210px;
   width: 100%;
+}
+.data-description-content-div {
+  flex: auto;
+  /*  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start; */
 }

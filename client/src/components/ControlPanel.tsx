@@ -9,6 +9,7 @@ import {
   setCurSystem,
   setSamplingFlag
 } from "../actions/setUIState";
+import SliderWithLabel from "./SliderWithLabel";
 
 interface Props {
   setCurSystem: typeof setCurSystem;
@@ -39,10 +40,11 @@ function ControlPanel(props: Props) {
     <div className="panel panel-default control-panel-div">
       <Heading title="Control Panel" />
       <div className="control-panel-content-div">
-        <div>
+        <div className="buttons-div " id="buttons-div1">
+          <span>select data:</span>
           <button
             id="twitter"
-            className="btn btn-default"
+            className="btn btn-default btn-sm"
             onClick={handleSystemNameClick.bind(null, "twitter")}
           >
             twitter
@@ -50,27 +52,43 @@ function ControlPanel(props: Props) {
           <button
             id="yelp"
             onClick={handleSystemNameClick.bind(null, "yelp")}
-            className="btn btn-default"
+            className="btn btn-default btn-sm"
           >
             yelp
           </button>
         </div>
-        <div>
+        <div className="buttons-div " id="buttons-div2">
+          <span>select status:</span>
           <button
             id="original"
             onClick={handleSamplingClick.bind(null, false)}
-            className="btn btn-default"
+            className="btn btn-default btn-sm"
           >
             original
           </button>
           <button
             id="sampling"
             onClick={handleSamplingClick.bind(null, true)}
-            className="btn btn-default"
+            className="btn btn-default btn-sm"
           >
             sampling
           </button>
         </div>
+        <SliderWithLabel
+          name="sampling ratio"
+          min={0}
+          max={1}
+          color="red"
+          step={0.1}
+        />
+
+        <SliderWithLabel
+          name="disk radius"
+          min={0}
+          max={1}
+          color="red"
+          step={0.1}
+        />
       </div>
     </div>
   );

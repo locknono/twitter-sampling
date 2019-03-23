@@ -71,7 +71,6 @@ class SliderWithLabel extends React.Component<Props, State> {
         <span className="slider-text" style={nameStyle}>
           {nameTag}
         </span>
-        <span className="slider-value-text">{valueStr}</span>
         <div className="slider-div">
           <Slider
             min={min}
@@ -85,6 +84,7 @@ class SliderWithLabel extends React.Component<Props, State> {
             handleStyle={{ borderColor: color, borderRadius: `25%` }}
           />
         </div>
+        <span className="slider-value-text">{valueStr}</span>
       </div>
     );
   }

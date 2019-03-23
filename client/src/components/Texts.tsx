@@ -50,10 +50,47 @@ const mapDispatch = {
   setSelectedIDs
 };
 
-function Texts() {
+function Texts(props: Props) {
+  const [texts, setTexts] = React.useState([]);
+
+  const { selectedIDs } = props;
+
+  React.useEffect(() => {
+    (async () => {
+      const res = await fetch(pythonServerURL + "getInitialTexts", {
+        method: "get",
+        mode: "cors",
+        cache: "no-cache"
+      });
+      const texts = await res.json();
+      setTexts(texts);
+    })();
+  }, []);
+
+  React.useEffect(() => {
+    if (selectedIDs.length === 0) return;
+    (async () => {
+      const res = await fetch(pythonServerURL + "getTextsByIDs", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        body: JSON.stringify(selectedIDs)
+      });
+      const texts = await res.json();
+      setTexts(texts);
+    })();
+  }, [selectedIDs]);
+
+  let renderTexts;
+  renderTexts = texts.map(e => {
+    return <li>{e}</li>;
+  });
   return (
     <div className="view-div panel panel-default" id="texts-div">
       <Heading title="texts" />
+      <div className="texts-content-div">
+        <ul className="text-ul">{renderTexts}</ul>
+      </div>
     </div>
   );
 }
