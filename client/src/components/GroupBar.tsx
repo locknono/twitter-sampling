@@ -97,6 +97,9 @@ function GroupBar(props: Props) {
           fill={color.originalBarColor}
           rx={2}
           ry={2}
+          onClick={() => {
+            setCurTopic(i);
+          }}
         />
       );
       bars.push(
@@ -109,6 +112,9 @@ function GroupBar(props: Props) {
           fill={color.samplingColor}
           rx={2}
           ry={2}
+          onClick={() => {
+            setCurTopic(i);
+          }}
         />
       );
     }

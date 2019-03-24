@@ -34,6 +34,12 @@ function WordCloud(props: Props) {
   const [layoutWords, setLayoutWords] = React.useState<any | undefined>(
     undefined
   );
+  const [lastWords, setLastWords] = React.useState<CloudWord[]>([]);
+  const [curWords, setCurWords] = React.useState<CloudWord[]>([]);
+  const [lastTopicIndex, setLastTopicIndex] = React.useState<CurTopic>(
+    undefined
+  );
+  const [curTopicIndex, setCurTopicIndex] = React.useState(topicNumber);
 
   React.useEffect(() => {
     (async function fetchData() {
@@ -64,25 +70,72 @@ function WordCloud(props: Props) {
         setCloudLayout(layout);
         setLayoutWords(words);
       });
-    console.log(Object.getPrototypeOf(layout));
-    console.log((layout as any).prototype);
     layout.start();
   }, [cloudData]);
 
-  //select a topic OR replace cloud data
+  //select a topic OR select ids
   React.useEffect(() => {
     if (!cloudLayout) return;
     let topicIndex = curTopic === undefined ? topicNumber : curTopic;
-    cloudLayout.words(JSON.parse(JSON.stringify(cloudData[topicIndex])));
+
+    let newWords: CloudWord[];
+    if (topicIndex === lastTopicIndex) {
+      newWords = [];
+
+      const newWordsSet = new Set();
+      lastWords.map(e => {
+        if (!newWordsSet.has(e.text)) {
+          newWords.push(e);
+          newWordsSet.add(e.text);
+        }
+      });
+      cloudData[topicIndex].map(e => {
+        if (!newWordsSet.has(e.text)) {
+          newWords.push(e);
+          newWordsSet.add(e.text);
+        }
+      });
+    } else {
+      newWords = JSON.parse(JSON.stringify(cloudData[topicIndex]));
+    }
+    setCurTopicIndex(topicIndex);
+    setCurWords(JSON.parse(JSON.stringify(cloudData[topicIndex])));
+    cloudLayout.words(newWords);
     cloudLayout.start();
+    return function memoLastWordsAndLastTopic() {
+      setLastWords(JSON.parse(JSON.stringify(cloudData[topicIndex])));
+      setLastTopicIndex(topicIndex);
+    };
   }, [curTopic, cloudData, cloudLayout]);
 
-  let renderWords;
-
+  let renderWords = [];
   let renderGroup;
   if (layoutWords) {
-    renderWords = layoutWords.map((e: any, i: number) => {
-      return (
+    const lastWordsSet = new Set();
+    const curWordsSet = new Set();
+    curWords.map(e => curWordsSet.add(e.text));
+    lastWords.map(e => lastWordsSet.add(e.text));
+    console.log("curTopicIndex: ", curTopicIndex);
+    console.log("lastTopicIndex: ", lastTopicIndex);
+    for (let i = 0; i < layoutWords.length; i++) {
+      const e = layoutWords[i];
+      const text = layoutWords[i].text;
+      let fillColor;
+      if (lastTopicIndex === undefined) {
+        fillColor = "blue";
+      } else if (curTopicIndex !== lastTopicIndex) {
+        fillColor = "blue";
+      } else {
+        if (lastWordsSet.has(text) && curWordsSet.has(text)) {
+          fillColor = "blue";
+        } else if (!lastWordsSet.has(text) && curWordsSet.has(text)) {
+          fillColor = "red";
+        } else if (lastWordsSet.has(text) && !curWordsSet.has(text)) {
+          fillColor = "black";
+        }
+      }
+
+      renderWords.push(
         <text
           key={`${e.text}-${e.x}-${e.y}`}
           textAnchor="middle"
@@ -90,13 +143,13 @@ function WordCloud(props: Props) {
           style={{
             fontSize: e.size,
             fontFamily: "Impact",
-            fill: color.cloudColors[i % color.cloudColors.length]
+            fill: fillColor
           }}
         >
           {e.text}
         </text>
       );
-    });
+    }
   }
 
   if (cloudLayout) {
