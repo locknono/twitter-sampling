@@ -44,6 +44,8 @@ function GroupBar(props: Props) {
   const { setData, setCurTopic, original, sampling, curTopic } = props;
 
   const [width, height] = useWidthAndHeight("groupbar-svg");
+  console.log("height: ", height);
+  console.log("width: ", width);
 
   let bars: JSX.Element[] = [];
 
@@ -55,10 +57,11 @@ function GroupBar(props: Props) {
   }, []);
 
   if (width && height && sampling.length !== 0 && original.length !== 0) {
-    const xStart = width * 0.05;
-    const xEnd = width * (1 - 0.05);
-    const yStart = height * 0.05;
-    const yEnd = height * (1 - 0.05);
+    const pad = 0.1;
+    const xStart = width * pad;
+    const xEnd = width * (1 - pad);
+    const yStart = height * pad;
+    const yEnd = height * (1 - pad);
 
     let minValue = Number.MAX_SAFE_INTEGER;
     let maxValue = 0;
@@ -80,7 +83,7 @@ function GroupBar(props: Props) {
 
     const yScale = d3
       .scaleLinear()
-      .domain([minValue, maxValue])
+      .domain([0, maxValue])
       .range([yEnd, yStart]);
 
     for (let i = 0; i < original.length; i++) {
@@ -100,21 +103,50 @@ function GroupBar(props: Props) {
         <rect
           key={v4()}
           x={(xScale(i.toString()) as number) + xScale.bandwidth() / 2}
-          y={yScale(original[i])}
+          y={yScale(sampling[i])}
           width={xScale.bandwidth() / 2}
-          height={yScale(0) - yScale(original[i])}
+          height={yScale(0) - yScale(sampling[i])}
           fill={color.samplingColor}
           rx={2}
           ry={2}
         />
       );
     }
+
+    const x1g = d3
+      .select("#x1-axis-g")
+      .attr("transform", `translate(${0},${height * (1 - pad)})`)
+      .call(
+        d3
+          .axisBottom(xScale)
+          .tickSizeOuter(0)
+          .tickSize(3)
+      )
+      .call(x1g => {
+        x1g.selectAll("text").attr("dy", "0.51em");
+      });
+    const y1g = d3
+      .select("#y1-axis-g")
+      .attr("transform", `translate(${xStart},0)`)
+      .call(
+        d3
+          .axisLeft(yScale)
+          .tickSizeOuter(0)
+          .tickSize(3)
+      )
+      .call(y1g => {
+        y1g.select(".domain").remove();
+      });
   }
 
   return (
-    <div className="groupbar-div panel panel-default">
+    <div className="groupbar-div view-div panel panel-default">
       <Heading title="LDA Bar Chart" />
-      <svg id="groupbar-svg">{bars}</svg>
+      <svg id="groupbar-svg">
+        {bars}
+        <g id="x1-axis-g" />
+        <g id="y1-axis-g" />
+      </svg>
     </div>
   );
 }

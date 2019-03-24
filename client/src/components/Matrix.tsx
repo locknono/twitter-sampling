@@ -188,7 +188,7 @@ class Matrix extends React.Component<Props, State> {
     }
 
     return (
-      <div className="matrix-div panel panel-default">
+      <div className="matrix-div view-div panel panel-default">
         <div className="panel-heading heading">
           {"LDA Matrix"}
           <div className="matrix-color-bar-text">difference:</div>

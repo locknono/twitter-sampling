@@ -9,9 +9,10 @@
   display: flex;
 }
 .view-div {
-  margin-bottom: 0;
   display: flex;
   flex-direction: column;
+  margin-bottom: 0;
+  width: 100%;
 }
 .left-side {
   display: flex;
@@ -51,9 +52,10 @@
   height: 210px;
   padding-bottom: 0;
   margin-right: 0;
-  margin-bottom: 0;
   display: flex;
   flex-direction: column;
+  margin-bottom: 0;
+  width: 100%;
 }
 .whole-right {
   display: flex;
@@ -80,9 +82,10 @@
   width: 860px;
   padding-bottom: 0;
   margin-right: 0;
-  margin-bottom: 0;
   display: flex;
   flex-direction: column;
+  margin-bottom: 0;
+  width: 100%;
 }
 #river {
   width: 100%;
@@ -96,9 +99,10 @@
 .barchart-div {
   width: 340px;
   height: 420px;
-  margin-bottom: 0;
   display: flex;
   flex-direction: column;
+  margin-bottom: 0;
+  width: 100%;
 }
 .heading {
   position: relative;
@@ -143,11 +147,8 @@
   flex: 1 1 auto;
 }
 .matrix-div {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  width: 100%;
-  margin-bottom: 0;
+  height: 140px;
+  flex: auto;
   padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
@@ -184,11 +185,7 @@
   float: left;
 }
 .groupbar-div {
-  display: flex;
-  flex-direction: column;
-  height: 200px;
-  width: 100%;
-  margin-bottom: 0;
+  height: 140px;
   padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
