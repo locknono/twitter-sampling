@@ -1,7 +1,11 @@
 import * as React from "react";
 import * as d3 from "d3";
 import { setData, SCATTER_DATA, CLOUD_DATA } from "../actions/setDataAction";
-import { setIfDrawCenters, setSelectedIDs } from "../actions/setUIState";
+import {
+  setIfDrawCenters,
+  setSelectedIDs,
+  setCurTopic
+} from "../actions/setUIState";
 import {
   color,
   padding,
@@ -26,6 +30,7 @@ interface Props {
   setSelectedIDs: typeof setSelectedIDs;
   selectedIDs: string[];
   samplingFlag: boolean;
+  setCurTopic: typeof setCurTopic;
 }
 
 const mapState = (state: any) => {
@@ -47,7 +52,8 @@ const mapState = (state: any) => {
 const mapDispatch = {
   setData,
   setIfDrawCenters,
-  setSelectedIDs
+  setSelectedIDs,
+  setCurTopic
 };
 function LdaScatterCanvasCanvas(props: Props) {
   const {
@@ -57,7 +63,8 @@ function LdaScatterCanvasCanvas(props: Props) {
     ifDrawScatterCenters,
     setSelectedIDs,
     selectedIDs,
-    samplingFlag
+    samplingFlag,
+    setCurTopic
   } = props;
   const [o1, setO1] = React.useState<[number, number] | null>(null);
   const [o2, setO2] = React.useState<[number, number] | null>(null);
@@ -106,7 +113,7 @@ function LdaScatterCanvasCanvas(props: Props) {
     if (!backgroudCtx || !scatterData || !scales || !width || !height) {
       return;
     }
-    
+
     backgroudCtx.clearRect(0, 0, width, height);
     const [xScale, yScale] = scales;
     //todo:move slice function to shared.ts
@@ -268,6 +275,42 @@ function LdaScatterCanvasCanvas(props: Props) {
     updateQueue.flush();
   }, [selectedIDs]);
 
+  function handleClick(e: any) {
+    if (e.ctrlKey !== true) return;
+
+    if (!width || !height) return;
+    const rect = e.target.getBoundingClientRect();
+    const x = e.clientX - rect.x;
+    const y = e.clientY - rect.y;
+
+    const indices = [];
+    for (let i = 0; i < topicNumber; i++) {
+      indices.push(i.toString());
+    }
+    const xScale = d3
+      .scaleBand()
+      .domain(indices)
+      .range([
+        (width * padding.scatterPadding) / 3,
+        (width * (1 - padding.scatterPadding)) / 2
+      ])
+      .paddingInner(0.2);
+    if (
+      y < height * (1 - padding.scatterPadding / 2) ||
+      y > height * (1 - padding.scatterPadding / 2) + xScale.bandwidth()
+    ) {
+      return;
+    }
+    if (x > (xScale(topicNumber.toString()) as number)) return;
+    for (let i = 0; i < topicNumber; i++) {
+      const rectX = xScale(i.toString()) as number;
+      if (x > rectX && x < rectX + xScale.bandwidth()) {
+        setCurTopic(i);
+        console.log("i: ", i);
+        break;
+      }
+    }
+  }
   function handleMouseDown(e: any) {
     const rect = e.target.getBoundingClientRect();
     const x1 = e.clientX - rect.x;
@@ -337,6 +380,7 @@ function LdaScatterCanvasCanvas(props: Props) {
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onMouseMove={handleMouseMove}
+          onClick={handleClick}
           ref={canvasRef}
           width={width}
           height={height}

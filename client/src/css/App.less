@@ -14,7 +14,7 @@
 
 @controlPanelHeight: @mapHeight / 2;
 
-@wordCloudHeight: @rightSideWidth - @heading-height;
+@wordCloudHeight: @rightSideWidth - @heading-height -10px;
 
 @scatterDivHeight: @height - @dataHeight - @controlPanelHeight;
 
@@ -76,7 +76,8 @@
   width: @rightSideWidth;
   height: @wordCloudHeight;
   .panel-margin();
-  .view-div();
+  display: flex;
+  flex-direction: column;
 }
 
 .whole-right {
@@ -228,6 +229,9 @@
 #texts-div {
   height: @height - @wordCloudHeight;
   width: 100%;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
 }
 
 .data-description-content-div {

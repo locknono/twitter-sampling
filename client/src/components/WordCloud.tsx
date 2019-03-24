@@ -115,8 +115,7 @@ function WordCloud(props: Props) {
     const curWordsSet = new Set();
     curWords.map(e => curWordsSet.add(e.text));
     lastWords.map(e => lastWordsSet.add(e.text));
-    console.log("curTopicIndex: ", curTopicIndex);
-    console.log("lastTopicIndex: ", lastTopicIndex);
+
     for (let i = 0; i < layoutWords.length; i++) {
       const e = layoutWords[i];
       const text = layoutWords[i].text;

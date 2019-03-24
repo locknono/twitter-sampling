@@ -132,9 +132,8 @@ class Matrix extends React.Component<Props, State> {
       );
 
       const r1 = getRelationList(original);
-      console.log("r1: ", r1);
+
       const r2 = getRelationList(sampling);
-      console.log("r2: ", r2);
 
       const d1 = getDiffList(original);
       const d2 = getDiffList(sampling);
