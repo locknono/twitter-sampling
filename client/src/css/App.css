@@ -49,7 +49,7 @@
 .word-cloud-div {
   box-sizing: border-box;
   width: 340px;
-  height: 210px;
+  height: 318px;
   padding-bottom: 0;
   margin-right: 0;
   display: flex;
@@ -79,13 +79,12 @@
 }
 .river-view {
   height: 280px;
-  width: 860px;
+  width: 520px;
   padding-bottom: 0;
+  margin-bottom: 0;
   margin-right: 0;
   display: flex;
   flex-direction: column;
-  margin-bottom: 0;
-  width: 100%;
 }
 #river {
   width: 100%;
@@ -93,7 +92,7 @@
 }
 .right-side {
   box-sizing: border-box;
-  height: 420px;
+  height: 700px;
   width: 340px;
 }
 .barchart-div {
@@ -179,7 +178,7 @@
   transform: scale(1.03, 1.03);
 }
 .bottom-div {
-  width: 1140px;
+  width: 800px;
   height: 280px;
   display: flex;
   float: left;
@@ -191,7 +190,7 @@
   padding-right: 0;
 }
 #texts-div {
-  height: 210px;
+  height: 382px;
   width: 100%;
 }
 .data-description-content-div {

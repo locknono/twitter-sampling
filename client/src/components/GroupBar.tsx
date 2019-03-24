@@ -149,7 +149,7 @@ function GroupBar(props: Props) {
     <div className="groupbar-div view-div panel panel-default">
       <Heading title="LDA Bar Chart" />
       <svg id="groupbar-svg">
-        {bars}
+        <g className="group-rects-g">{bars}</g>
         <g id="x1-axis-g" />
         <g id="y1-axis-g" />
       </svg>

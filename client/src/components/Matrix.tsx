@@ -132,34 +132,39 @@ class Matrix extends React.Component<Props, State> {
       );
 
       const r1 = getRelationList(original);
+      console.log("r1: ", r1);
       const r2 = getRelationList(sampling);
+      console.log("r2: ", r2);
 
       const d1 = getDiffList(original);
-
       const d2 = getDiffList(sampling);
-
       const allDiffs = [];
+
       for (let i = 0; i < d1.length; i++) {
         for (let j = 0; j < d1[i].length; j++) {
-          const diff = d1[i][j] - d2[i][j];
+          const diff = Math.abs(d1[i][j] - d2[i][j]);
           allDiffs.push(diff);
         }
       }
-
       const minDiff = Math.min(...allDiffs);
       const maxDiff = Math.max(...allDiffs);
 
       const scale = d3
         .scaleLinear()
         .domain([minDiff, maxDiff])
-        .range([0.1, 0.7]);
+        .range([0, 0.7]);
 
-      color1 = d3.interpolateBlues(0.1);
+      color1 = d3.interpolateBlues(0.0);
       color2 = d3.interpolateBlues(0.7);
       for (let i = 0; i < d1.length; i++) {
         for (let j = 0; j < d1[i].length; j++) {
-          const diff = d1[i][j] - d2[i][j];
-          const fillColor = d3.interpolateBlues(scale(diff));
+          let fillColor;
+          if (r1[i][j] !== r2[i][j]) {
+            fillColor = color.samplingColor;
+          } else {
+            const diff = Math.abs(d1[i][j] - d2[i][j]);
+            fillColor = d3.interpolateBlues(scale(diff));
+          }
           const x = xScale(i.toString());
           const y = yScale(j.toString());
           const width = xScale.bandwidth();

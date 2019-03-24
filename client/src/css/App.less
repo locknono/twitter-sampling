@@ -6,13 +6,15 @@
 
 @mapHeight: 420px;
 
+@heading-height: 22px;
+
 @height: 700px;
 
 @dataHeight: @mapHeight / 2;
 
 @controlPanelHeight: @mapHeight / 2;
 
-@wordCloudHeight: @mapHeight / 2;
+@wordCloudHeight: @rightSideWidth - @heading-height;
 
 @scatterDivHeight: @height - @dataHeight - @controlPanelHeight;
 
@@ -100,9 +102,10 @@
 
 .river-view {
   height: @height - @mapHeight;
-  width: @middileWidth - @scatterDivHeight + @rightSideWidth;
+  width: @middileWidth - @scatterDivHeight;
   .panel-margin();
-  .view-div();
+  display: flex;
+  flex-direction: column;
 }
 #river {
   width: 100%;
@@ -111,7 +114,7 @@
 
 .right-side {
   box-sizing: border-box;
-  height: @height - @scatterDivHeight;
+  height: @height;
   width: @rightSideWidth;
 }
 
@@ -123,7 +126,7 @@
 
 .heading {
   position: relative;
-  height: 22px;
+  height: @heading-height;
   text-align: left;
   padding-top: 2px;
   padding-left: 10px;
@@ -209,7 +212,7 @@
 }
 
 .bottom-div {
-  width: @middileWidth + @rightSideWidth;
+  width: @middileWidth;
   height: @scatterDivHeight;
   display: flex;
   float: left;
@@ -223,7 +226,7 @@
 }
 
 #texts-div {
-  height: @mapHeight - @wordCloudHeight;
+  height: @height - @wordCloudHeight;
   width: 100%;
 }
 
@@ -233,4 +236,7 @@
   flex-direction: column;
   justify-content: space-around;
   align-items: flex-start; */
+}
+
+.group-rects-g {
 }
