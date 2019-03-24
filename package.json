@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "koa": "^2.7.0"
+    "koa": "^2.7.0",
+    "leaflet-d3-svg-overlay": "^2.2.0"
   }
 }

@@ -48,6 +48,11 @@ cookies@~0.7.1:
     depd "~1.1.2"
     keygrip "~1.0.3"
 
+d3@^3.5.6:
+  version "3.5.17"
+  resolved "https://registry.yarnpkg.com/d3/-/d3-3.5.17.tgz#bc46748004378b21a360c9fc7cf5231790762fb8"
+  integrity sha1-vEZ0gAQ3iyGjYMn8fPUjF5B2L7g=
+
 debug@~3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
@@ -183,6 +188,19 @@ koa@^2.7.0:
     statuses "^1.5.0"
     type-is "^1.6.16"
     vary "^1.1.2"
+
+leaflet-d3-svg-overlay@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/leaflet-d3-svg-overlay/-/leaflet-d3-svg-overlay-2.2.0.tgz#3e68255b588077c85179fe961f6eee516d07fe94"
+  integrity sha1-PmglW1iAd8hRef6WH27uUW0H/pQ=
+  dependencies:
+    d3 "^3.5.6"
+    leaflet "^0.7.0"
+
+leaflet@^0.7.0:
+  version "0.7.7"
+  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-0.7.7.tgz#1e352ba54e63d076451fa363c900890cb2cf75ee"
+  integrity sha1-HjUrpU5j0HZFH6NjyQCJDLLPde4=
 
 media-typer@0.3.0:
   version "0.3.0"

@@ -16,7 +16,6 @@ import { setData, MAP_POINTS, CLOUD_DATA } from "../actions/setDataAction";
 import { connect } from "react-redux";
 import "leaflet.pm";
 import { setSelectedIDs } from "../actions/setUIState";
-
 const mapState = (state: any) => {
   const { mapPoints } = state.dataTree;
   const { curTopic, selectedIDs, systemName } = state.uiState;
@@ -50,6 +49,7 @@ function Map(props: Props) {
     setSelectedIDs,
     systemName
   } = props;
+
   const [
     lastSelectedLayer,
     setLastSelectedLayer
@@ -62,7 +62,6 @@ function Map(props: Props) {
   const [controlLayer, setControlLayer] = React.useState<L.Control.Layers>(
     initialControlLayer
   );
-
   //set map points
   React.useEffect(() => {
     (async function setMapPoints() {
@@ -131,7 +130,6 @@ function Map(props: Props) {
               body: JSON.stringify(id)
             });
             const text = await res.json();
-            
           })();
         })
       );
@@ -279,11 +277,19 @@ function Map(props: Props) {
     map.pm.addControls(options);
     //map.pm.enableDraw("Circle", drawOptions as any);
   }, []);
-
   React.useEffect(() => {
     if (!map) return;
+    let lastW: any = null;
     map.on("pm:create", function(e1: any) {
       if (!mapPoints) return;
+      const layer = e1.layer;
+      if (!lastW) {
+        lastW = layer;
+      } else {
+        map.removeLayer(lastW);
+        lastW = layer;
+      }
+      console.log("e1: ", e1);
       const radius = e1.layer._radius;
       const center: [number, number] = [
         e1.layer._latlng.lat,
@@ -299,15 +305,69 @@ function Map(props: Props) {
 
       (async function setWordCloudDataWithSelectedIDs(ids: string[]) {
         if (ids.length === 0) return;
-        const res = await fetch(pythonServerURL + "selectArea", {
-          method: "POST",
-          mode: "cors",
-          cache: "no-cache",
-          body: JSON.stringify(ids)
-        });
-        const data = await res.json();
-        setData(CLOUD_DATA, data);
+        try {
+          const res = await fetch(pythonServerURL + "selectArea", {
+            method: "POST",
+            mode: "cors",
+            cache: "no-cache",
+            body: JSON.stringify(ids)
+          });
+          const data = await res.json();
+          setData(CLOUD_DATA, data);
+        } catch (e) {
+          console.log("e: ", e);
+        }
       })(ids);
+
+      (async function drawWheel() {
+        try {
+          const fetch1 = fetch("./wheelData.json");
+          const fetch2 = fetch("./wheelDataMeta.json");
+          const res1 = await fetch1;
+          const res2 = await fetch2;
+          const data: WheelData = await res1.json();
+          const meta = await res2.json();
+          console.log("data: ", data);
+          console.log("meta: ", meta);
+          const { minTime, maxTime } = meta;
+          const pad = 1;
+          const sliceCount = (maxTime - minTime) / pad;
+
+          const svg = L.svg();
+          svg.addTo(map);
+          const d3Svg = d3.select(".leaflet-overlay-pane svg");
+          const transform = d3Svg.attr("transform");
+          console.log("transform: ", transform);
+          console.log("d3Svg: ", d3Svg);
+          d3Svg
+            .append("circle")
+            .attr("cx", e1.layer._point.x)
+            .attr("cy", e1.layer._point.y)
+            .attr("r", 10)
+            .attr("fill", "black")
+            .attr("transform", transform);
+
+          const initialZoom = (map as any)._zoom;
+          const wgsOrigin = L.latLng([0, 0]);
+          const wgsInitialShift = map.latLngToLayerPoint(wgsOrigin);
+          map.on("zoom", function() {
+            const newZoom = (map as any)._zoom;
+            const zoomDiff = newZoom - initialZoom;
+            const scale = Math.pow(2, zoomDiff);
+            const shift = (map.latLngToLayerPoint(wgsOrigin) as any)._subtract(
+              wgsInitialShift.multiplyBy(scale)
+            );
+            d3Svg
+              .selectAll("circle")
+              .attr(
+                "transform",
+                `translate(${shift.x},${shift.y}) scale(${scale})`
+              );
+          });
+        } catch (e) {
+          console.log("e: ", e);
+        }
+      })();
     });
   }, [mapPoints]);
 
@@ -328,7 +388,7 @@ function Map(props: Props) {
       const minvalue = d3.min(data, function(e: any) {
         return e.value as number;
       }) as number;
-      
+
       const maxValue = d3.max(data, function(e: any) {
         return e.value as number;
       }) as number;

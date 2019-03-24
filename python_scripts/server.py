@@ -22,9 +22,10 @@ def hello():
     return "Hello World!"
 
 
-@app.route("/selectArea", methods=['GET'])
+@app.route("/selectArea", methods=['GET', 'POST'])
 def selectArea():
     ids = json.loads(request.data)
+    print(ids)
     renderData = getWordCloud(idTextDict, idClassDict, g.topicNumber, ids)
     res = Response(json.dumps(renderData))
     res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
@@ -84,7 +85,6 @@ def getInitialTexts():
     res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res
-
 
 
 if __name__ == '__main__':

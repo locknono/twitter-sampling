@@ -31,3 +31,9 @@ interface CloudWord {
 type CloudData = CloudWord[][];
 
 type SystemName = "yelp" | "twitter";
+
+interface SingleWheelData {
+  [time: number]: number;
+}
+
+type WheelData = SingleWheelData[];
