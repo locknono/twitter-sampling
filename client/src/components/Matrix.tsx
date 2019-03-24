@@ -76,6 +76,8 @@ class Matrix extends React.Component<Props, State> {
     let matrixRects = [];
     let topBars;
     let leftBars;
+    let color1;
+    let color2;
     if (svgWidth && svgHeight && sampling.length > 0 && original.length > 0) {
       const matriXStart = (svgWidth * 0.1) / 2;
       const matrixYStart = (svgHeight * 0.1) / 2;
@@ -132,11 +134,32 @@ class Matrix extends React.Component<Props, State> {
       const r1 = getRelationList(original);
       const r2 = getRelationList(sampling);
 
-      for (let i = 0; i < r1.length; i++) {
-        for (let j = 0; j < r1[i].length; j++) {
-          const equalFlag = r1[i][j] === r2[i][j] ? true : false;
-          const fillColor =
-            equalFlag === true ? color.matrixSameColor : color.matrixDiffColor;
+      const d1 = getDiffList(original);
+
+      const d2 = getDiffList(sampling);
+
+      const allDiffs = [];
+      for (let i = 0; i < d1.length; i++) {
+        for (let j = 0; j < d1[i].length; j++) {
+          const diff = d1[i][j] - d2[i][j];
+          allDiffs.push(diff);
+        }
+      }
+
+      const minDiff = Math.min(...allDiffs);
+      const maxDiff = Math.max(...allDiffs);
+
+      const scale = d3
+        .scaleLinear()
+        .domain([minDiff, maxDiff])
+        .range([0.1, 0.7]);
+
+      color1 = d3.interpolateBlues(0.1);
+      color2 = d3.interpolateBlues(0.7);
+      for (let i = 0; i < d1.length; i++) {
+        for (let j = 0; j < d1[i].length; j++) {
+          const diff = d1[i][j] - d2[i][j];
+          const fillColor = d3.interpolateBlues(scale(diff));
           const x = xScale(i.toString());
           const y = yScale(j.toString());
           const width = xScale.bandwidth();
@@ -166,7 +189,17 @@ class Matrix extends React.Component<Props, State> {
 
     return (
       <div className="matrix-div panel panel-default">
-        <Heading title="LDA Matrix" />
+        <div className="panel-heading heading">
+          {"LDA Matrix"}
+          <div className="matrix-color-bar-text">difference:</div>
+          <div
+            className="matrix-color-bar"
+            style={{
+              background: `linear-gradient(to right,
+              ${color1},${color2})`
+            }}
+          />
+        </div>
         <svg id="matrix-svg">{matrixRects}</svg>
       </div>
     );
@@ -196,6 +229,16 @@ function getRelationList(list: number[]) {
   return ralationList;
 }
 
+function getDiffList(list: number[]) {
+  const diffList: number[][] = [];
+  for (let i = 0; i < list.length; i++) {
+    diffList.push([]);
+    for (let j = 0; j < list.length; j++) {
+      diffList[i][j] = Math.abs(list[i] - list[j]);
+    }
+  }
+  return diffList;
+}
 function getBars(
   data: number[],
   xScale: d3.ScaleBand<string>,

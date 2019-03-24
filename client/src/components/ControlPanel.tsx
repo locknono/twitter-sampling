@@ -86,7 +86,7 @@ function ControlPanel(props: Props) {
           name="disk radius"
           min={0}
           max={1}
-          color="red"
+          color="blue"
           step={0.1}
         />
       </div>

@@ -47,3 +47,17 @@
   overflow: auto;
   text-align: start;
 }
+.matrix-color-bar {
+  width: 35%;
+  height: 65%;
+  position: absolute;
+  top: 50%;
+  left: 80%;
+  transform: translate(-50%, -50%);
+  border: 0.1px #c8c8c8 solid;
+}
+.matrix-color-bar-text {
+  position: absolute;
+  top: 1px;
+  left: 37%;
+}

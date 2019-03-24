@@ -55,15 +55,23 @@ function Texts(props: Props) {
 
   const { selectedIDs } = props;
 
+  const [ifFetchSuccess, setIfFetchSuccess] = React.useState(false);
+
   React.useEffect(() => {
     (async () => {
-      const res = await fetch(pythonServerURL + "getInitialTexts", {
-        method: "get",
-        mode: "cors",
-        cache: "no-cache"
-      });
-      const texts = await res.json();
-      setTexts(texts);
+      try {
+        const res = await fetch(pythonServerURL + "getInitialTexts", {
+          method: "get",
+          mode: "cors",
+          cache: "no-cache"
+        });
+        const ok = res.ok;
+        const texts = await res.json();
+        setTexts(texts);
+        setIfFetchSuccess(true);
+      } catch (error) {
+        setIfFetchSuccess(false);
+      }
     })();
   }, []);
 
@@ -78,17 +86,22 @@ function Texts(props: Props) {
       });
       const texts = await res.json();
       setTexts(texts);
+      setIfFetchSuccess(true);
     })();
   }, [selectedIDs]);
 
   let renderTexts;
-  renderTexts = texts.map(e => {
-    return (
-      <a href="#" className="list-group-item">
-        {e}
-      </a>
-    );
-  });
+  if (ifFetchSuccess === false) {
+    renderTexts = <div>!!!START SERVER!!!</div>;
+  } else {
+    renderTexts = texts.map(e => {
+      return (
+        <a href="#" className="list-group-item">
+          {e}
+        </a>
+      );
+    });
+  }
   return (
     <div className="view-div panel panel-default" id="texts-div">
       <Heading title="Texts" />

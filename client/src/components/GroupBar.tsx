@@ -8,7 +8,7 @@ import { fetchJsonData } from "../shared";
 import { updateQueue } from "src/fiber/updateQueue";
 import Heading from "../components/Heading";
 import { useWidthAndHeight } from "../hooks/layoutHooks";
-
+import * as v4 from "uuid/v4";
 interface State {
   iter?: number[];
   svgWidth: number | null;
@@ -86,6 +86,7 @@ function GroupBar(props: Props) {
     for (let i = 0; i < original.length; i++) {
       bars.push(
         <rect
+          key={v4()}
           x={xScale(i.toString())}
           y={yScale(original[i])}
           width={xScale.bandwidth() / 2}
@@ -97,6 +98,7 @@ function GroupBar(props: Props) {
       );
       bars.push(
         <rect
+          key={v4()}
           x={(xScale(i.toString()) as number) + xScale.bandwidth() / 2}
           y={yScale(original[i])}
           width={xScale.bandwidth() / 2}

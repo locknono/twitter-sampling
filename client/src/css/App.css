@@ -101,6 +101,7 @@
   flex-direction: column;
 }
 .heading {
+  position: relative;
   height: 22px;
   text-align: left;
   padding-top: 2px;
