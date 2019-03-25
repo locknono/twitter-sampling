@@ -62,6 +62,36 @@ function Map(props: Props) {
   const [controlLayer, setControlLayer] = React.useState<L.Control.Layers>(
     initialControlLayer
   );
+
+  const [wheelCenter, setWheelCenter] = React.useState<any>(null);
+
+  const [svgLayer, setSvgLayer] = React.useState<any>(null);
+  React.useEffect(() => {
+    if (!map) return;
+    const svg = L.svg();
+    svg.addTo(map);
+    const d3Svg = d3.select(".leaflet-overlay-pane svg");
+    const g = d3Svg.append("g");
+    setSvgLayer(g);
+    const initialZoom = (map as any)._zoom;
+    const wgsOrigin = L.latLng([0, 0]);
+    const wgsInitialShift = map.latLngToLayerPoint(wgsOrigin);
+    map.on("zoom", function() {
+      const newZoom = (map as any)._zoom;
+      const zoomDiff = newZoom - initialZoom;
+      const scale = Math.pow(2, zoomDiff);
+
+      const shift = (map.latLngToLayerPoint(L.latLng(0, 0)) as any)._subtract(
+        wgsInitialShift.multiplyBy(scale)
+      );
+      g.attr("transform", `translate(${shift.x},${shift.y}) scale(${scale})`);
+    });
+  }, [map]);
+
+  React.useEffect(() => {
+    if (!map || !wheelCenter) return;
+    const d3Svg = d3.select(".leaflet-overlay-pane svg").select("g");
+  }, [map, wheelCenter]);
   //set map points
   React.useEffect(() => {
     (async function setMapPoints() {
@@ -278,7 +308,7 @@ function Map(props: Props) {
     //map.pm.enableDraw("Circle", drawOptions as any);
   }, []);
   React.useEffect(() => {
-    if (!map) return;
+    if (!map || !svgLayer) return;
     let lastW: any = null;
     map.on("pm:create", function(e1: any) {
       if (!mapPoints) return;
@@ -289,7 +319,7 @@ function Map(props: Props) {
         map.removeLayer(lastW);
         lastW = layer;
       }
-      console.log("e1: ", e1);
+
       const radius = e1.layer._radius;
       const center: [number, number] = [
         e1.layer._latlng.lat,
@@ -314,9 +344,7 @@ function Map(props: Props) {
           });
           const data = await res.json();
           setData(CLOUD_DATA, data);
-        } catch (e) {
-          console.log("e: ", e);
-        }
+        } catch (e) {}
       })(ids);
 
       (async function drawWheel() {
@@ -326,47 +354,95 @@ function Map(props: Props) {
           const res1 = await fetch1;
           const res2 = await fetch2;
           const data: WheelData = await res1.json();
+
           const meta = await res2.json();
-          console.log("data: ", data);
+          const { minTime, maxTime, maxValue, pad } = meta;
           console.log("meta: ", meta);
-          const { minTime, maxTime } = meta;
-          const pad = 1;
+
           const sliceCount = (maxTime - minTime) / pad;
 
-          const svg = L.svg();
-          svg.addTo(map);
-          const d3Svg = d3.select(".leaflet-overlay-pane svg");
-          const transform = d3Svg.attr("transform");
-          console.log("transform: ", transform);
-          console.log("d3Svg: ", d3Svg);
-          d3Svg
-            .append("circle")
-            .attr("cx", e1.layer._point.x)
-            .attr("cy", e1.layer._point.y)
-            .attr("r", 10)
-            .attr("fill", "black")
-            .attr("transform", transform);
+          const layerHeight = 10;
+          const scale = d3
+            .scaleLinear()
+            .domain([0, maxValue])
+            .range([0, layerHeight]);
 
-          const initialZoom = (map as any)._zoom;
-          const wgsOrigin = L.latLng([0, 0]);
-          const wgsInitialShift = map.latLngToLayerPoint(wgsOrigin);
-          map.on("zoom", function() {
-            const newZoom = (map as any)._zoom;
-            const zoomDiff = newZoom - initialZoom;
-            const scale = Math.pow(2, zoomDiff);
-            const shift = (map.latLngToLayerPoint(wgsOrigin) as any)._subtract(
-              wgsInitialShift.multiplyBy(scale)
-            );
-            d3Svg
-              .selectAll("circle")
+          const arc = d3
+            .arc()
+            .innerRadius(function(d) {
+              return d.innerRadius;
+            })
+            .outerRadius(function(d) {
+              return d.outerRadius;
+            })
+            .startAngle(function(d) {
+              return d.startAngle;
+            })
+            .endAngle(function(d) {
+              return d.endAngle;
+            });
+
+          const cx = e1.layer._point.x;
+          const cy = e1.layer._point.y;
+
+          const curWheelCenter = [e1.layer._point.x, e1.layer._point.y];
+          console.log("curWheelCenter: ", curWheelCenter);
+          setWheelCenter(curWheelCenter);
+
+          for (let i = 0; i < data.length; i++) {
+            const layerArc = {
+              innerRadius: radius + layerHeight * i,
+              outerRadius: radius + layerHeight * (i + 1),
+              startAngle: 0,
+              endAngle: Math.PI * 2
+            };
+            svgLayer
+              .append("path")
+              .attr("d", arc(layerArc))
+              .attr("stroke", color.nineColors[i])
+              .attr("stroke-width", "0.1psx")
+              .attr("fill", "none")
               .attr(
                 "transform",
-                `translate(${shift.x},${shift.y}) scale(${scale})`
+                `translate(${e1.layer._point.x},${e1.layer._point.y})`
               );
-          });
-        } catch (e) {
-          console.log("e: ", e);
-        }
+            const singleWheelData = data[i];
+            //{innerRadius:number,outerRadius:number,startAngle:number,endAngle:number}
+            let arcData: any = {};
+            for (let j = minTime; j <= maxTime; j += pad) {
+              const value = singleWheelData[j];
+              const height = value === 0 ? 0 : scale(value);
+              let angle =
+                (Math.PI / 180) *
+                ((360 / sliceCount) * Math.floor((j - minTime) / pad));
+              if (value > 0) {
+                arcData.innerRadius = radius + layerHeight * i;
+                arcData.outerRadius = radius + layerHeight * i + height;
+                if (!arcData.startAngle) {
+                  arcData.startAngle = angle;
+                }
+                arcData.endAngle = angle;
+              } else {
+                if (Object.keys(arcData).length > 0) {
+                  if (i === 0) {
+                    console.log("arcData: ", arcData);
+                  }
+                  svgLayer
+                    .append("path")
+                    .attr("d", arc(arcData))
+                    .attr("stroke", color.nineColors[i])
+                    .attr("stroke-width", "0.1psx")
+                    .attr("fill", color.nineColors[i])
+                    .attr(
+                      "transform",
+                      `translate(${curWheelCenter[0]},${curWheelCenter[1]})`
+                    );
+                  arcData = {};
+                }
+              }
+            }
+          }
+        } catch (e) {}
       })();
     });
   }, [mapPoints]);

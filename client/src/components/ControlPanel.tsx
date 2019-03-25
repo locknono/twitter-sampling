@@ -75,11 +75,11 @@ function ControlPanel(props: Props) {
           </button>
         </div>
         <SliderWithLabel
-          name="sampling ratio"
-          min={0}
-          max={1}
+          name="LDA topic number"
+          min={1}
+          max={20}
           color="red"
-          step={0.1}
+          step={1}
         />
 
         <SliderWithLabel

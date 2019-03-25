@@ -19,6 +19,9 @@ os.system('python ./getRiverData.py')
 
 os.chdir('../')
 os.system('python ./runSampling.py')
+os.system('python ./getWheelData.py')
+
+
 
 """
 os.system('python ./getWordCloudDataForVec.py')
