@@ -16,7 +16,17 @@ export namespace color {
   export const brighterBarColor = (d3.color(originalBarColor) as d3.RGBColor)
     .darker()
     .toString();
-  export const nineColors = d3.schemeSet1;
+  export const nineColors = [
+    "#a6cee3",
+    "#1f78b4",
+    "#b2df8a",
+    "#33a02c",
+    "#fb9a99",
+    "#e31a1c",
+    "#fdbf6f",
+    "#ff7f00",
+    "#cab2d6"
+  ];
   export const cloudColors = [
     "rgb(13, 157, 255)",
     "rgb(140, 162, 82)",
@@ -43,6 +53,12 @@ export namespace color {
   export const originalColor = "rgb(70,140,200)";
 
   export const samplingColor = "rgb(238,172,87)";
+
+  export const beforeCloudColor = "rgb(222,222,222)";
+
+  export const currentCloudColor = "rgb(54,130,190)";
+
+  export const extraCloudColor = "rgb(238,172,87)";
 }
 
 export namespace url {

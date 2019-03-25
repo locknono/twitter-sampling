@@ -121,16 +121,16 @@ function WordCloud(props: Props) {
       const text = layoutWords[i].text;
       let fillColor;
       if (lastTopicIndex === undefined) {
-        fillColor = "blue";
+        fillColor = color.currentCloudColor;
       } else if (curTopicIndex !== lastTopicIndex) {
-        fillColor = "blue";
+        fillColor = color.currentCloudColor;
       } else {
         if (lastWordsSet.has(text) && curWordsSet.has(text)) {
-          fillColor = "blue";
+          fillColor = color.currentCloudColor;
         } else if (!lastWordsSet.has(text) && curWordsSet.has(text)) {
-          fillColor = "red";
+          fillColor = color.extraCloudColor;
         } else if (lastWordsSet.has(text) && !curWordsSet.has(text)) {
-          fillColor = "black";
+          fillColor = color.beforeCloudColor;
         }
       }
 
