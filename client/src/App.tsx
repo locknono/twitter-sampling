@@ -11,8 +11,8 @@ import River from "./components/River";
 import BarChart from "./components/BarChart";
 import Matrix from "./components/Matrix";
 import GroupBar from "./components/GroupBar";
-import Texts from "./components/Texts"
-
+import Texts from "./components/Texts";
+import StackBar from "./components/StackBar";
 class App extends React.Component {
   public render() {
     return (
@@ -28,13 +28,16 @@ class App extends React.Component {
             <Map />
             <div className="right-side panel panel-default">
               <WordCloud />
-              <Texts></Texts>
+              <Texts />
             </div>
           </div>
 
           <div className="bottom-div">
             <Scatter />
-            <River />
+            <div className="bottom-right-div">
+              <River />
+              <StackBar />
+            </div>
           </div>
         </div>
       </div>

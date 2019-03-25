@@ -137,6 +137,7 @@ function GroupBar(props: Props) {
       .call(
         d3
           .axisLeft(yScale)
+          .ticks(5)
           .tickSizeOuter(0)
           .tickSize(3)
       )

@@ -10,6 +10,7 @@ import {
   setSamplingFlag
 } from "../actions/setUIState";
 import SliderWithLabel from "./SliderWithLabel";
+import "../css/awesome-bootstrap-checkbox.css";
 
 interface Props {
   setCurSystem: typeof setCurSystem;
@@ -44,7 +45,7 @@ function ControlPanel(props: Props) {
           <span>select data:</span>
           <button
             id="twitter"
-            className="btn btn-default btn-sm"
+            className="btn btn-default btn-sm white-button"
             onClick={handleSystemNameClick.bind(null, "twitter")}
           >
             twitter
@@ -52,32 +53,56 @@ function ControlPanel(props: Props) {
           <button
             id="yelp"
             onClick={handleSystemNameClick.bind(null, "yelp")}
-            className="btn btn-default btn-sm"
+            className="btn btn-default btn-sm white-button"
           >
             yelp
           </button>
         </div>
+
+        <div className="checkbox-div">
+          <form role="form">
+            <div className="checkbox">
+              <input type="checkbox" id="checkbox1" />
+              <label htmlFor="checkbox1">random</label>
+            </div>
+          </form>
+
+          <form role="form">
+            <div className="checkbox">
+              <input type="checkbox" id="checkbox1" />
+              <label htmlFor="checkbox1">space</label>
+            </div>
+          </form>
+          <form role="form">
+            <div className="checkbox">
+              <input type="checkbox" id="checkbox1" />
+              <label htmlFor="checkbox1">time</label>
+            </div>
+          </form>
+        </div>
+
         <div className="buttons-div " id="buttons-div2">
           <span>select status:</span>
           <button
             id="original"
             onClick={handleSamplingClick.bind(null, false)}
-            className="btn btn-default btn-sm"
+            className="btn btn-default btn-sm white-button"
           >
             original
           </button>
           <button
             id="sampling"
             onClick={handleSamplingClick.bind(null, true)}
-            className="btn btn-default btn-sm"
+            className="btn btn-default btn-sm white-button"
           >
             sampling
           </button>
         </div>
         <SliderWithLabel
-          name="LDA topic number"
+          name="LDA topics"
           min={1}
           max={20}
+          defaultValue={9}
           color="red"
           step={1}
         />

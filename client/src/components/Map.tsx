@@ -365,7 +365,7 @@ function Map(props: Props) {
           const scale = d3
             .scaleLinear()
             .domain([0, maxValue])
-            .range([0, layerHeight]);
+            .range([0, layerHeight - 2]);
 
           const arc = d3
             .arc()
