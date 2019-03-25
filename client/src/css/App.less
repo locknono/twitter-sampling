@@ -4,21 +4,23 @@
 @middileWidth: 800px;
 @rightSideWidth: 340px;
 
-@mapHeight: 420px;
+@mapHeight: 440px;
 
-@heading-height: 22px;
+@headingHeight: 22px;
 
 @height: 700px;
 
-@dataHeight: @mapHeight / 2;
+@dataHeight: @mapHeight / 5;
 
 @controlPanelHeight: @mapHeight / 2;
 
-@wordCloudHeight: @rightSideWidth - @heading-height -10px;
+@wordCloudHeight: @rightSideWidth - @headingHeight - 10px;
 
 @scatterDivHeight: @height - @dataHeight - @controlPanelHeight;
 
 @barchartdivheight: @height - @scatterDivHeight;
+
+@matrixDivHeight: @leftSideWidth - @headingHeight;
 
 .panel-margin {
   padding-bottom: 0;
@@ -48,7 +50,9 @@
 
 .data-description-div {
   height: @dataHeight;
+  max-height: @dataHeight;
   width: @leftSideWidth;
+  flex: 0 1 auto;
   display: flex;
   flex-direction: column;
   .panel-margin();
@@ -102,8 +106,8 @@
 }
 
 .river-view {
-  height: @height - @mapHeight;
-  width: @middileWidth - @scatterDivHeight;
+  height: (@height - @mapHeight)/2;
+  width: @middileWidth - @matrixDivHeight;
   .panel-margin();
   display: flex;
   flex-direction: column;
@@ -127,7 +131,7 @@
 
 .heading {
   position: relative;
-  height: @heading-height;
+  height: @headingHeight;
   text-align: left;
   padding-top: 2px;
   padding-left: 10px;
@@ -158,8 +162,8 @@
 .scatter-div {
   display: flex;
   flex-direction: column;
-  width: @scatterDivHeight;
-  height: @scatterDivHeight;
+  height: @matrixDivHeight;
+  width: @matrixDivHeight;
 }
 .scatter-canvas-div {
   flex: 1 1 auto;
@@ -175,7 +179,7 @@
 }
 
 .matrix-div {
-  height: @scatterDivHeight / 2;
+  height: @matrixDivHeight;
   flex: auto;
   padding-bottom: 0;
   padding-left: 0;
@@ -214,21 +218,22 @@
 
 .bottom-div {
   width: @middileWidth;
-  height: @scatterDivHeight;
+  height: @height - @mapHeight;
+  position: absolute;
+  bottom: 16px;
   display: flex;
-  float: left;
 }
 
 .groupbar-div {
-  height: @scatterDivHeight / 2;
+  height: @height - @dataHeight - @controlPanelHeight - @matrixDivHeight;
   padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
 }
 
 #texts-div {
-  height: @height - @wordCloudHeight;
   width: 100%;
+  height: @height - @wordCloudHeight;
   border-bottom: none;
   border-left: none;
   border-right: none;
@@ -240,7 +245,4 @@
   flex-direction: column;
   justify-content: space-around;
   align-items: flex-start; */
-}
-
-.group-rects-g {
 }

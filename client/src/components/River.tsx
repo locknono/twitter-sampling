@@ -40,10 +40,11 @@ function River(props: Props) {
     ) as HTMLDivElement);
 
     const legends = [];
+
     for (let i = 0; i < topicNumber; i++) {
       legends.push(i.toString());
     }
-    var option = {
+    const option = {
       tooltip: {
         trigger: "axis",
         axisPointer: {
@@ -59,8 +60,8 @@ function River(props: Props) {
         data: legends
       },
       singleAxis: {
-        top: 50,
-        bottom: 50,
+        top: 20,
+        bottom: 20,
         axisTick: {},
         axisLabel: {},
         type: "time",
@@ -83,7 +84,7 @@ function River(props: Props) {
         itemStyle: {
           emphasis: {
             shadowBlur: 20,
-            shadowColor: "rgba(0, 0, 0, 0.8)"
+            shadowColor: "rgba(0, 0, 0, 0.5)"
           }
         },
         data: riverData

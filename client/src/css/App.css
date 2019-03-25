@@ -21,8 +21,10 @@
   width: 280px;
 }
 .data-description-div {
-  height: 210px;
+  height: 88px;
+  max-height: 88px;
   width: 280px;
+  flex: 0 1 auto;
   display: flex;
   flex-direction: column;
   padding-bottom: 0;
@@ -33,7 +35,7 @@
   display: flex;
   flex-direction: column;
   width: 280px;
-  height: 210px;
+  height: 220px;
   padding-bottom: 0;
   margin-bottom: 0;
   margin-right: 0;
@@ -49,13 +51,12 @@
 .word-cloud-div {
   box-sizing: border-box;
   width: 340px;
-  height: 318px;
+  height: 308px;
   padding-bottom: 0;
+  margin-bottom: 0;
   margin-right: 0;
   display: flex;
   flex-direction: column;
-  margin-bottom: 0;
-  width: 100%;
 }
 .whole-right {
   display: flex;
@@ -63,7 +64,7 @@
 }
 .above-div {
   box-sizing: border-box;
-  height: 420px;
+  height: 308px;
   width: 1140px;
   margin-bottom: 0;
   display: flex;
@@ -72,14 +73,14 @@
 #map {
   top: 0;
   width: 800px;
-  height: 420px;
+  height: 440px;
   padding-bottom: 0;
   margin-bottom: 0;
   margin-right: 0;
 }
 .river-view {
-  height: 280px;
-  width: 520px;
+  height: 130px;
+  width: 542px;
   padding-bottom: 0;
   margin-bottom: 0;
   margin-right: 0;
@@ -97,7 +98,7 @@
 }
 .barchart-div {
   width: 340px;
-  height: 420px;
+  height: 308px;
   display: flex;
   flex-direction: column;
   margin-bottom: 0;
@@ -132,8 +133,8 @@
 .scatter-div {
   display: flex;
   flex-direction: column;
-  width: 280px;
-  height: 280px;
+  height: 258px;
+  width: 258px;
 }
 .scatter-canvas-div {
   flex: 1 1 auto;
@@ -146,7 +147,7 @@
   flex: 1 1 auto;
 }
 .matrix-div {
-  height: 140px;
+  height: 258px;
   flex: auto;
   padding-bottom: 0;
   padding-left: 0;
@@ -179,19 +180,23 @@
 }
 .bottom-div {
   width: 800px;
-  height: 280px;
+  height: 260px;
+  position: absolute;
+  bottom: 16px;
   display: flex;
-  float: left;
 }
 .groupbar-div {
-  height: 140px;
+  height: 134px;
   padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
 }
 #texts-div {
-  height: 382px;
   width: 100%;
+  height: 392px;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
 }
 .data-description-content-div {
   flex: auto;
