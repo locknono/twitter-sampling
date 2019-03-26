@@ -3,6 +3,7 @@ import time
 import g
 
 os.system('python ./split.py')
+os.system('python ./clearFirstAndLastDay.py')
 os.system('python ./clean.py')
 os.system('python ./process.py')
 os.system('python ./process_filterShortText.py')
@@ -20,8 +21,6 @@ os.system('python ./getRiverData.py')
 os.chdir('../')
 os.system('python ./runSampling.py')
 os.system('python ./getWheelData.py')
-
-
 
 """
 os.system('python ./getWordCloudDataForVec.py')

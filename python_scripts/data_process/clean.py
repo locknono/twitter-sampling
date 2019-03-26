@@ -7,7 +7,7 @@ import json
 
 def clean():
     tweets = []
-    with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8', errors='ignore') as f:
+    with open(g.dataPath + 'finalExtractedData.txt', 'r', encoding='utf-8', errors='ignore') as f:
         for line in f:
             try:
                 tweet = line.strip("\t\n").split("\t")
