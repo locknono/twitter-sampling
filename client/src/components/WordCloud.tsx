@@ -131,6 +131,8 @@ function WordCloud(props: Props) {
           fillColor = color.extraCloudColor;
         } else if (lastWordsSet.has(text) && !curWordsSet.has(text)) {
           fillColor = color.beforeCloudColor;
+        } else {
+          fillColor = color.currentCloudColor;
         }
       }
 

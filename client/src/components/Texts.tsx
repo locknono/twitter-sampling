@@ -17,6 +17,7 @@ import { updateQueue } from "../fiber/updateQueue";
 import createFiber from "../fiber/fiber";
 import * as v4 from "uuid/v4";
 import Heading from "../components/Heading";
+import SingleText from "./SingleText";
 interface Props {
   scatterData: ScatterPoint[];
   curTopic: CurTopic;
@@ -94,12 +95,8 @@ function Texts(props: Props) {
   if (ifFetchSuccess === false) {
     renderTexts = <div>!!!START SERVER!!!</div>;
   } else {
-    renderTexts = texts.map(e => {
-      return (
-        <a href="#" className="list-group-item">
-          {e}
-        </a>
-      );
+    renderTexts = texts.map((e, i) => {
+      return <SingleText key={e} text={e} index={i} />;
     });
   }
   return (

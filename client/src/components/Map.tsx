@@ -250,9 +250,9 @@ function Map(props: Props) {
       preferCanvas
     };
     const map = L.map("map", options);
-    L.tileLayer(`https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`).addTo(
-      map
-    );
+    L.tileLayer(
+      "https://api.mapbox.com/styles/v1/lockyes/cjiva3omz8hrq2so4mfdaurmw/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg"
+    ).addTo(map);
     setMap(map);
     map.on("click", function(e) {});
     controlLayer.addTo(map);

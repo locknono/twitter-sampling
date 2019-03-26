@@ -60,9 +60,9 @@ if __name__ == '__main__':
 
     with open(g.dataPath + "extractedData.txt", 'w', encoding='utf-8') as f:
         pass
-    for i in range(12, 12 + g.dataDays):
+    for i in range(11, 11 + g.dataDays):
         print(i)
-        extractFromSingleFile('../data/2016-06-{0}.txt'.format(i))
+        extractFromSingleFile('../data/2016-11-{0}.txt'.format(i))
 
     rowCount = 0
     with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8') as f:
