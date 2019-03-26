@@ -74,62 +74,27 @@ class Matrix extends React.Component<Props, State> {
     const { original, sampling, curTopic } = this.props;
 
     let matrixRects = [];
-    let topBars;
-    let leftBars;
     let color1;
     let color2;
+
     if (svgWidth && svgHeight && sampling.length > 0 && original.length > 0) {
       const matriXStart = (svgWidth * 0.1) / 2;
-      const matrixYStart = (svgHeight * 0.1) / 2;
+      const matrixYStart = svgHeight * 0.1;
       const matriXEnd = svgWidth * (1 - padding.barChartPadding / 2);
       const matrixYEnd = svgHeight * (1 - padding.barChartPadding / 2);
-
-      const topBarStart = svgHeight * 0.03;
-      const leftBarStart = svgWidth * 0.03;
-
-      const xStart = svgWidth * padding.barChartPadding;
-      const xEnd = svgWidth * (1 - padding.barChartPadding);
-      const y1Start = (svgHeight * padding.barChartPadding) / 2;
-      const y1End = svgHeight * (0.5 - padding.barChartPadding / 2);
       const y2Start = svgHeight * (0.5 + padding.barChartPadding / 2);
-      const y2End = svgHeight * (1 - padding.barChartPadding / 2);
+      const y2End = svgHeight * (1 - padding.barChartPadding / 4);
       const xScale = d3
         .scaleBand()
         .domain(original.map((e, i) => i.toString()))
         .range([matriXStart, matriXEnd])
-        .paddingInner(0.2);
+        .paddingInner(0.1);
 
       const yScale = d3
         .scaleBand()
         .domain(original.map((e, i) => i.toString()))
         .range([matrixYStart, matrixYEnd])
-        .paddingInner(0.2);
-
-      const topBarScale = d3
-        .scaleLinear()
-        .domain([0, Math.max(...original)])
-        .range([matrixYStart - 5, topBarStart]);
-
-      const leftBarScale = d3
-        .scaleLinear()
-        .domain([0, Math.max(...sampling)])
-        .range([matriXStart - 5, leftBarStart]);
-
-      topBars = getBars(
-        original,
-        xScale,
-        topBarScale,
-        curTopic,
-        this.handleClick
-      );
-
-      leftBars = getLeftBars(
-        sampling,
-        leftBarScale,
-        yScale,
-        curTopic,
-        this.handleClick
-      );
+        .paddingInner(0.1);
 
       const r1 = getRelationList(original);
 
@@ -191,10 +156,64 @@ class Matrix extends React.Component<Props, State> {
         .range([y2End, y2Start]);
     }
 
+    let colorBars;
+    if (svgWidth && svgHeight) {
+      const matriXStart = (svgWidth * 0.1) / 2 + 112;
+      const matrixYStart = svgHeight * 0.1;
+      const matriXEnd = svgWidth * (1 - padding.barChartPadding / 2);
+      const matrixYEnd = svgHeight * (1 - padding.barChartPadding / 2);
+      const width = svgHeight * 0.05;
+      const textY = svgHeight * 0.06 + 3;
+      colorBars = (
+        <>
+          <rect
+            className="color-bar-rect"
+            width={width}
+            height={width}
+            x={matriXStart}
+            y={svgHeight * 0.03}
+            fill={color.originalBarColor}
+            stroke={color.originalBarColor}
+            strokeWidth={1}
+            rx={3}
+            ry={3}
+          />
+          <text
+            x={matriXStart + width + 5}
+            y={textY}
+            font-family="Verdana"
+            font-size="12"
+          >
+            same
+          </text>
+          <rect
+            className="color-bar-rect"
+            width={width}
+            height={width}
+            x={matriXStart + width + 50}
+            y={svgHeight * 0.03}
+            fill={color.samplingColor}
+            stroke={color.samplingColor}
+            strokeWidth={1}
+            rx={3}
+            ry={3}
+          />
+          <text
+            x={matriXStart + width + 50 + width + 5}
+            y={textY}
+            font-family="Verdana"
+            font-size="12"
+          >
+            not same
+          </text>
+        </>
+      );
+    }
+
     return (
       <div className="matrix-div view-div panel panel-default">
         <div className="panel-heading heading">
-          {"LDA Matrix"}
+          "LDA Matrix"
           <div className="matrix-color-bar-text">difference:</div>
           <div
             className="matrix-color-bar"
@@ -204,7 +223,10 @@ class Matrix extends React.Component<Props, State> {
             }}
           />
         </div>
-        <svg id="matrix-svg">{matrixRects}</svg>
+        <svg id="matrix-svg">
+          {matrixRects}
+          {colorBars}
+        </svg>
       </div>
     );
   }
@@ -242,61 +264,4 @@ function getDiffList(list: number[]) {
     }
   }
   return diffList;
-}
-function getBars(
-  data: number[],
-  xScale: d3.ScaleBand<string>,
-  yScale: d3.ScaleLinear<number, number>,
-  curTopic: CurTopic,
-  clickFunc: Function
-) {
-  const rects = data.map((e, i) => {
-    const fillColor =
-      curTopic === undefined || curTopic !== i
-        ? color.originalBarColor
-        : color.brighterBarColor;
-    return (
-      <rect
-        key={e}
-        x={xScale(i.toString())}
-        y={yScale(e)}
-        width={xScale.bandwidth()}
-        height={yScale(0) - yScale(e)}
-        fill={fillColor}
-        onClick={() => clickFunc(i)}
-        rx={3}
-        ry={3}
-      />
-    );
-  });
-  return rects;
-}
-
-function getLeftBars(
-  data: number[],
-  xScale: d3.ScaleLinear<number, number>,
-  yScale: d3.ScaleBand<string>,
-  curTopic: CurTopic,
-  clickFunc: Function
-) {
-  const rects = data.map((e, i) => {
-    const fillColor =
-      curTopic === undefined || curTopic !== i
-        ? color.originalBarColor
-        : color.brighterBarColor;
-    return (
-      <rect
-        key={e}
-        x={xScale(e)}
-        y={yScale(i.toString())}
-        width={xScale(0) - xScale(e)}
-        height={yScale.bandwidth()}
-        fill={fillColor}
-        onClick={() => clickFunc(i)}
-        rx={3}
-        ry={3}
-      />
-    );
-  });
-  return rects;
 }

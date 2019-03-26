@@ -59,7 +59,7 @@ function GroupBar(props: Props) {
   if (width && height && sampling.length !== 0 && original.length !== 0) {
     const pad = 0.1;
     const xStart = width * pad;
-    const xEnd = width * (1 - pad);
+    const xEnd = width * (1 - pad / 2);
     const yStart = height * pad;
     const yEnd = height * (1 - pad);
 
@@ -146,11 +146,69 @@ function GroupBar(props: Props) {
       });
   }
 
+  let colorBars;
+  if (width && height) {
+    const pad = 0.1;
+    const xStart = 127;
+    const xEnd = width * (1 - pad);
+    const yStart = 7;
+    const yEnd = height * (1 - pad);
+    const textY = height * 0.06 + 3 + 6.5;
+    const barWidth = 11.7;
+    colorBars = (
+      <>
+        <rect
+          className="color-bar-rect"
+          width={barWidth}
+          height={barWidth}
+          x={xStart}
+          y={yStart}
+          fill={color.originalBarColor}
+          stroke={color.originalBarColor}
+          strokeWidth={1}
+          rx={3}
+          ry={3}
+        />
+        <text
+          x={xStart + barWidth + 4.5}
+          y={textY}
+          font-family="Verdana"
+          font-size="12"
+        >
+          original
+        </text>
+        <rect
+          className="color-bar-rect"
+          width={barWidth}
+          height={barWidth}
+          x={xStart + barWidth + 50}
+          y={yStart}
+          fill={color.samplingColor}
+          stroke={color.samplingColor}
+          strokeWidth={1}
+          rx={3}
+          ry={3}
+        />
+        <text
+          x={xStart + barWidth + 50 + barWidth + 4.5}
+          y={textY}
+          font-family="Verdana"
+          font-size="12"
+        >
+          sampling
+        </text>
+      </>
+    );
+  }
+
   return (
     <div className="groupbar-div view-div panel panel-default">
       <Heading title="LDA Bar Chart" />
       <svg id="groupbar-svg">
-        <g className="group-rects-g">{bars}</g>
+        <g className="group-rects-g">
+          {bars}
+          {colorBars}
+        </g>
         <g id="x1-axis-g" />
         <g id="y1-axis-g" />
       </svg>
