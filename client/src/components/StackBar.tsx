@@ -70,14 +70,27 @@ function StackBar(props: Props) {
     days.sort((a, b) => {
       return parseInt(a.split("-")[1]) - parseInt(b.split("-")[1]);
     });
+    console.log("days: ", days);
     const s1 = getStackData(originalRiverData);
+
+    //s1 :
+    console.log("s1: ", s1);
     const s2 = getStackData(samplingRiverData);
     const stackData = [];
     for (let i = 0; i < s1.length; i++) {
+      //这里有5类，7天
+      //所以有5个stack Object
+      //每个stackobj的长度为7
+      //days的长度和天数相同
+
+      //每个stackobj代表一列堆叠的bar
+      //假设是9类，3天
+      //那么每个stack.obj.length===3
+      //一共9个stackobj
       const stackObj: {
         [index: string]: any;
       } = {
-        name: days[i],
+        name: i,
         type: "bar",
         stack: "总量",
         data: []
@@ -87,11 +100,10 @@ function StackBar(props: Props) {
       }
       stackData.push(stackObj);
     }
-
-    stackData.sort((a, b) => {
-      return parseInt(a.name.split("-")[1]) - parseInt(b.name.split("-")[1]);
-    });
     console.log("stackData: ", stackData);
+    /* stackData.sort((a, b) => {
+      return parseInt(a.name.split("-")[1]) - parseInt(b.name.split("-")[1]);
+    }); */
     const option = {
       tooltip: {
         trigger: "axis",
@@ -154,7 +166,6 @@ function getStackData(riverData: [string, number, any][]) {
     if (day > maxDay) maxDay = day;
     if (day < minDay) minDay = day;
   }
-
   const interval = maxDay - minDay + 1;
   const stackData: any[] = [];
   for (let i = 0; i < topicNumber; i++) {

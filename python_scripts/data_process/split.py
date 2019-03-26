@@ -20,7 +20,6 @@ def ifInNYC(lat, lng):
 
 
 def extractFromSingleFile(filePath):
-    print(filePath)
     with open(filePath, 'r', encoding='utf-8') as f:
         writeF = codecs.open(g.dataPath + "extractedData.txt", 'a', encoding='utf-8')
         for index, line in enumerate(f):
@@ -64,11 +63,9 @@ if __name__ == '__main__':
 
     with open(g.dataPath + "extractedData.txt", 'w', encoding='utf-8') as f:
         pass
-    paths=[]
     for i in range(g.startDay, g.startDay + g.dataDays + 1):
-        paths.append('../data/2016-{0}-{1}.txt'.format(g.startDay, i))
-
-    p.map(extractFromSingleFile, paths)
+        print(i)
+        extractFromSingleFile('../data/2016-{0}-{1}.txt'.format(g.startDay, i))
 
     rowCount = 0
     with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8') as f:
