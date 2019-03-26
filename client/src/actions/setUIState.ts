@@ -3,6 +3,7 @@ export const IF_DRAW_SCATTER_CENTERS = "IF_DRAW_SCATTER_CENTERS";
 export const SET_SELECTED_IDS = "SET_SELECTED_IDS";
 export const SET_CUR_SYSTEM = "SET_CUR_SYSTEM";
 export const SET_SAMPLING_FLAG = "SET_SAMPLING_FLAG";
+export const SET_IF_SHOW_MAP_POINTS = "SET_IF_SHOW_MAP_POINTS";
 
 export function setCurTopic(index: CurTopic) {
   return {
@@ -35,6 +36,13 @@ export function setCurSystem(name: SystemName) {
 export function setSamplingFlag(flag: boolean) {
   return {
     type: SET_SAMPLING_FLAG,
+    flag
+  };
+}
+
+export function setIfShowMapPoints(flag: boolean) {
+  return {
+    type: SET_IF_SHOW_MAP_POINTS,
     flag
   };
 }

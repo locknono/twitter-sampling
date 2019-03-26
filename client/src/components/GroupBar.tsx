@@ -46,7 +46,7 @@ function GroupBar(props: Props) {
   const [width, height] = useWidthAndHeight("groupbar-svg");
 
   let bars: JSX.Element[] = [];
-
+  let borders: JSX.Element[] = [];
   React.useLayoutEffect(() => {
     fetchJsonData(url.barDataURL).then((data: fetchedBarData) => {
       setData("ORIGINAL_BARDATA", data.original);
@@ -85,8 +85,26 @@ function GroupBar(props: Props) {
       .range([yEnd, yStart]);
 
     for (let i = 0; i < original.length; i++) {
+      borders.push(
+        <rect
+          className="svg-border-rect"
+          key={i}
+          x={xScale(i.toString())}
+          y={yScale(maxValue)}
+          width={xScale.bandwidth()}
+          height={yScale(0) - yScale(maxValue)}
+          fill="rgb(223,223,223)"
+          opacity={i === curTopic ? 0.7 : 0}
+          rx={2}
+          ry={2}
+          onClick={() => {
+            setCurTopic(i);
+          }}
+        />
+      );
       bars.push(
         <rect
+          className="group-rect"
           key={v4()}
           x={xScale(i.toString())}
           y={yScale(original[i])}
@@ -102,6 +120,7 @@ function GroupBar(props: Props) {
       );
       bars.push(
         <rect
+          className="group-rect"
           key={v4()}
           x={(xScale(i.toString()) as number) + xScale.bandwidth() / 2}
           y={yScale(sampling[i])}
@@ -203,10 +222,12 @@ function GroupBar(props: Props) {
     <div className="groupbar-div view-div panel panel-default">
       <Heading title="LDA Bar Chart" />
       <svg id="groupbar-svg">
+        {borders}
         <g className="group-rects-g">
           {bars}
           {colorBars}
         </g>
+
         <g id="x1-axis-g" />
         <g id="y1-axis-g" />
       </svg>

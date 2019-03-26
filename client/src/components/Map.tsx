@@ -15,15 +15,16 @@ import {
 import { setData, MAP_POINTS, CLOUD_DATA } from "../actions/setDataAction";
 import { connect } from "react-redux";
 import "leaflet.pm";
-import { setSelectedIDs } from "../actions/setUIState";
+import { setSelectedIDs, setIfShowMapPoints } from "../actions/setUIState";
 const mapState = (state: any) => {
   const { mapPoints } = state.dataTree;
-  const { curTopic, selectedIDs, systemName } = state.uiState;
-  return { mapPoints, curTopic, selectedIDs, systemName };
+  const { curTopic, selectedIDs, systemName, ifShowMapPoints } = state.uiState;
+  return { mapPoints, curTopic, selectedIDs, systemName, ifShowMapPoints };
 };
 const mapDispatch = {
   setData,
-  setSelectedIDs
+  setSelectedIDs,
+  setIfShowMapPoints
 };
 
 interface Props {
@@ -33,6 +34,8 @@ interface Props {
   selectedIDs: string[];
   setSelectedIDs: typeof setSelectedIDs;
   systemName: SystemName;
+  ifShowMapPoints: boolean;
+  setIfShowMapPoints: typeof setIfShowMapPoints;
 }
 
 interface Map {
@@ -47,7 +50,9 @@ function Map(props: Props) {
     curTopic,
     selectedIDs,
     setSelectedIDs,
-    systemName
+    systemName,
+    ifShowMapPoints,
+    setIfShowMapPoints
   } = props;
 
   const [
@@ -95,6 +100,7 @@ function Map(props: Props) {
     if (!map || !wheelCenter) return;
     const d3Svg = d3.select(".leaflet-overlay-pane svg").select("g");
   }, [map, wheelCenter]);
+
   //set map points
   React.useEffect(() => {
     (async function setMapPoints() {
@@ -107,7 +113,6 @@ function Map(props: Props) {
   //draw selected ids
   React.useEffect(() => {
     if (!map) return;
-
     (async function drawSelectedIDs() {
       const res = await fetch(pythonServerURL + "getCoorsByIDs", {
         method: "POST",
@@ -135,6 +140,7 @@ function Map(props: Props) {
     })();
   }, [selectedIDs]);
 
+  //add all points to map
   React.useEffect(() => {
     if (!mapPoints) return;
     const allPoints: MapPoint[] = [];

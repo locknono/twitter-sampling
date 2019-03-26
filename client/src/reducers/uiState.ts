@@ -4,7 +4,8 @@ import {
   SET_SELECTED_IDS,
   setCurSystem,
   SET_CUR_SYSTEM,
-  SET_SAMPLING_FLAG
+  SET_SAMPLING_FLAG,
+  SET_IF_SHOW_MAP_POINTS
 } from "../actions/setUIState";
 
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
@@ -15,6 +16,7 @@ interface UIState {
   selectedIDs: string[];
   systemName: SystemName;
   samplingFlag: boolean;
+  ifShowMapPoints: boolean;
 }
 
 const initialState: UIState = {
@@ -22,7 +24,8 @@ const initialState: UIState = {
   ifDrawScatterCenters: false,
   selectedIDs: [],
   systemName: "yelp",
-  samplingFlag: false
+  samplingFlag: false,
+  ifShowMapPoints: false
 };
 
 export function uiState(state = initialState, action: any) {
@@ -41,6 +44,9 @@ export function uiState(state = initialState, action: any) {
       break;
     case SET_SAMPLING_FLAG:
       return { ...state, samplingFlag: action.flag };
+      break;
+    case SET_IF_SHOW_MAP_POINTS:
+      return { ...state, ifShowMapPoints: action.flag };
       break;
     default:
       return state;

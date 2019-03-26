@@ -33,16 +33,20 @@ function DataDescription(props: Props) {
   }, [count]);
 
   let allTweetsCountDOM = allTweetsCount ? (
-    <p>all tweets: {allTweetsCount} </p>
-  ) : null;
+    <p>all points: {allTweetsCount} </p>
+  ) : (
+    <p>all points: </p>
+  );
 
   let samplingCountDOM = samplingTweetsCount ? (
-    <p>sampling tweets: {samplingTweetsCount} </p>
-  ) : null;
+    <p>sampling points: {samplingTweetsCount} </p>
+  ) : (
+    <p>sampling points:</p>
+  );
   return (
     <div className="panel panel-default data-description-div ">
       <Heading title="Data" />
-      <div className='data-description-content-div'>
+      <div className="data-description-content-div">
         {allTweetsCountDOM}
         {samplingCountDOM}
       </div>
