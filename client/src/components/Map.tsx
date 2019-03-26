@@ -66,6 +66,9 @@ function Map(props: Props) {
   const [wheelCenter, setWheelCenter] = React.useState<any>(null);
 
   const [svgLayer, setSvgLayer] = React.useState<any>(null);
+
+  const [lastTopicPoints, setLastTopicPoints] = React.useState<any>(null);
+
   React.useEffect(() => {
     if (!map) return;
     const svg = L.svg();
@@ -168,7 +171,51 @@ function Map(props: Props) {
     controlLayer.addOverlay(layerGroup, `all points`);
   }, [mapPoints]);
 
+  //points for one topic
   React.useEffect(() => {
+    if (!mapPoints || !curTopic || !map) return;
+    if (lastTopicPoints) {
+      map.removeLayer(lastTopicPoints);
+      controlLayer.removeLayer(lastTopicPoints);
+    }
+    const allPoints: MapPoint[] = [];
+
+    const pointsSet = new Set();
+    mapPoints.map(e => {
+      if (e.topic !== curTopic) return;
+      const latlngStr = `${e.lat}_${e.lng}`;
+      if (pointsSet.has(latlngStr) === false) {
+        allPoints.push(e);
+        pointsSet.add(latlngStr);
+      }
+    });
+    const allPointsLayer: L.Layer[] = [];
+    allPoints.map(e => {
+      const id = e.id;
+      allPointsLayer.push(
+        L.circle(e, {
+          radius: mapCircleRadius,
+          color: color.mapPointColor
+        }).on("mouseover", () => {
+          (async function fechText() {
+            const res = await fetch(pythonServerURL + "getTextByID", {
+              method: "POST",
+              mode: "cors",
+              cache: "no-cache",
+              body: JSON.stringify(id)
+            });
+            const text = await res.json();
+          })();
+        })
+      );
+    });
+    const layerGroup = L.layerGroup(allPointsLayer);
+    setLastTopicPoints(layerGroup);
+    layerGroup.addTo(map);
+    controlLayer.addOverlay(layerGroup, `points for topic${curTopic}`);
+  }, [curTopic]);
+
+  /* React.useEffect(() => {
     if (!mapPoints) return;
     const allPointsLayer: L.Layer[] = [];
     mapPoints.map(e => {
@@ -181,7 +228,7 @@ function Map(props: Props) {
     });
     const layerGroup = L.layerGroup(allPointsLayer);
     controlLayer.addOverlay(layerGroup, `all points with topic`);
-  }, [mapPoints]);
+  }, [mapPoints]); */
 
   /* React.useEffect(() => {
     if (!mapPoints) return;
