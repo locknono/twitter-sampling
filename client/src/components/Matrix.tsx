@@ -181,8 +181,8 @@ class Matrix extends React.Component<Props, State> {
           <text
             x={matriXStart + width + 5}
             y={textY}
-            font-family="Verdana"
-            font-size="12"
+            fontFamily="Verdana"
+            fontSize="12"
           >
             same
           </text>
@@ -201,8 +201,8 @@ class Matrix extends React.Component<Props, State> {
           <text
             x={matriXStart + width + 50 + width + 5}
             y={textY}
-            font-family="Verdana"
-            font-size="12"
+            fontFamily="Verdana"
+            fontSize="12"
           >
             not same
           </text>

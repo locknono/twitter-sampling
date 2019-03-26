@@ -27,9 +27,23 @@ interface Props {
 function StackBar(props: Props) {
   const { riverData, curTopic, setData, samplingFlag } = props;
 
-  const [originalRiverData, SetOriginalRiverData] = React.useState();
+  const [originalRiverData, setOriginalRiverData] = React.useState();
   const [samplingRiverData, setSamplingRiverData] = React.useState();
   const [chart, setChart] = React.useState();
+
+  React.useEffect(() => {
+    fetchJsonData(url.riverDataURL)
+      .then(data => {
+        setOriginalRiverData(data);
+      })
+      .then(function() {
+        return fetchJsonData(url.samplingRiverDataURL);
+      })
+      .then(data => {
+        setSamplingRiverData(data);
+      });
+  }, []);
+
   React.useEffect(() => {
     const fetchURL =
       samplingFlag === true ? url.samplingRiverDataURL : url.riverDataURL;
@@ -37,21 +51,25 @@ function StackBar(props: Props) {
       console.log("data: ", data);
       setData(RIVER_DATA, data);
       if (samplingFlag === false) {
-        SetOriginalRiverData(data);
+        setOriginalRiverData(data);
       } else {
         setSamplingRiverData(data);
       }
     });
   }, [samplingFlag]);
+
   React.useEffect(() => {
     if (!samplingRiverData || !originalRiverData) return;
-    const days = Array.from(
+    const days: string[] = Array.from(
       new Set(
         originalRiverData.map((e: [string]) => {
           return `${e[0].split("/")[1]}-${e[0].split("/")[2]}`;
         })
       )
     );
+    days.sort((a, b) => {
+      return parseInt(a.split("-")[1]) - parseInt(b.split("-")[1]);
+    });
     const s1 = getStackData(originalRiverData);
     const s2 = getStackData(samplingRiverData);
     const stackData = [];
@@ -68,9 +86,12 @@ function StackBar(props: Props) {
         stackObj.data.push(s1[i][j] - s2[i][j]);
       }
       stackData.push(stackObj);
-      console.log("stackData: ", stackData);
     }
 
+    stackData.sort((a, b) => {
+      return parseInt(a.name.split("-")[1]) - parseInt(b.name.split("-")[1]);
+    });
+    console.log("stackData: ", stackData);
     const option = {
       tooltip: {
         trigger: "axis",

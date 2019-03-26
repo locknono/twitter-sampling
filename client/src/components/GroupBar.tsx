@@ -44,8 +44,6 @@ function GroupBar(props: Props) {
   const { setData, setCurTopic, original, sampling, curTopic } = props;
 
   const [width, height] = useWidthAndHeight("groupbar-svg");
-  console.log("height: ", height);
-  console.log("width: ", width);
 
   let bars: JSX.Element[] = [];
 
@@ -149,7 +147,7 @@ function GroupBar(props: Props) {
   let colorBars;
   if (width && height) {
     const pad = 0.1;
-    const xStart = 127;
+    const xStart = 127.5;
     const xEnd = width * (1 - pad);
     const yStart = 7;
     const yEnd = height * (1 - pad);
@@ -172,8 +170,8 @@ function GroupBar(props: Props) {
         <text
           x={xStart + barWidth + 4.5}
           y={textY}
-          font-family="Verdana"
-          font-size="12"
+          fontFamily="Verdana"
+          fontSize="12"
         >
           original
         </text>
@@ -192,8 +190,8 @@ function GroupBar(props: Props) {
         <text
           x={xStart + barWidth + 50 + barWidth + 4.5}
           y={textY}
-          font-family="Verdana"
-          font-size="12"
+          fontFamily="Verdana"
+          fontSize="12"
         >
           sampling
         </text>

@@ -42,21 +42,14 @@ function ControlPanel(props: Props) {
       <Heading title="Control Panel" />
       <div className="control-panel-content-div">
         <div className="buttons-div " id="buttons-div1">
-          <span>select data:</span>
           <button
             id="twitter"
             className="btn btn-default btn-sm white-button"
             onClick={handleSystemNameClick.bind(null, "twitter")}
           >
-            twitter
+            dataset
           </button>
-          <button
-            id="yelp"
-            onClick={handleSystemNameClick.bind(null, "yelp")}
-            className="btn btn-default btn-sm white-button"
-          >
-            yelp
-          </button>
+          <input type="text" style={{ height: 25 }} />
         </div>
 
         <div className="checkbox-div">

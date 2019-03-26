@@ -117,7 +117,7 @@ function LdaScatterCanvasCanvas(props: Props) {
     backgroudCtx.clearRect(0, 0, width, height);
     const [xScale, yScale] = scales;
     //todo:move slice function to shared.ts
-    const sliceCount = 50;
+    const sliceCount = 200;
     const slicePointsNumber = scatterData.length / sliceCount;
     const sliceIndices = [];
     for (let i = 0; i < sliceCount - 1; i++) {
