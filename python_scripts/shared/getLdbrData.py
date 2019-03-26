@@ -11,11 +11,13 @@ import math
 from typing import List
 
 
-def getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict):
-    centers = getCenters(idScatterData, idClassDict)
-    minDis, maxDis = getMinMaxDis(idScatterData, centers, idClassDict)
+def getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict, ids=None):
+    if ids == None:
+        ids = idLocationDict.keys()
+    centers = getCenters(idScatterData, idClassDict, ids)
+    minDis, maxDis = getMinMaxDis(idScatterData, centers, idClassDict, ids)
     points = []
-    for id in idScatterData:
+    for id in ids:
         p = idScatterData[id]
         topic = idClassDict[id]
         x = p[0]
@@ -28,10 +30,12 @@ def getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict):
     return points
 
 
-def getMinMaxDis(idScatterData, centers, idClassDict):
+def getMinMaxDis(idScatterData, centers, idClassDict, ids=None):
+    if ids == None:
+        ids = idScatterData.keys()
     minDis = 999999
     maxDis = -1
-    for id in idScatterData:
+    for id in ids:
         p = idScatterData[id]
         topic = idClassDict[id]
         x = p[0]
@@ -44,10 +48,12 @@ def getMinMaxDis(idScatterData, centers, idClassDict):
     return [minDis, maxDis]
 
 
-def getCenters(idScatterData, idClassDict):
+def getCenters(idScatterData, idClassDict, ids=None):
+    if ids == None:
+        ids = idScatterData.keys()
     centers = [[0, 0] for i in range(g.topicNumber)]
     topicCounts = [0 for i in range(g.topicNumber)]
-    for id in idScatterData:
+    for id in ids:
         p = idScatterData[id]
         topic = idClassDict[id]
         centers[topic][0] += p[0]

@@ -33,6 +33,7 @@ function River(props: Props) {
       setData(RIVER_DATA, data);
     });
   }, [samplingFlag]);
+  
   React.useEffect(() => {
     if (!riverData) return;
     const myChart = echarts.init(document.getElementById(

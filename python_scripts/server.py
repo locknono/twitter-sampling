@@ -1,6 +1,27 @@
 from flask import Flask, Response, Request, request, jsonify
 import json
 from shared.generateRenderData import getWordCloud, readJsonFile
+import json
+import g
+from docAlgo.runDoc2vec import runDoc2vec
+from docAlgo.runTsne import runTsne
+from docAlgo.runKmeans import runKmeans
+from docAlgo.runLDA import runLDA
+from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile
+from docAlgo.getClass import getIDClassDict
+import json
+import g
+from docAlgo.runDoc2vec import runDoc2vec
+from docAlgo.runTsne import runTsne
+from docAlgo.runKmeans import runKmeans
+from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile, \
+    getHexes, getRiverData
+import os
+from blueRapidEstimate import getRalationshipList, compareRelationshipList
+from ldbr import ldbr
+from shared.getLdbrData import getLdbrPoints, getOriginalEstimates, getSamplingIDs
+from shared.constant import nyBound
+import copy
 
 app = Flask(__name__)
 import g
@@ -13,8 +34,17 @@ with open(g.dataPath + 'finalText.txt', 'r', encoding='utf-8')as f:
         text = line[1]
         idTextDict[id] = text
 idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
-
+idLocationDict = readJsonFile(g.dataPath + 'finalIDLocation.json')
 originalIDTextDict = readJsonFile(g.dataPath + 'originalTexts.json')
+
+idTimeDict = readJsonFile(g.dataPath + 'idTimeDict.json')
+riverIDTimeDict = {}
+with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8') as f:
+    for line in f:
+        line = line.strip('\t\n').split('\t')
+        time = line[2].split(' ')[0].replace('-', '/')
+        id = line[0]
+        riverIDTimeDict[id] = time
 
 
 @app.route("/")
@@ -25,7 +55,6 @@ def hello():
 @app.route("/selectArea", methods=['GET', 'POST'])
 def selectArea():
     ids = json.loads(request.data)
-    print(ids)
     renderData = getWordCloud(idTextDict, idClassDict, g.topicNumber, ids)
     res = Response(json.dumps(renderData))
     res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
@@ -82,6 +111,59 @@ def getInitialTexts():
         text = originalIDTextDict[id]
         texts.append(text)
     res = Response(json.dumps(texts))
+    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
+    return res
+
+
+@app.route("/runSamplingOnIDs", methods=['GET', 'POST'])
+def runSamplingOnIDs():
+    returnData = {}
+    ids = json.loads(request.data)
+    print(len(ids))
+    texts = []
+    for id in ids:
+        texts.append(idTextDict[id])
+
+    idVectorDict = runLDA(texts, ids)
+    idScatterData = runTsne(idVectorDict)
+    idClassDict = getIDClassDict(idVectorDict)
+    scatterPoints = getScatterPoints(idScatterData, idClassDict, ids)
+    mapPoints = getMapPoints(idLocationDict, idClassDict, ids)
+    cloudData = getWordCloud(idTextDict, idClassDict, g.topicNumber, ids)
+    riverData = getRiverData(riverIDTimeDict, idClassDict, ids)
+
+    points = getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict, ids)
+
+    c = 0.05
+    samplingSuccess = False
+    estimates = None
+    sampleGroups = None
+    originalEstimates = getOriginalEstimates(points, g.topicNumber)
+    while samplingSuccess == False:
+        estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.08, c, 0.0005)
+        if estimates != None:
+            samplingSuccess = True
+        else:
+            c -= 0.005
+    r1 = getRalationshipList(estimates)
+    r2 = getRalationshipList(originalEstimates)
+    ratio = compareRelationshipList(r2, r1)
+    samplingIDs = getSamplingIDs(sampleGroups)
+
+    barData = {"original": originalEstimates, "sampling": estimates}
+    samplingMapPoints = getMapPoints(idLocationDict, idClassDict, samplingIDs)
+    samplingScatterPoints = getScatterPoints(idScatterData, idClassDict, samplingIDs)
+    samplingCloudData = getWordCloud(idTextDict, idClassDict, g.topicNumber, samplingIDs)
+    samplingRiverData = getRiverData(riverIDTimeDict, idClassDict, samplingIDs)
+
+    returnData = {"scatterPoints": scatterPoints, 'mapPoints': mapPoints, 'cloudData': cloudData,
+                  "riverData": riverData, "barData": barData, "samplingMapPoints": samplingMapPoints,
+                  "samplingScatterPoints": samplingScatterPoints, "samplingCloudData": samplingCloudData,
+                  "samplingRiverData": samplingRiverData}
+
+    res = Response(json.dumps(returnData))
+
     res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res

@@ -12,10 +12,21 @@ import {
   topicNumber,
   mapCircleRadius
 } from "../constants";
-import { setData, MAP_POINTS, CLOUD_DATA } from "../actions/setDataAction";
+import {
+  setData,
+  MAP_POINTS,
+  CLOUD_DATA,
+  SCATTER_DATA,
+  RIVER_DATA,
+  SAMPLING_RIVER_DATA
+} from "../actions/setDataAction";
 import { connect } from "react-redux";
 import "leaflet.pm";
-import { setSelectedIDs, setIfShowMapPoints } from "../actions/setUIState";
+import {
+  setSelectedIDs,
+  setIfShowMapPoints,
+  setSelectedMapIDs
+} from "../actions/setUIState";
 const mapState = (state: any) => {
   const { mapPoints } = state.dataTree;
   const { curTopic, selectedIDs, systemName, ifShowMapPoints } = state.uiState;
@@ -24,7 +35,8 @@ const mapState = (state: any) => {
 const mapDispatch = {
   setData,
   setSelectedIDs,
-  setIfShowMapPoints
+  setIfShowMapPoints,
+  setSelectedMapIDs
 };
 
 interface Props {
@@ -36,6 +48,7 @@ interface Props {
   systemName: SystemName;
   ifShowMapPoints: boolean;
   setIfShowMapPoints: typeof setIfShowMapPoints;
+  setSelectedMapIDs: typeof setSelectedMapIDs;
 }
 
 interface Map {
@@ -52,7 +65,8 @@ function Map(props: Props) {
     setSelectedIDs,
     systemName,
     ifShowMapPoints,
-    setIfShowMapPoints
+    setIfShowMapPoints,
+    setSelectedMapIDs
   } = props;
 
   const [
@@ -112,7 +126,7 @@ function Map(props: Props) {
 
   //draw selected ids
   React.useEffect(() => {
-    if (!map) return;
+    if (!map || !mapPoints) return;
     (async function drawSelectedIDs() {
       const res = await fetch(pythonServerURL + "getCoorsByIDs", {
         method: "POST",
@@ -384,7 +398,35 @@ function Map(props: Props) {
           ids.push(e.id);
         }
       });
-      setSelectedIDs(ids);
+      setSelectedMapIDs(ids);
+      (async () => {
+        const res = await fetch(pythonServerURL + "runSamplingOnIDs", {
+          method: "POST",
+          mode: "cors",
+          cache: "no-cache",
+          body: JSON.stringify(ids)
+        });
+        const data = await res.json();
+        console.log("data: ", data);
+        const {
+          mapPoints,
+          scatterPoints,
+          cloudData,
+          riverData,
+          barData,
+          samplingMapPoints,
+          samplingScatterPoints,
+          samplingCloudData,
+          samplingRiverData
+        } = data;
+        setData(SCATTER_DATA, scatterPoints);
+        setData(CLOUD_DATA, cloudData);
+        setData("ORIGINAL_BARDATA", barData.original);
+        setData("SAMPLING_BARDATA", barData.sampling);
+        setData(RIVER_DATA, riverData);
+        setData(SAMPLING_RIVER_DATA, samplingRiverData);
+        /*  setData(MAP_POINTS, mapPoints); */
+      })();
 
       (async function setWordCloudDataWithSelectedIDs(ids: string[]) {
         if (ids.length === 0) return;
@@ -410,7 +452,6 @@ function Map(props: Props) {
 
           const meta = await res2.json();
           const { minTime, maxTime, maxValue, pad } = meta;
-          console.log("meta: ", meta);
 
           const sliceCount = (maxTime - minTime) / pad;
 
@@ -439,9 +480,8 @@ function Map(props: Props) {
           const cy = e1.layer._point.y;
 
           const curWheelCenter = [e1.layer._point.x, e1.layer._point.y];
-          console.log("curWheelCenter: ", curWheelCenter);
           setWheelCenter(curWheelCenter);
-
+          svgLayer.selectAll("path").remove();
           for (let i = 0; i < data.length; i++) {
             const layerArc = {
               innerRadius: radius + layerHeight * i,
@@ -478,7 +518,6 @@ function Map(props: Props) {
               } else {
                 if (Object.keys(arcData).length > 0) {
                   if (i === 0) {
-                    console.log("arcData: ", arcData);
                   }
                   svgLayer
                     .append("path")

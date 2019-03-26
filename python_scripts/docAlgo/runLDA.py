@@ -10,14 +10,13 @@ import g
 import os
 import time
 import json
-import matplotlib.pyplot as plt
 
 
 
 # texts:string[]
 # stopWords:string[]
 def runLDA(texts, ids):
-    print('run LDA')
+    print('run lda')
     stopwords = nltkStopWords.words('english')
     extraStopWords = ['cant', 'im', 'ya', 'yall', 'dont', 'shit', 'ass', 'fuck', 'us', 'maybe', 'today', 'much', 'lol',
                       'omg', 'thank', 'love', 'ye', 'oh', 'u', 'lmao', 'yell', 'your', 'little', 'better', 'good',

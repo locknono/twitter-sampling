@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     points = getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict)
     c = 0.03
-    estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.05, c, 0.0005)
+    estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.08, c, 0.0005)
 
     if estimates != None or sampleGroups != None:
         originalEstimates = getOriginalEstimates(points, g.topicNumber)

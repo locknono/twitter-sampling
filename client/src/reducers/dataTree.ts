@@ -8,7 +8,9 @@ import {
   SET_DOC_PR_DATA,
   SET_CLOUD_DATA,
   SET_RIVER_DATA,
-  SET_MAP_POINTS
+  SET_MAP_POINTS,
+  SET_SAMPLING_RIVER_DATA,
+  SET_TEXTS
 } from "../actions/setDataAction";
 
 const initialState = {
@@ -18,7 +20,9 @@ const initialState = {
   ducPrData: null,
   cloudData: null,
   riverData: null,
-  mapPoints: null
+  mapPoints: null,
+  samplingRiverData: null,
+  texts: []
 };
 
 export default function dataTree(state = initialState, action: any) {
@@ -43,6 +47,11 @@ export default function dataTree(state = initialState, action: any) {
       break;
     case SET_MAP_POINTS:
       return { ...state, mapPoints: action.data };
+    case SET_SAMPLING_RIVER_DATA:
+      return { ...state, samplingRiverData: action.data };
+    case SET_TEXTS:
+      console.log("action: ", action);
+      return { ...state, texts: action.data };
     default:
       return state;
   }

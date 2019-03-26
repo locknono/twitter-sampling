@@ -2,7 +2,6 @@ import g
 import json
 import numpy as np
 from sklearn.manifold import TSNE
-import matplotlib.pyplot as plt
 import os
 from shared.lda_op import findMaxIndexAndValueForOneDoc
 
@@ -19,11 +18,14 @@ def runTsne(idVectorDict):
     X_embedded = TSNE(n_components=2).fit_transform(X)
     for i, v in enumerate(X_embedded):
         idScatterData[ids[i]] = v.tolist()
+
+    """
     plt.figure(figsize=(15, 15))
     plt.scatter(X_embedded[:, 0], X_embedded[:, 1])
     plt.savefig(g.dataPath + 'scatter.png')
-    plt.savefig('../client/public/scatter.png')
+    #plt.savefig('../client/public/scatter.png')
     plt.close()
+    """
     return idScatterData
 
 

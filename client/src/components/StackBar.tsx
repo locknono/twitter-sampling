@@ -3,16 +3,20 @@ import { useState } from "react";
 
 import * as echarts from "echarts";
 import Heading from "./Heading";
-import { setData, RIVER_DATA } from "../actions/setDataAction";
+import {
+  setData,
+  RIVER_DATA,
+  SAMPLING_RIVER_DATA
+} from "../actions/setDataAction";
 import { connect } from "react-redux";
 import { fetchJsonData } from "src/shared";
 import { topicNumber, url } from "src/constants";
 import { color } from "../constants";
 
 const mapState = (state: any) => {
-  const { riverData } = state.dataTree;
+  const { riverData, samplingRiverData } = state.dataTree;
   const { curTopic, samplingFlag } = state.uiState;
-  return { riverData, curTopic, samplingFlag };
+  return { riverData, curTopic, samplingFlag, samplingRiverData };
 };
 const mapDispatch = {
   setData
@@ -20,49 +24,40 @@ const mapDispatch = {
 
 interface Props {
   riverData: [string, number, string][];
+  samplingRiverData: [string, number, string][];
   curTopic: CurTopic;
   setData: typeof setData;
   samplingFlag: boolean;
 }
 function StackBar(props: Props) {
-  const { riverData, curTopic, setData, samplingFlag } = props;
+  const {
+    riverData,
+    samplingRiverData,
+    curTopic,
+    setData,
+    samplingFlag
+  } = props;
 
-  const [originalRiverData, setOriginalRiverData] = React.useState();
-  const [samplingRiverData, setSamplingRiverData] = React.useState();
   const [chart, setChart] = React.useState();
 
   React.useEffect(() => {
     fetchJsonData(url.riverDataURL)
       .then(data => {
-        setOriginalRiverData(data);
+        setData(RIVER_DATA, data);
       })
       .then(function() {
         return fetchJsonData(url.samplingRiverDataURL);
       })
       .then(data => {
-        setSamplingRiverData(data);
+        setData(SAMPLING_RIVER_DATA, data);
       });
   }, []);
 
   React.useEffect(() => {
-    const fetchURL =
-      samplingFlag === true ? url.samplingRiverDataURL : url.riverDataURL;
-    fetchJsonData(fetchURL).then(data => {
-      console.log("data: ", data);
-      setData(RIVER_DATA, data);
-      if (samplingFlag === false) {
-        setOriginalRiverData(data);
-      } else {
-        setSamplingRiverData(data);
-      }
-    });
-  }, [samplingFlag]);
-
-  React.useEffect(() => {
-    if (!samplingRiverData || !originalRiverData) return;
+    if (!samplingRiverData || !riverData) return;
     const days: string[] = Array.from(
       new Set(
-        originalRiverData.map((e: [string]) => {
+        riverData.map((e: [string, number, string]) => {
           return `${e[0].split("/")[1]}-${e[0].split("/")[2]}`;
         })
       )
@@ -70,23 +65,11 @@ function StackBar(props: Props) {
     days.sort((a, b) => {
       return parseInt(a.split("-")[1]) - parseInt(b.split("-")[1]);
     });
-    console.log("days: ", days);
-    const s1 = getStackData(originalRiverData);
-
-    //s1 :
-    console.log("s1: ", s1);
+    const s1 = getStackData(riverData);
     const s2 = getStackData(samplingRiverData);
     const stackData = [];
     for (let i = 0; i < s1.length; i++) {
-      //这里有5类，7天
-      //所以有5个stack Object
-      //每个stackobj的长度为7
-      //days的长度和天数相同
-
-      //每个stackobj代表一列堆叠的bar
-      //假设是9类，3天
-      //那么每个stack.obj.length===3
-      //一共9个stackobj
+      //m topics,n days  <=> m stackobj,stackobj.data.length===n
       const stackObj: {
         [index: string]: any;
       } = {
@@ -100,10 +83,7 @@ function StackBar(props: Props) {
       }
       stackData.push(stackObj);
     }
-    console.log("stackData: ", stackData);
-    /* stackData.sort((a, b) => {
-      return parseInt(a.name.split("-")[1]) - parseInt(b.name.split("-")[1]);
-    }); */
+
     const option = {
       tooltip: {
         trigger: "axis",

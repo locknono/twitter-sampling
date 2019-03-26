@@ -2,10 +2,10 @@ import {
   SET_CUR_TOPIC,
   IF_DRAW_SCATTER_CENTERS,
   SET_SELECTED_IDS,
-  setCurSystem,
   SET_CUR_SYSTEM,
   SET_SAMPLING_FLAG,
-  SET_IF_SHOW_MAP_POINTS
+  SET_IF_SHOW_MAP_POINTS,
+  SET_SELECTED_MAP_IDS
 } from "../actions/setUIState";
 
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
@@ -17,6 +17,7 @@ interface UIState {
   systemName: SystemName;
   samplingFlag: boolean;
   ifShowMapPoints: boolean;
+  selectedMapIDs: string[];
 }
 
 const initialState: UIState = {
@@ -25,7 +26,8 @@ const initialState: UIState = {
   selectedIDs: [],
   systemName: "yelp",
   samplingFlag: false,
-  ifShowMapPoints: false
+  ifShowMapPoints: false,
+  selectedMapIDs: []
 };
 
 export function uiState(state = initialState, action: any) {
@@ -47,6 +49,9 @@ export function uiState(state = initialState, action: any) {
       break;
     case SET_IF_SHOW_MAP_POINTS:
       return { ...state, ifShowMapPoints: action.flag };
+      break;
+    case SET_SELECTED_MAP_IDS:
+      return { ...state, selectedMapIDs: action.ids };
       break;
     default:
       return state;

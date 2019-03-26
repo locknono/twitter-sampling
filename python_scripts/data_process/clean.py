@@ -5,6 +5,7 @@ import g
 import os
 import json
 
+
 def clean():
     tweets = []
     with open(g.dataPath + 'finalExtractedData.txt', 'r', encoding='utf-8', errors='ignore') as f:
@@ -20,9 +21,8 @@ def clean():
     tagPattern = re.compile(r'#.+?\s')
     for i in range(len(tweets) - 1, -1, -1):
         tweets[i][1] = tweets[i][1].lower()
-        #repeat hashtag
+        # repeat hashtag
         matches = re.findall(tagPattern, tweets[i][1])
-
 
         for tag in matches:
             if tag in tagDict:
@@ -109,13 +109,15 @@ def clean():
         tweets[i][1] = re.sub('ny ', ' ', tweets[i][1])
         tweets[i][1] = re.sub('york ', ' ', tweets[i][1])
 
-
         writeF.write(
             tweets[i][0] + '\t' + tweets[i][1] + '\t' + tweets[i][2] + '\t' + tweets[i][3] + '\t' + tweets[i][4] +
             '\t\n')
 
+    tagDict = sorted(tagDict.items(), key=lambda v: v[1],reverse=True)
     with open(g.dataPath + 'tags.json', 'w', encoding='utf-8') as tagF:
         tagF.write(json.dumps(tagDict))
+
+
 if __name__ == '__main__':
     print('clean text')
     cwd = os.getcwd()
