@@ -13,7 +13,7 @@ import {
   topicNumber,
   pythonServerURL,
   url
-} from "../constants";
+} from "../constants/constants";
 import { connect } from "react-redux";
 import { useWidthAndHeight } from "src/hooks/layoutHooks";
 import { useCtxWithRef } from "src/hooks/canvasHooks";
@@ -21,6 +21,7 @@ import { updateQueue } from "../fiber/updateQueue";
 import createFiber from "../fiber/fiber";
 import * as v4 from "uuid/v4";
 import Heading from "../components/Heading";
+import { fetchWordCloudDataByIDs } from "src/shared/fetch";
 interface Props {
   scatterData: ScatterPoint[];
   curTopic: CurTopic;
@@ -348,13 +349,7 @@ function LdaScatterCanvasCanvas(props: Props) {
 
     (async function setWordCloudDataWithSelectedIDs(ids: string[]) {
       if (ids.length === 0) return;
-      const res = await fetch(pythonServerURL + "selectArea", {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        body: JSON.stringify(ids)
-      });
-      const data = await res.json();
+      const data = await fetchWordCloudDataByIDs(ids);
       setData(CLOUD_DATA, data);
     })(ids);
   }

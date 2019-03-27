@@ -115,7 +115,7 @@ def getInitialTexts():
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res
 
-
+"""
 @app.route("/runSamplingOnIDs", methods=['GET', 'POST'])
 def runSamplingOnIDs():
     returnData = {}
@@ -164,6 +164,17 @@ def runSamplingOnIDs():
 
     res = Response(json.dumps(returnData))
 
+    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
+    return res
+"""
+
+
+@app.route("/selectIDsOnMap", methods=['GET', 'POST'])
+def selectIDsOnMap():
+    returnData = {}
+    ids = json.loads(request.data)
+    res = Response(json.dumps(ids))
     res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res

@@ -10,7 +10,7 @@ import {
 } from "../actions/setUIState";
 
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
-import { pythonServerURL } from "../constants";
+import { pythonServerURL } from "../constants/constants";
 interface UIState {
   curTopic: CurTopic;
   ifDrawScatterCenters: boolean;

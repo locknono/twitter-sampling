@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { maxCloudWordSize } from "src/constants";
+import { maxCloudWordSize } from "src/constants/constants";
 
 import {
   SET_ORIGINAL_BARDATA,

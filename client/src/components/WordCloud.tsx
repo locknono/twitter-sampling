@@ -6,7 +6,7 @@ import * as cloud from "d3-cloud";
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
 import { setCurTopic } from "../actions/setUIState";
 import { connect } from "react-redux";
-import { color, maxCloudWordSize, topicNumber, url } from "src/constants";
+import { color, maxCloudWordSize, topicNumber, url } from "src/constants/constants";
 import { useWidthAndHeight } from "src/hooks/layoutHooks";
 interface Props {
   cloudData: CloudData;

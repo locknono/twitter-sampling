@@ -11,7 +11,7 @@ import {
   url,
   topicNumber,
   mapCircleRadius
-} from "../constants";
+} from "../constants/constants";
 import {
   setData,
   MAP_POINTS,
@@ -28,6 +28,9 @@ import {
   setSelectedMapIDs
 } from "../actions/setUIState";
 import Heading from "./Heading";
+import { fetchWordCloudDataByIDs } from "../shared/fetch";
+import { getArcGenerator, getLineGenerator } from "src/shared/renderer";
+import { tl, rb, options, tileLayerURL } from "src/constants/mapOptions";
 const mapState = (state: any) => {
   const { mapPoints } = state.dataTree;
   const {
@@ -335,73 +338,14 @@ function Map(props: Props) {
 }*/
 
   React.useEffect(() => {
-    const center: [number, number] = [40.74236688190866, -74.01489262003452];
-    const zoom = 11.5;
-    const preferCanvas = true;
-    const zoomControl = false;
-    const attributionControl = false;
-    const options: object = {
-      center,
-      zoom,
-      zoomControl,
-      attributionControl,
-      preferCanvas
-    };
     const map = L.map("map", options);
-    L.tileLayer(
-      "https://api.mapbox.com/styles/v1/lockyes/cjiva3omz8hrq2so4mfdaurmw/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg"
-    ).addTo(map);
+    L.tileLayer(tileLayerURL).addTo(map);
     setMap(map);
     map.on("click", function(e) {});
     controlLayer.addTo(map);
-
-    const p1: [number, number] = [40.9328129198744, -74.32278448250146];
-    const p2: [number, number] = [40.49040846908216, -73.73446653597058];
-    const bounds = [p1, p2];
+    const bounds = [tl, rb];
     const bound = L.rectangle(bounds);
     controlLayer.addOverlay(bound, "bound");
-
-    const pmOptions = {
-      position: "topleft", // toolbar position, options are 'topleft', 'topright', 'bottomleft', 'bottomright'
-      useFontAwesome: false, // use fontawesome instead of glyphicons (you need to include fontawesome yourself)
-      drawMarker: true, // adds button to draw markers
-      drawPolyline: true, // adds button to draw a polyline
-      drawRectangle: true, // adds button to draw a rectangle
-      drawPolygon: true, // adds button to draw a polygon
-      drawCircle: true, // adds button to draw a cricle
-      cutPolygon: true, // adds button to cut a hole in a polygon
-      editMode: true, // adds button to toggle edit mode for all layers
-      removalMode: true // adds a button to remove layers
-    };
-    const drawOptions = {
-      snappable: true,
-      snapDistance: 20,
-      snapMiddle: false,
-      allowSelfIntersection: true,
-      templineStyle: {
-        color: "blue"
-      },
-      hintlineStyle: {
-        color: "blue",
-        dashArray: [5, 5]
-      },
-      cursorMarker: false,
-      finishOn: null,
-      markerStyle: {
-        fillColor: "none",
-        stroke: "blue",
-        opacity: 0,
-        draggable: true,
-        pointerEvents: `none`
-      },
-      pathOptions: {
-        fill: "blue",
-        fillOpacity: 0,
-        color: "blue",
-        fillColor: "none",
-        pointerEvents: `none`
-      }
-    };
     map.pm.addControls(options);
     //map.pm.enableDraw("Circle", drawOptions as any);
   }, []);
@@ -429,7 +373,9 @@ function Map(props: Props) {
           ids.push(e.id);
         }
       });
-      setSelectedMapIDs(ids);
+      setSelectedIDs(ids);
+
+      /* setSelectedMapIDs(ids);
       (async () => {
         const res = await fetch(pythonServerURL + "runSamplingOnIDs", {
           method: "POST",
@@ -438,7 +384,6 @@ function Map(props: Props) {
           body: JSON.stringify(ids)
         });
         const data = await res.json();
-        console.log("data: ", data);
         const {
           mapPoints,
           scatterPoints,
@@ -456,21 +401,13 @@ function Map(props: Props) {
         setData("SAMPLING_BARDATA", barData.sampling);
         setData(RIVER_DATA, riverData);
         setData(SAMPLING_RIVER_DATA, samplingRiverData);
-        /*  setData(MAP_POINTS, mapPoints); */
-      })();
+          setData(MAP_POINTS, mapPoints); 
+      })(); */
 
       (async function setWordCloudDataWithSelectedIDs(ids: string[]) {
         if (ids.length === 0) return;
-        try {
-          const res = await fetch(pythonServerURL + "selectArea", {
-            method: "POST",
-            mode: "cors",
-            cache: "no-cache",
-            body: JSON.stringify(ids)
-          });
-          const data = await res.json();
-          setData(CLOUD_DATA, data);
-        } catch (e) {}
+        const data = await fetchWordCloudDataByIDs(ids);
+        setData(CLOUD_DATA, data);
       })(ids);
 
       (async function drawWheel() {
@@ -492,32 +429,16 @@ function Map(props: Props) {
             .domain([0, maxValue])
             .range([0, layerHeight - 2]);
 
-          const arc = d3
-            .arc()
-            .innerRadius(function(d) {
-              return d.innerRadius;
-            })
-            .outerRadius(function(d) {
-              return d.outerRadius;
-            })
-            .startAngle(function(d) {
-              return d.startAngle;
-            })
-            .endAngle(function(d) {
-              return d.endAngle;
-            });
+          const arc = getArcGenerator();
 
           const cx = e1.layer._point.x;
           const cy = e1.layer._point.y;
 
-          const curWheelCenter = [e1.layer._point.x, e1.layer._point.y];
+          const curWheelCenter = [cx, cy];
           setWheelCenter(curWheelCenter);
           svgLayer.selectAll("path").remove();
 
-          const line = d3
-            .line()
-            .x(d => d[0])
-            .y(d => d[1]);
+          const line = getLineGenerator();
           /* for (let i = 0; i < 3; i++) {
             const angle = (360 / 3) * i;
             console.log("angle: ", angle);

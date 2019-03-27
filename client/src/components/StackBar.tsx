@@ -10,8 +10,8 @@ import {
 } from "../actions/setDataAction";
 import { connect } from "react-redux";
 import { fetchJsonData } from "src/shared";
-import { topicNumber, url } from "src/constants";
-import { color } from "../constants";
+import { topicNumber, url } from "src/constants/constants";
+import { color } from "../constants/constants";
 
 const mapState = (state: any) => {
   const { riverData, samplingRiverData } = state.dataTree;

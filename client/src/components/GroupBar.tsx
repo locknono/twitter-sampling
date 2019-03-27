@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as d3 from "d3";
-import { padding, color, url } from "../constants";
+import { padding, color, url } from "../constants/constants";
 import { setData } from "../actions/setDataAction";
 import { setCurTopic } from "../actions/setUIState";
 import { connect } from "react-redux";

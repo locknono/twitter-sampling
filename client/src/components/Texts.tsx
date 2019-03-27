@@ -15,7 +15,7 @@ import {
   topicNumber,
   pythonServerURL,
   url
-} from "../constants";
+} from "../constants/constants";
 import { connect } from "react-redux";
 import { useWidthAndHeight } from "src/hooks/layoutHooks";
 import { useCtxWithRef } from "src/hooks/canvasHooks";
