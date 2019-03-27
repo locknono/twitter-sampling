@@ -25,39 +25,9 @@ interface Props {
 export default function SingleText(props: Props) {
   const { text, index } = props;
 
-  const imgRadius = 65;
   return (
-    <div style={{ width: "100%", height: imgRadius, display: "flex" }}>
-      <div
-        style={{
-          marginLeft: "5px",
-          width: imgRadius,
-          height: imgRadius
-        }}
-      >
-        <img
-          src={`./imgs/${index % 6}.jpg`}
-          style={{
-            width: `100%`,
-            height: `100%`,
-            borderRadius: `50%`,
-            border: "solid 1px rgb(222,222,222)",
-            transform: "scale(0.8)",
-            transformOrigin: "center"
-          }}
-        />
-      </div>
-      <div
-        style={{
-          display: "block",
-          float: "left",
-          width: "100%"
-        }}
-      >
-        <a href="#" className="list-group-item">
-          {text}
-        </a>
-      </div>
-    </div>
+    <a href="#" className="list-group-item" style={{ paddingLeft: 10 }}>
+      {text}
+    </a>
   );
 }

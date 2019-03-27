@@ -7,6 +7,7 @@ export const SET_IF_SHOW_MAP_POINTS = "SET_IF_SHOW_MAP_POINTS";
 
 //select ids on map => run lda,tsne,sampling on those ids and all other view data view be replaced
 export const SET_SELECTED_MAP_IDS = "SET_SELECTED_MAP_IDS";
+export const SET_SAMPLING_CONDITION = "SET_SAMPLING_CONDITION";
 
 export function setCurTopic(index: CurTopic) {
   return {
@@ -54,5 +55,12 @@ export function setSelectedMapIDs(ids: string[]) {
   return {
     type: SET_SELECTED_MAP_IDS,
     ids
+  };
+}
+
+export function setSamplingCondition(condition: [boolean, boolean]) {
+  return {
+    type: SET_SAMPLING_CONDITION,
+    condition
   };
 }

@@ -11,6 +11,8 @@ from ldbr import ldbr
 from shared.getLdbrData import getLdbrPoints, getOriginalEstimates, getSamplingIDs
 from shared.constant import nyBound
 import copy
+from ldbr import getKDE, setRadius
+from kdeIndicator import getKDEIndicator
 
 if __name__ == '__main__':
     idTextDict = {}
@@ -34,7 +36,28 @@ if __name__ == '__main__':
 
     points = getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict)
     c = 0.03
-    estimates, sampleGroups = ldbr(copy.deepcopy(points), g.topicNumber, 1000, 0.08, c, 0.0005)
+    copyPoints = copy.deepcopy(points)
+    estimates, sampleGroups = ldbr(copyPoints, g.topicNumber, 1000, 0.08, c, 0.0005)
+
+    samplingPoints = []
+    for sg in sampleGroups:
+        for p in sg:
+            samplingPoints.append(p)
+    samplingKDE = getKDE(samplingPoints)
+    for p in samplingPoints:
+        setRadius(p, 1000, samplingKDE)
+    sum = 0
+    values = []
+    for p1 in samplingPoints:
+        for p2 in copyPoints:
+            if p1.id == p2.id:
+                value = getKDEIndicator(p1, p2)
+                values.append([p1.kdeValue, p2.kdeValue])
+                sum += value
+                continue
+    print(sum)
+    with open(g.dataPath + 'kdeValue.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps({"sum": sum, "values": values}))
 
     if estimates != None or sampleGroups != None:
         originalEstimates = getOriginalEstimates(points, g.topicNumber)

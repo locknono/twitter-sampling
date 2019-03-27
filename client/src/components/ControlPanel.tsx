@@ -7,7 +7,8 @@ import {
   setIfDrawCenters,
   setSelectedIDs,
   setCurSystem,
-  setSamplingFlag
+  setSamplingFlag,
+  setSamplingCondition
 } from "../actions/setUIState";
 import SliderWithLabel from "./SliderWithLabel";
 import "../css/awesome-bootstrap-checkbox.css";
@@ -15,20 +16,33 @@ import "../css/awesome-bootstrap-checkbox.css";
 interface Props {
   setCurSystem: typeof setCurSystem;
   setSamplingFlag: typeof setSamplingFlag;
+  setSamplingCondition: typeof setSamplingCondition;
+  samplingCondition: boolean;
 }
 const mapState = (state: any) => {
+  const { samplingCondition } = state.uiState;
+
   /* const { scatterData } = state.dataTree;
   const { curTopic, ifDrawScatterCenters, selectedIDs } = state.uiState;
   return { scatterData, curTopic, ifDrawScatterCenters, selectedIDs }; */
-  return {};
+  return { samplingCondition };
 };
 const mapDispatch = {
   setCurSystem,
-  setSamplingFlag
+  setSamplingFlag,
+  setSamplingCondition
 };
 
 function ControlPanel(props: Props) {
-  const { setCurSystem, setSamplingFlag } = props;
+  const {
+    setCurSystem,
+    setSamplingFlag,
+    setSamplingCondition,
+    samplingCondition
+  } = props;
+  console.log("samplingCondition: ", samplingCondition);
+  const [spaceChecked, setSpaceChecked] = React.useState(false);
+  const [timeChecked, setTimeChecked] = React.useState(false);
 
   function handleSystemNameClick(name: "twitter" | "yelp") {
     setCurSystem(name);
@@ -36,6 +50,15 @@ function ControlPanel(props: Props) {
 
   function handleSamplingClick(flag: boolean) {
     setSamplingFlag(flag);
+  }
+
+  function handleCheck(e: React.SyntheticEvent) {
+    const id = (e.target as any).id;
+    if (id === "space") {
+      setSamplingCondition([!samplingCondition[0], samplingCondition[1]]);
+    } else {
+      setSamplingCondition([samplingCondition[0], !samplingCondition[1]]);
+    }
   }
   return (
     <div className="panel panel-default control-panel-div">
@@ -62,14 +85,14 @@ function ControlPanel(props: Props) {
 
           <form role="form">
             <div className="checkbox">
-              <input type="checkbox" id="checkbox1" />
-              <label htmlFor="checkbox1">space</label>
+              <input type="checkbox" id="space" onChange={handleCheck} />
+              <label htmlFor="space">space</label>
             </div>
           </form>
           <form role="form">
             <div className="checkbox">
-              <input type="checkbox" id="checkbox1" />
-              <label htmlFor="checkbox1">time</label>
+              <input type="checkbox" id="time" onChange={handleCheck} />
+              <label htmlFor="time">time</label>
             </div>
           </form>
         </div>

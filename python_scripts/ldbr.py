@@ -4,6 +4,7 @@ import numpy as np
 import random
 import math
 import json
+import copy
 
 
 # one sample for one disk ,starts from the fewest count
@@ -64,7 +65,8 @@ def getTimeKDE(points: List[Point]):
 
 
 def setRadius(point: Point, r: float, kde):
-    radius = r / kde([point.lat, point.lng])[0]
+    point.kdeValue = kde([point.lat, point.lng])[0]
+    radius = r / point.kdeValue
     point.r = radius
 
 
@@ -217,7 +219,7 @@ def ldbr(points: List[Point], k: int, r: float, delta: float, c: float, timeR: f
             if ifActive(estimates, A[i], epsilon, A) == False:
                 A.pop(i)
         # print(str(A))
-    return [estimates, sampleGroups]
+    return [estimates, copy.deepcopy(sampleGroups)]
 
 
 if __name__ == '__main__':

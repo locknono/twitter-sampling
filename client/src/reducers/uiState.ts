@@ -5,7 +5,8 @@ import {
   SET_CUR_SYSTEM,
   SET_SAMPLING_FLAG,
   SET_IF_SHOW_MAP_POINTS,
-  SET_SELECTED_MAP_IDS
+  SET_SELECTED_MAP_IDS,
+  SET_SAMPLING_CONDITION
 } from "../actions/setUIState";
 
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
@@ -18,6 +19,7 @@ interface UIState {
   samplingFlag: boolean;
   ifShowMapPoints: boolean;
   selectedMapIDs: string[];
+  samplingCondition: [boolean, boolean];
 }
 
 const initialState: UIState = {
@@ -27,7 +29,8 @@ const initialState: UIState = {
   systemName: "yelp",
   samplingFlag: false,
   ifShowMapPoints: false,
-  selectedMapIDs: []
+  selectedMapIDs: [],
+  samplingCondition: [false, false]
 };
 
 export function uiState(state = initialState, action: any) {
@@ -52,6 +55,9 @@ export function uiState(state = initialState, action: any) {
       break;
     case SET_SELECTED_MAP_IDS:
       return { ...state, selectedMapIDs: action.ids };
+      break;
+    case SET_SAMPLING_CONDITION:
+      return { ...state, samplingCondition: action.condition };
       break;
     default:
       return state;

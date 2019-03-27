@@ -29,8 +29,21 @@ import {
 } from "../actions/setUIState";
 const mapState = (state: any) => {
   const { mapPoints } = state.dataTree;
-  const { curTopic, selectedIDs, systemName, ifShowMapPoints } = state.uiState;
-  return { mapPoints, curTopic, selectedIDs, systemName, ifShowMapPoints };
+  const {
+    curTopic,
+    selectedIDs,
+    systemName,
+    ifShowMapPoints,
+    samplingFlag
+  } = state.uiState;
+  return {
+    mapPoints,
+    curTopic,
+    selectedIDs,
+    systemName,
+    ifShowMapPoints,
+    samplingFlag
+  };
 };
 const mapDispatch = {
   setData,
@@ -49,6 +62,7 @@ interface Props {
   ifShowMapPoints: boolean;
   setIfShowMapPoints: typeof setIfShowMapPoints;
   setSelectedMapIDs: typeof setSelectedMapIDs;
+  samplingFlag: boolean;
 }
 
 interface Map {
@@ -66,7 +80,8 @@ function Map(props: Props) {
     systemName,
     ifShowMapPoints,
     setIfShowMapPoints,
-    setSelectedMapIDs
+    setSelectedMapIDs,
+    samplingFlag
   } = props;
 
   const [
@@ -154,6 +169,10 @@ function Map(props: Props) {
     })();
   }, [selectedIDs]);
 
+  //click sampling button
+  React.useEffect(() => {
+    
+  }, [samplingFlag]);
   //add all points to map
   React.useEffect(() => {
     if (!mapPoints) return;
@@ -482,6 +501,31 @@ function Map(props: Props) {
           const curWheelCenter = [e1.layer._point.x, e1.layer._point.y];
           setWheelCenter(curWheelCenter);
           svgLayer.selectAll("path").remove();
+
+          const line = d3
+            .line()
+            .x(d => d[0])
+            .y(d => d[1]);
+          /* for (let i = 0; i < 3; i++) {
+            const angle = (360 / 3) * i;
+            console.log("angle: ", angle);
+            const x1 =
+              e1.layer._point.x + radius * Math.cos((angle * Math.PI) / 180);
+            const y1 =
+              e1.layer._point.y + radius * Math.sin((angle * Math.PI) / 180);
+            const x2 =
+              e1.layer._point.x +
+              (radius + layerHeight * 9) * Math.cos((angle * Math.PI) / 180);
+            const y2 =
+              e1.layer._point.y +
+              (radius + layerHeight * 9) * Math.sin((angle * Math.PI) / 180);
+            svgLayer
+              .append("path")
+              .attr("d", line([[x1, y1], [x2, y2]]))
+              .attr("stroke", "grey")
+              .attr("stroke-width", "1px")
+              .attr("fill", "none");
+          } */
           for (let i = 0; i < data.length; i++) {
             const layerArc = {
               innerRadius: radius + layerHeight * i,
