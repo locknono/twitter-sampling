@@ -12,25 +12,29 @@ import {
 } from "../actions/setUIState";
 import SliderWithLabel from "./SliderWithLabel";
 import "../css/awesome-bootstrap-checkbox.css";
+import { url } from "src/constants/constants";
 
 interface Props {
   setCurSystem: typeof setCurSystem;
   setSamplingFlag: typeof setSamplingFlag;
   setSamplingCondition: typeof setSamplingCondition;
   samplingCondition: boolean;
+  setSelectedIDs: typeof setSelectedIDs;
+  selectedIDs: string[];
 }
 const mapState = (state: any) => {
-  const { samplingCondition } = state.uiState;
+  const { samplingCondition, selectedIDs } = state.uiState;
 
   /* const { scatterData } = state.dataTree;
   const { curTopic, ifDrawScatterCenters, selectedIDs } = state.uiState;
   return { scatterData, curTopic, ifDrawScatterCenters, selectedIDs }; */
-  return { samplingCondition };
+  return { samplingCondition, selectedIDs };
 };
 const mapDispatch = {
   setCurSystem,
   setSamplingFlag,
-  setSamplingCondition
+  setSamplingCondition,
+  setSelectedIDs
 };
 
 function ControlPanel(props: Props) {
@@ -38,18 +42,40 @@ function ControlPanel(props: Props) {
     setCurSystem,
     setSamplingFlag,
     setSamplingCondition,
-    samplingCondition
+    samplingCondition,
+    setSelectedIDs,
+    selectedIDs
   } = props;
-  console.log("samplingCondition: ", samplingCondition);
   const [spaceChecked, setSpaceChecked] = React.useState(false);
   const [timeChecked, setTimeChecked] = React.useState(false);
-
+  const [originalSelectedIDs, setOriginalSelectedIDs] = React.useState<
+    string[]
+  >([]);
   function handleSystemNameClick(name: "twitter" | "yelp") {
     setCurSystem(name);
   }
 
   function handleSamplingClick(flag: boolean) {
     setSamplingFlag(flag);
+    if (selectedIDs.length > 0) {
+      if (flag === true) {
+        (async () => {
+          setOriginalSelectedIDs(selectedIDs);
+          const res = await fetch(url.ldbrPointsURL);
+          const samplingPoints = await res.json();
+          const newIDs: string[] = [];
+          const selectedIDsSet = new Set(selectedIDs);
+          for (let i = 0; i < samplingPoints.length; i++) {
+            if (selectedIDsSet.has(samplingPoints[i].id)) {
+              newIDs.push(samplingPoints[i].id);
+            }
+          }
+          setSelectedIDs(newIDs);
+        })();
+      } else {
+        setSelectedIDs(originalSelectedIDs);
+      }
+    }
   }
 
   function handleCheck(e: React.SyntheticEvent) {

@@ -12,6 +12,7 @@ import {
   topicNumber,
   mapCircleRadius
 } from "../constants/constants";
+import { tl, rb, options, tileLayerURL } from "src/constants/mapOptions";
 import {
   setData,
   MAP_POINTS,
@@ -30,7 +31,6 @@ import {
 import Heading from "./Heading";
 import { fetchWordCloudDataByIDs } from "../shared/fetch";
 import { getArcGenerator, getLineGenerator } from "src/shared/renderer";
-import { tl, rb, options, tileLayerURL } from "src/constants/mapOptions";
 const mapState = (state: any) => {
   const { mapPoints } = state.dataTree;
   const {
@@ -350,10 +350,9 @@ function Map(props: Props) {
     //map.pm.enableDraw("Circle", drawOptions as any);
   }, []);
   React.useEffect(() => {
-    if (!map || !svgLayer) return;
+    if (!map || !svgLayer || !mapPoints) return;
     let lastW: any = null;
     map.on("pm:create", function(e1: any) {
-      if (!mapPoints) return;
       const layer = e1.layer;
       if (!lastW) {
         lastW = layer;
@@ -361,7 +360,6 @@ function Map(props: Props) {
         map.removeLayer(lastW);
         lastW = layer;
       }
-
       const radius = e1.layer._radius;
       const center: [number, number] = [
         e1.layer._latlng.lat,
@@ -403,12 +401,6 @@ function Map(props: Props) {
         setData(SAMPLING_RIVER_DATA, samplingRiverData);
           setData(MAP_POINTS, mapPoints); 
       })(); */
-
-      (async function setWordCloudDataWithSelectedIDs(ids: string[]) {
-        if (ids.length === 0) return;
-        const data = await fetchWordCloudDataByIDs(ids);
-        setData(CLOUD_DATA, data);
-      })(ids);
 
       (async function drawWheel() {
         try {

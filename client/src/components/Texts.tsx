@@ -53,7 +53,6 @@ const mapDispatch = {
 
 function Texts(props: Props) {
   const { texts, setData } = props;
-  console.log("texts: ", texts);
 
   const { selectedIDs } = props;
 

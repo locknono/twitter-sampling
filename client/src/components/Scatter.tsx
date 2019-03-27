@@ -249,14 +249,15 @@ function LdaScatterCanvasCanvas(props: Props) {
     if (!width || !height) return;
     const [xScale, yScale] = scales;
     const selectedPoints: ScatterPoint[] = [];
-    selectedIDs.map(id => {
-      for (let i = 0; i < scatterData.length; i++) {
-        if (scatterData[i].id === id) {
-          selectedPoints.push(scatterData[i]);
-          break;
-        }
+    console.log("selectedIDs: ", selectedIDs);
+    const idsSet = new Set(selectedIDs);
+
+    for (let i = 0; i < scatterData.length; i++) {
+      if (idsSet.has(scatterData[i].id)) {
+        selectedPoints.push(scatterData[i]);
       }
-    });
+    }
+    console.log("selectedPoints: ", selectedPoints);
     const fiber = createFiber(() => {
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = "black";
@@ -274,7 +275,7 @@ function LdaScatterCanvasCanvas(props: Props) {
     }, 1);
     updateQueue.push(fiber);
     updateQueue.flush();
-  }, [selectedIDs]);
+  }, [selectedIDs, scatterData]);
 
   function handleClick(e: any) {
     if (e.ctrlKey !== true) return;
