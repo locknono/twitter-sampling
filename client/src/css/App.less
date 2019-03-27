@@ -98,11 +98,18 @@
   flex-direction: row;
 }
 
-#map {
+.map-view {
   top: 0;
   width: @middileWidth;
-  height: @mapHeight;
+  height: @mapHeight + 2px;
   .panel-margin();
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+#map {
+  flex: 1 1 auto;
+  margin-bottom: 0;
 }
 
 .river-view {
@@ -247,4 +254,16 @@
   flex-direction: column;
   justify-content: space-around;
   align-items: flex-start; */
+}
+
+.heading-button {
+  padding: 0;
+  float: right;
+  margin-bottom: 3;
+}
+
+.map-heading::after {
+  content: "";
+  display: block;
+  clear: both;
 }

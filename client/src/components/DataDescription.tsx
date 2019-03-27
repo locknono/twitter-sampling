@@ -33,9 +33,9 @@ function DataDescription(props: Props) {
   }, [count]);
 
   let allTweetsCountDOM = allTweetsCount ? (
-    <p>all points: {allTweetsCount} </p>
+    <p>original data: {allTweetsCount} </p>
   ) : (
-    <p>all points: </p>
+    <p>sampled data: </p>
   );
 
   let samplingCountDOM = samplingTweetsCount ? (
@@ -45,7 +45,7 @@ function DataDescription(props: Props) {
   );
   return (
     <div className="panel panel-default data-description-div ">
-      <Heading title="Data" />
+      <Heading title="Social Media Data" />
       <div className="data-description-content-div">
         {allTweetsCountDOM}
         {samplingCountDOM}

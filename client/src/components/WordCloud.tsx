@@ -166,7 +166,7 @@ function WordCloud(props: Props) {
 
   return (
     <div className="word-cloud-div panel panel-default">
-      <Heading title="Word Cloud" />
+      <Heading title="Word Clouds" />
       <svg id="cloud-svg">{renderGroup}</svg>
     </div>
   );

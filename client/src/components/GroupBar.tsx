@@ -220,7 +220,7 @@ function GroupBar(props: Props) {
 
   return (
     <div className="groupbar-div view-div panel panel-default">
-      <Heading title="LDA Bar Chart" />
+      <Heading title="Topic Difference" />
       <svg id="groupbar-svg">
         {borders}
         <g className="group-rects-g">

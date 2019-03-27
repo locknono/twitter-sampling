@@ -367,7 +367,7 @@ function LdaScatterCanvasCanvas(props: Props) {
   }, [o2]);
   return (
     <div className="scatter-div panel panel-default">
-      <Heading title="Projection View" />
+      <Heading title="LDA Projection" />
       <div className="scatter-canvas-div">
         <canvas
           id="scatter-canvas-background"

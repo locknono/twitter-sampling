@@ -98,7 +98,7 @@ function River(props: Props) {
 
   return (
     <div className="river-view panel panel-default">
-      <Heading title="Theme River" />
+      <Heading title="Topic River" />
       <div id="river" />
     </div>
   );

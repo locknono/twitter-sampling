@@ -124,7 +124,7 @@ function StackBar(props: Props) {
 
   return (
     <div className="stack-bar-div panel panel-default">
-      <Heading title="stack bars" />
+      <Heading title="Temporal Difference" />
       <div id="stack-bar" />
     </div>
   );

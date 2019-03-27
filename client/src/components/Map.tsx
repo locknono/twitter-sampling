@@ -27,6 +27,7 @@ import {
   setIfShowMapPoints,
   setSelectedMapIDs
 } from "../actions/setUIState";
+import Heading from "./Heading";
 const mapState = (state: any) => {
   const { mapPoints } = state.dataTree;
   const {
@@ -93,6 +94,7 @@ function Map(props: Props) {
   const initialControlLayer = L.control.layers(undefined, undefined, {
     collapsed: false
   });
+
   const [controlLayer, setControlLayer] = React.useState<L.Control.Layers>(
     initialControlLayer
   );
@@ -102,6 +104,19 @@ function Map(props: Props) {
   const [svgLayer, setSvgLayer] = React.useState<any>(null);
 
   const [lastTopicPoints, setLastTopicPoints] = React.useState<any>(null);
+
+  const [
+    pointsLayerGroup,
+    setPointsLayerGroup
+  ] = React.useState<null | L.LayerGroup>(null);
+
+  function handleShowPointsClick(flag: boolean, e: React.SyntheticEvent) {
+    setIfShowMapPoints(flag);
+    if (!map || !pointsLayerGroup) return;
+    if (flag === true) {
+      pointsLayerGroup.addTo(map);
+    }
+  }
 
   React.useEffect(() => {
     if (!map) return;
@@ -124,11 +139,6 @@ function Map(props: Props) {
       g.attr("transform", `translate(${shift.x},${shift.y}) scale(${scale})`);
     });
   }, [map]);
-
-  React.useEffect(() => {
-    if (!map || !wheelCenter) return;
-    const d3Svg = d3.select(".leaflet-overlay-pane svg").select("g");
-  }, [map, wheelCenter]);
 
   //set map points
   React.useEffect(() => {
@@ -171,8 +181,9 @@ function Map(props: Props) {
 
   //click sampling button
   React.useEffect(() => {
-    
+    if (!map) return;
   }, [samplingFlag]);
+
   //add all points to map
   React.useEffect(() => {
     if (!mapPoints) return;
@@ -207,6 +218,7 @@ function Map(props: Props) {
       );
     });
     const layerGroup = L.layerGroup(allPointsLayer);
+    setPointsLayerGroup(layerGroup);
     controlLayer.addOverlay(layerGroup, `all points`);
   }, [mapPoints]);
 
@@ -626,7 +638,24 @@ function Map(props: Props) {
       controlLayer.addOverlay(layerGroup, "original hex");
     })();
   }, []);
-  return <div id="map" className="panel panel-default" />;
+  return (
+    <div className="map-view panel panel-default">
+      <div className="panel-heading heading map-heading">
+        Map View
+        <button
+          className="btn btn-default heading-button"
+          onClick={handleShowPointsClick.bind(null, !ifShowMapPoints)}
+        >
+          show points
+        </button>
+      </div>
+      <div
+        id="map"
+        className="panel panel-default"
+        style={{ textAlign: "left" }}
+      />
+    </div>
+  );
 }
 
 export default connect(

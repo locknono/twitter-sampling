@@ -103,7 +103,7 @@ function Texts(props: Props) {
   }
   return (
     <div className="view-div panel panel-default" id="texts-div">
-      <Heading title="Texts" />
+      <Heading title="Text Information" />
       <div className="texts-content-div"> </div>
       <div className="list-group"> {renderTexts}</div>
     </div>
