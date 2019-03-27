@@ -13,7 +13,7 @@ import {
 import SliderWithLabel from "./SliderWithLabel";
 import "../css/awesome-bootstrap-checkbox.css";
 import { url } from "src/constants/constants";
-
+import Checkbox from "./Checkbox";
 interface Props {
   setCurSystem: typeof setCurSystem;
   setSamplingFlag: typeof setSamplingFlag;
@@ -89,57 +89,41 @@ function ControlPanel(props: Props) {
   return (
     <div className="panel panel-default control-panel-div">
       <Heading title="Control Panel" />
+
+      <div className="buttons-div" id="buttons-div2">
+        <span>Status:</span>
+        <button
+          id="original"
+          onClick={handleSamplingClick.bind(null, false)}
+          className="btn btn-default btn-sm white-button"
+        >
+          original
+        </button>
+        <button
+          id="sampling"
+          onClick={handleSamplingClick.bind(null, true)}
+          className="btn btn-default btn-sm white-button"
+        >
+          sampling
+        </button>
+      </div>
+
       <div className="control-panel-content-div">
-        <div className="buttons-div " id="buttons-div1">
-          <button
-            id="twitter"
-            className="btn btn-default btn-sm white-button"
-            onClick={handleSystemNameClick.bind(null, "twitter")}
-          >
-            dataset
-          </button>
-          <input type="text" style={{ height: 25 }} />
+        <div
+          className="checkbox-div method-div"
+          style={{ position: "relative", top: 10 }}
+        >
+          <span>Methods:</span>
+          <Checkbox id="random" text="random" />
+          <Checkbox id="br" text="blue noise sampling" />
         </div>
 
-        <div className="checkbox-div">
-          <form role="form">
-            <div className="checkbox">
-              <input type="checkbox" id="checkbox1" />
-              <label htmlFor="checkbox1">random</label>
-            </div>
-          </form>
-
-          <form role="form">
-            <div className="checkbox">
-              <input type="checkbox" id="space" onChange={handleCheck} />
-              <label htmlFor="space">space</label>
-            </div>
-          </form>
-          <form role="form">
-            <div className="checkbox">
-              <input type="checkbox" id="time" onChange={handleCheck} />
-              <label htmlFor="time">time</label>
-            </div>
-          </form>
+        <div className="checkbox-div method-div">
+          <Checkbox id="rp" text="rapid sampling" />
+          <Checkbox id="spatial" text="spatial" />
+          <Checkbox id="temporal" text="temporal" />
         </div>
 
-        <div className="buttons-div " id="buttons-div2">
-          <span>select status:</span>
-          <button
-            id="original"
-            onClick={handleSamplingClick.bind(null, false)}
-            className="btn btn-default btn-sm white-button"
-          >
-            original
-          </button>
-          <button
-            id="sampling"
-            onClick={handleSamplingClick.bind(null, true)}
-            className="btn btn-default btn-sm white-button"
-          >
-            sampling
-          </button>
-        </div>
         <SliderWithLabel
           name="LDA topics"
           min={1}

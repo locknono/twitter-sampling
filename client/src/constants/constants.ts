@@ -80,3 +80,5 @@ export const scatterRadius = 1.5;
 export const maxCloudWordSize = 70;
 
 export const pythonServerURL = "http://localhost:8000/";
+
+export const wheelLayerHeight = 10;

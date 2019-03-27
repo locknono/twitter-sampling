@@ -19,17 +19,6 @@
 .slider-text {
   margin-right: 5px;
 }
-.buttons-div {
-  height: 21px;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-#buttons-div2 {
-  padding-left: 5px;
-  padding-right: 7px;
-}
 #buttons-div1 {
   margin-left: -3px;
 }
@@ -49,18 +38,15 @@
   text-align: start;
 }
 .matrix-color-bar {
-  width: 35%;
-  height: 65%;
-  position: absolute;
-  top: 50%;
-  left: 80%;
-  transform: translate(-50%, -50%);
-  border: 0.1px #c8c8c8 solid;
+  width: 28%;
+  height: 12px;
+  position: relative;
+  top: 3px;
+  float: right;
+  border-radius: 10%;
 }
 .matrix-color-bar-text {
-  position: absolute;
-  top: 1px;
-  left: 37%;
+  float: right;
 }
 .checkbox-div {
   width: 100%;

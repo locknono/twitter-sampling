@@ -3,110 +3,80 @@ from flask import Flask, Response, Request, request, jsonify
 import json
 from shared.generateRenderData import getWordCloud, readJsonFile, writeToJsonFile
 import math
+import time
+import os
+
+def getStartEndMinuteForOneDay(day):
+    startTime = time.strptime('2016-11-{0} 00:00:00'.format(day + 1), '%Y-%m-%d %H:%M:%S')
+    startMinute = int(math.floor(math.floor(time.mktime(startTime) / 60)))
+
+    endTime = time.strptime('2016-11-{0} 23:59:59'.format(day + 1), '%Y-%m-%d %H:%M:%S')
+    endMinute = int(math.floor(math.floor(time.mktime(endTime) / 60)))
+
+    return [startMinute, endMinute]
 
 
-def getTimeNumberDictForOneClass(classIDs, idTimeDict, minTime, maxTime, minValue):
-    print('----------------------------------')
+def getTimeNumberDictForOneClassOneDay(classIDs, idTimeDict, minValue, timeInterval, day):
+    startMinute, endMinute = getStartEndMinuteForOneDay(day)
     timeNumberDict = {}
-    for time in range(minTime, maxTime + 1):
-        timeNumberDict[time] = 0
+
+    for t in range(startMinute, endMinute):
+        timeNumberDict[t] = 0
+
     for id in classIDs:
         time = idTimeDict[id]
-        timeNumberDict[time] += 1
-    for time in range(minTime, maxTime + 1):
-        if timeNumberDict[time] <= minValue:
-            timeNumberDict[time] = 0
-
-    stack = []
-    zeroStack = []
-    maxTimeInterval = 30
-    minStackSize = 60
-    for time in range(minTime, maxTime + 1):
-        if timeNumberDict[time] != 0:
-            stack.append({"time": time, "value": timeNumberDict[time]})
-            zeroStack = []
+        if time in timeNumberDict:
+            timeNumberDict[time] += 1
         else:
-            zeroStack.append(0)
+            continue
+    timeSlices = []
+    for i in range(0, int((endMinute - startMinute) / timeInterval) + 1):
+        sm = startMinute + i * timeInterval
+        em = startMinute + (i + 1) * timeInterval
+        timeSlices.append([sm, em])
 
-        if len(zeroStack) > maxTimeInterval:
-            if len(stack) < minStackSize:
-                timeNumberDict = flushStack(stack, timeNumberDict, 0)
-                stack = []
-                continue
-            sum = 0
-            for s in stack:
-                sum += s['value']
-            avg = sum / len(stack)
-
-            timeNumberDict = flushStack(stack, timeNumberDict, avg)
-            stack = []
-    if len(stack) < minStackSize:
-        timeNumberDict = flushStack(stack, timeNumberDict, 0)
-        stack = []
-    else:
+    for slice in timeSlices:
         sum = 0
-        for s in stack:
-            sum += s['value']
-        avg = sum / len(stack)
-        timeNumberDict = flushStack(stack, timeNumberDict, avg)
-
-    return timeNumberDict
-
-
-def getMinMaxTimeInStack(stack):
-    minTime = 999999999999
-    maxTime = -1
-    for s in stack:
-        if s['time'] < minTime:
-            minTime = s['time']
-        if s['time'] > maxTime:
-            maxTime = s['time']
-    return [minTime, maxTime]
-
-
-def flushStack(stack, timeNumberDict, value):
-    if len(stack) == 0:
-        return timeNumberDict
-    minTime, maxTime = getMinMaxTimeInStack(stack)
-    for t in range(minTime, maxTime+1):
-        timeNumberDict[t] = value
+        for t in range(slice[0], slice[1]):
+            if t in timeNumberDict:
+                sum += timeNumberDict[t]
+        if sum < minValue:
+            for t in range(slice[0], slice[1]):
+                if t in timeNumberDict:
+                    timeNumberDict[t] = 0
+        else:
+            avg = sum / (slice[1] - slice[0])
+            for t in range(slice[0], slice[1]):
+                if t in timeNumberDict:
+                    timeNumberDict[t] = avg
     return timeNumberDict
 
 
 if __name__ == '__main__':
     idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
     idTimeDict = readJsonFile(g.dataPath + 'idTimeDict.json')
-    sortedValue = sorted(idTimeDict.values())
-
-    pad = 1
-
-    minTime = sortedValue[0]
-    maxTime = sortedValue[-1]
-    timeInterval = maxTime - minTime
-
     allClassIDs = []
+    try:
+        os.mkdir('../client/public/wheelData/')
+    except Exception as e :
+        print(e)
     for i in range(g.topicNumber):
         allClassIDs.append([])
     for id in idClassDict:
         allClassIDs[idClassDict[id]].append(id)
 
-    wheelData = []
-    for classIDs in allClassIDs:
-        timeNumberDict = getTimeNumberDictForOneClass(classIDs, idTimeDict, minTime, maxTime, 2)
-        for time in range(minTime, maxTime):
-            if time in timeNumberDict:
-                continue
-            else:
-                timeNumberDict[time] = 0
-        wheelData.append(timeNumberDict)
+    for day in range(g.startDay, g.startDay + g.dataDays):
+        minTime, maxTime = getStartEndMinuteForOneDay(day)
+        wheelData = []
+        for classIDs in allClassIDs:
+            timeNumberDict = getTimeNumberDictForOneClassOneDay(classIDs, idTimeDict, 30, 30, day)
+            wheelData.append(timeNumberDict)
+        maxValue = -1
+        for timeNumberDict in wheelData:
+            for t in timeNumberDict:
+                if timeNumberDict[t] > maxValue:
+                    maxValue = timeNumberDict[t]
+        meta = {'minTime': minTime, 'maxTime': maxTime, 'maxValue': maxValue}
 
-    maxValue = -1
-    for timeNumberDict in wheelData:
-        for time in timeNumberDict:
-            if timeNumberDict[time] > maxValue:
-                maxValue = timeNumberDict[time]
-
-    meta = {'minTime': minTime, 'maxTime': maxTime, 'maxValue': maxValue, 'pad': pad}
-
-    writeToJsonFile(wheelData, '../client/public/wheelData.json')
-    writeToJsonFile(meta, '../client/public/wheelDataMeta.json')
+        writeToJsonFile(wheelData, '../client/public/wheelData/{0}.json'.format(day))
+        writeToJsonFile(meta, '../client/public/wheelData/{0}-meta.json'.format(day))

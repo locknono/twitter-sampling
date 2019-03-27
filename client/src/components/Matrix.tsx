@@ -179,12 +179,12 @@ class Matrix extends React.Component<Props, State> {
             ry={3}
           />
           <text
-            x={matriXStart + width + 5}
+            x={matriXStart + width + 2}
             y={textY}
             fontFamily="Verdana"
             fontSize="12"
           >
-            same
+            uniform
           </text>
           <rect
             className="color-bar-rect"
@@ -204,7 +204,7 @@ class Matrix extends React.Component<Props, State> {
             fontFamily="Verdana"
             fontSize="12"
           >
-            not same
+            conflict
           </text>
         </>
       );
@@ -212,9 +212,8 @@ class Matrix extends React.Component<Props, State> {
 
     return (
       <div className="matrix-div view-div panel panel-default">
-        <div className="panel-heading heading">
+        <div className="panel-heading heading matrix-heading">
           Difference Matrix
-          <div className="matrix-color-bar-text">difference:</div>
           <div
             className="matrix-color-bar"
             style={{
@@ -222,6 +221,7 @@ class Matrix extends React.Component<Props, State> {
               ${color1},${color2})`
             }}
           />
+          <div className="matrix-color-bar-text">difference:</div>
         </div>
         <svg id="matrix-svg">
           {matrixRects}

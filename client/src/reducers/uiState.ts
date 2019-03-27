@@ -6,7 +6,8 @@ import {
   SET_SAMPLING_FLAG,
   SET_IF_SHOW_MAP_POINTS,
   SET_SELECTED_MAP_IDS,
-  SET_SAMPLING_CONDITION
+  SET_SAMPLING_CONDITION,
+  SET_WHEEL_DAY
 } from "../actions/setUIState";
 
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
@@ -20,6 +21,7 @@ interface UIState {
   ifShowMapPoints: boolean;
   selectedMapIDs: string[];
   samplingCondition: [boolean, boolean];
+  wheelDay: number;
 }
 
 const initialState: UIState = {
@@ -30,7 +32,8 @@ const initialState: UIState = {
   samplingFlag: false,
   ifShowMapPoints: false,
   selectedMapIDs: [],
-  samplingCondition: [false, false]
+  samplingCondition: [false, false],
+  wheelDay: 11
 };
 
 export function uiState(state = initialState, action: any) {
@@ -59,7 +62,12 @@ export function uiState(state = initialState, action: any) {
     case SET_SAMPLING_CONDITION:
       return { ...state, samplingCondition: action.condition };
       break;
+    case SET_WHEEL_DAY:
+      return { ...state, wheelDay: action.day };
+      break;
     default:
       return state;
   }
 }
+
+function getIDsForOneTopic(ids: string[], topic: number) {}

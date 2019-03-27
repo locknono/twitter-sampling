@@ -166,9 +166,9 @@ function GroupBar(props: Props) {
   let colorBars;
   if (width && height) {
     const pad = 0.1;
-    const xStart = 127.5;
+    const xStart = 129.5;
     const xEnd = width * (1 - pad);
-    const yStart = 7;
+    const yStart = 5;
     const yEnd = height * (1 - pad);
     const textY = height * 0.06 + 3 + 6.5;
     const barWidth = 11.7;
@@ -187,7 +187,7 @@ function GroupBar(props: Props) {
           ry={3}
         />
         <text
-          x={xStart + barWidth + 4.5}
+          x={xStart + barWidth + 3}
           y={textY}
           fontFamily="Verdana"
           fontSize="12"

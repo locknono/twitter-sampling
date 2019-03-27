@@ -3,14 +3,15 @@ import * as L from "leaflet";
 import * as d3 from "d3";
 import "leaflet.heat";
 /* import "leaflet-webgl-heatmap"; */
-import { fetchAndAddGroupLayer } from "../API/mapAPI";
+import { fetchAndAddGroupLayer, getArcDatasByWheelData } from "../API/mapAPI";
 import {
   colorScale,
   color,
   pythonServerURL,
   url,
   topicNumber,
-  mapCircleRadius
+  mapCircleRadius,
+  wheelLayerHeight
 } from "../constants/constants";
 import { tl, rb, options, tileLayerURL } from "src/constants/mapOptions";
 import {
@@ -26,7 +27,8 @@ import "leaflet.pm";
 import {
   setSelectedIDs,
   setIfShowMapPoints,
-  setSelectedMapIDs
+  setSelectedMapIDs,
+  setWheelDay
 } from "../actions/setUIState";
 import Heading from "./Heading";
 import { fetchWordCloudDataByIDs } from "../shared/fetch";
@@ -38,7 +40,8 @@ const mapState = (state: any) => {
     selectedIDs,
     systemName,
     ifShowMapPoints,
-    samplingFlag
+    samplingFlag,
+    wheelDay
   } = state.uiState;
   return {
     mapPoints,
@@ -46,14 +49,16 @@ const mapState = (state: any) => {
     selectedIDs,
     systemName,
     ifShowMapPoints,
-    samplingFlag
+    samplingFlag,
+    wheelDay
   };
 };
 const mapDispatch = {
   setData,
   setSelectedIDs,
   setIfShowMapPoints,
-  setSelectedMapIDs
+  setSelectedMapIDs,
+  setWheelDay
 };
 
 interface Props {
@@ -67,6 +72,8 @@ interface Props {
   setIfShowMapPoints: typeof setIfShowMapPoints;
   setSelectedMapIDs: typeof setSelectedMapIDs;
   samplingFlag: boolean;
+  wheelDay: number;
+  setWheelDay: typeof setWheelDay;
 }
 
 interface Map {
@@ -85,9 +92,11 @@ function Map(props: Props) {
     ifShowMapPoints,
     setIfShowMapPoints,
     setSelectedMapIDs,
-    samplingFlag
+    samplingFlag,
+    wheelDay,
+    setWheelDay
   } = props;
-
+  console.log("wheelDay: ", wheelDay);
   const [
     lastSelectedLayer,
     setLastSelectedLayer
@@ -102,8 +111,6 @@ function Map(props: Props) {
     initialControlLayer
   );
 
-  const [wheelCenter, setWheelCenter] = React.useState<any>(null);
-
   const [svgLayer, setSvgLayer] = React.useState<any>(null);
 
   const [lastTopicPoints, setLastTopicPoints] = React.useState<any>(null);
@@ -113,6 +120,11 @@ function Map(props: Props) {
     setPointsLayerGroup
   ] = React.useState<null | L.LayerGroup>(null);
 
+  const [wheelRadius, setWheelRadius] = React.useState<null | number>(null);
+  const [wheelCenter, setWheelCenter] = React.useState<any | [number, number]>(
+    null
+  );
+  <div className="" />;
   function handleShowPointsClick(flag: boolean, e: React.SyntheticEvent) {
     setIfShowMapPoints(flag);
     if (!map || !pointsLayerGroup) return;
@@ -121,8 +133,16 @@ function Map(props: Props) {
     }
   }
 
+  /*   React.useEffect(() => {
+    for (let i = 0; i <= 100; i++) {
+      setTimeout(() => {
+        setWheelDay(11 + (i % 3));
+      }, 5000 + 2000 * i);
+    }
+  }, []); */
   React.useEffect(() => {
     if (!map) return;
+
     const svg = L.svg();
     svg.addTo(map);
     const d3Svg = d3.select(".leaflet-overlay-pane svg");
@@ -351,6 +371,25 @@ function Map(props: Props) {
   }, []);
   React.useEffect(() => {
     if (!map || !svgLayer || !mapPoints) return;
+    map.on("pm:create", function(e1: any) {
+      const radius = e1.layer._radius;
+      const center: [number, number] = [
+        e1.layer._latlng.lat,
+        e1.layer._latlng.lng
+      ];
+      const ids: string[] = [];
+      mapPoints.map(e => {
+        if (ifInside([e.lat, e.lng], center, radius, map)) {
+          ids.push(e.id);
+        }
+      });
+      setSelectedIDs(ids);
+    });
+  }, [mapPoints]);
+
+  //create wheel
+  React.useEffect(() => {
+    if (!map) return;
     let lastW: any = null;
     map.on("pm:create", function(e1: any) {
       const layer = e1.layer;
@@ -365,149 +404,114 @@ function Map(props: Props) {
         e1.layer._latlng.lat,
         e1.layer._latlng.lng
       ];
-      const ids: string[] = [];
-      mapPoints.map(e => {
-        if (ifInside([e.lat, e.lng], center, radius, map)) {
-          ids.push(e.id);
-        }
-      });
-      setSelectedIDs(ids);
-
-      /* setSelectedMapIDs(ids);
-      (async () => {
-        const res = await fetch(pythonServerURL + "runSamplingOnIDs", {
-          method: "POST",
-          mode: "cors",
-          cache: "no-cache",
-          body: JSON.stringify(ids)
-        });
-        const data = await res.json();
-        const {
-          mapPoints,
-          scatterPoints,
-          cloudData,
-          riverData,
-          barData,
-          samplingMapPoints,
-          samplingScatterPoints,
-          samplingCloudData,
-          samplingRiverData
-        } = data;
-        setData(SCATTER_DATA, scatterPoints);
-        setData(CLOUD_DATA, cloudData);
-        setData("ORIGINAL_BARDATA", barData.original);
-        setData("SAMPLING_BARDATA", barData.sampling);
-        setData(RIVER_DATA, riverData);
-        setData(SAMPLING_RIVER_DATA, samplingRiverData);
-          setData(MAP_POINTS, mapPoints); 
-      })(); */
-
+      setWheelRadius(radius);
+      setWheelCenter(center);
       (async function drawWheel() {
-        try {
-          const fetch1 = fetch("./wheelData.json");
-          const fetch2 = fetch("./wheelDataMeta.json");
-          const res1 = await fetch1;
-          const res2 = await fetch2;
-          const data: WheelData = await res1.json();
+        const fetch1 = fetch(`./wheelData/${wheelDay}.json`);
+        const fetch2 = fetch(`./wheelData/${wheelDay}-meta.json`);
+        const res1 = await fetch1;
+        const res2 = await fetch2;
+        const data: WheelData = await res1.json();
+        const meta = await res2.json();
+        const { minTime, maxTime, maxValue } = meta;
 
-          const meta = await res2.json();
-          const { minTime, maxTime, maxValue, pad } = meta;
+        const sliceCount = maxTime - minTime;
 
-          const sliceCount = (maxTime - minTime) / pad;
+        const arc = getArcGenerator();
 
-          const layerHeight = 10;
-          const scale = d3
-            .scaleLinear()
-            .domain([0, maxValue])
-            .range([0, layerHeight - 2]);
+        const cx = e1.layer._point.x;
+        const cy = e1.layer._point.y;
 
-          const arc = getArcGenerator();
+        const curWheelCenter = [cx, cy];
+        setWheelCenter(curWheelCenter);
+        svgLayer.selectAll("path").remove();
 
-          const cx = e1.layer._point.x;
-          const cy = e1.layer._point.y;
+        const line = getLineGenerator();
 
-          const curWheelCenter = [cx, cy];
-          setWheelCenter(curWheelCenter);
-          svgLayer.selectAll("path").remove();
-
-          const line = getLineGenerator();
-          /* for (let i = 0; i < 3; i++) {
-            const angle = (360 / 3) * i;
-            console.log("angle: ", angle);
-            const x1 =
-              e1.layer._point.x + radius * Math.cos((angle * Math.PI) / 180);
-            const y1 =
-              e1.layer._point.y + radius * Math.sin((angle * Math.PI) / 180);
-            const x2 =
-              e1.layer._point.x +
-              (radius + layerHeight * 9) * Math.cos((angle * Math.PI) / 180);
-            const y2 =
-              e1.layer._point.y +
-              (radius + layerHeight * 9) * Math.sin((angle * Math.PI) / 180);
-            svgLayer
-              .append("path")
-              .attr("d", line([[x1, y1], [x2, y2]]))
-              .attr("stroke", "grey")
-              .attr("stroke-width", "1px")
-              .attr("fill", "none");
-          } */
-          for (let i = 0; i < data.length; i++) {
-            const layerArc = {
-              innerRadius: radius + layerHeight * i,
-              outerRadius: radius + layerHeight * (i + 1),
-              startAngle: 0,
-              endAngle: Math.PI * 2
-            };
-            svgLayer
-              .append("path")
-              .attr("d", arc(layerArc))
-              .attr("stroke", color.nineColors[i])
-              .attr("stroke-width", "0.1psx")
-              .attr("fill", "none")
-              .attr(
-                "transform",
-                `translate(${e1.layer._point.x},${e1.layer._point.y})`
-              );
-            const singleWheelData = data[i];
-            //{innerRadius:number,outerRadius:number,startAngle:number,endAngle:number}
-            let arcData: any = {};
-            for (let j = minTime; j <= maxTime; j += pad) {
-              const value = singleWheelData[j];
-              const height = value === 0 ? 0 : scale(value);
-              let angle =
-                (Math.PI / 180) *
-                ((360 / sliceCount) * Math.floor((j - minTime) / pad));
-              if (value > 0) {
-                arcData.innerRadius = radius + layerHeight * i;
-                arcData.outerRadius = radius + layerHeight * i + height;
-                if (!arcData.startAngle) {
-                  arcData.startAngle = angle;
-                }
-                arcData.endAngle = angle;
-              } else {
-                if (Object.keys(arcData).length > 0) {
-                  if (i === 0) {
-                  }
-                  svgLayer
-                    .append("path")
-                    .attr("d", arc(arcData))
-                    .attr("stroke", color.nineColors[i])
-                    .attr("stroke-width", "0.1psx")
-                    .attr("fill", color.nineColors[i])
-                    .attr(
-                      "transform",
-                      `translate(${curWheelCenter[0]},${curWheelCenter[1]})`
-                    );
-                  arcData = {};
-                }
-              }
-            }
-          }
-        } catch (e) {}
+        for (let i = 0; i < data.length; i++) {
+          const layerArc = {
+            innerRadius: radius + wheelLayerHeight * i,
+            outerRadius: radius + wheelLayerHeight * (i + 1),
+            startAngle: 0,
+            endAngle: Math.PI * 2
+          };
+          svgLayer
+            .append("path")
+            .attr("d", arc(layerArc))
+            .attr("stroke", color.nineColors[i])
+            .attr("stroke-width", "0.1psx")
+            .attr("fill", "none")
+            .attr(
+              "transform",
+              `translate(${curWheelCenter[0]},${curWheelCenter[1]})`
+            );
+        }
+        const arcDatas = getArcDatasByWheelData(
+          data,
+          meta,
+          radius,
+          wheelLayerHeight
+        );
+        for (let arcData of arcDatas) {
+          svgLayer
+            .append("path")
+            .attr("class", "wheel-path")
+            .attr("d", arc(arcData))
+            .attr("stroke", arcData.color)
+            .attr("stroke-width", "0.1psx")
+            .attr("fill", arcData.color)
+            .attr(
+              "transform",
+              `translate(${curWheelCenter[0]},${curWheelCenter[1]})`
+            );
+        }
       })();
     });
   }, [mapPoints]);
 
+  //change wheel path
+  React.useEffect(() => {
+    if (!svgLayer || !wheelRadius || !wheelCenter) return;
+    const radius = wheelRadius;
+    const center = wheelCenter;
+    console.log("wheelDay: ", wheelDay);
+    (async function drawWheel() {
+      const fetch1 = fetch(`./wheelData/${wheelDay}.json`);
+      const fetch2 = fetch(`./wheelData/${wheelDay}-meta.json`);
+      const res1 = await fetch1;
+      const res2 = await fetch2;
+      const data: WheelData = await res1.json();
+      const meta = await res2.json();
+      const { minTime, maxTime, maxValue } = meta;
+      const arc = getArcGenerator();
+      const arcDatas = getArcDatasByWheelData(
+        data,
+        meta,
+        radius,
+        wheelLayerHeight
+      );
+      const t = d3
+        .transition()
+        .duration(200)
+        .ease(d3.easeLinear);
+
+      svgLayer
+        .selectAll(".wheel-path")
+        .data(arcDatas)
+        .attr("stroke", function(d: any) {
+          return d.color;
+        })
+        .attr("stroke-width", "0.1psx")
+        .attr("fill", function(d: any) {
+          return d.color;
+        })
+        .attr("transform", `translate(${wheelCenter[0]},${wheelCenter[1]})`)
+        .transition(t)
+        .attr("d", function(d: any) {
+          return arc(d);
+        });
+    })();
+  }, [wheelDay]);
   React.useEffect(() => {
     if (!map) return;
     if (systemName === "yelp") {
