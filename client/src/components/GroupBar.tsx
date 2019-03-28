@@ -2,25 +2,26 @@ import * as React from "react";
 import * as d3 from "d3";
 import { padding, color, url } from "../constants/constants";
 import { setData } from "../actions/setDataAction";
-import { setCurTopic } from "../actions/setUIState";
+import { setCurTopic, SAMPLING_CONDITION } from "../actions/setUIState";
 import { connect } from "react-redux";
 import { fetchJsonData } from "../shared";
 import { updateQueue } from "src/fiber/updateQueue";
 import Heading from "../components/Heading";
 import { useWidthAndHeight } from "../hooks/layoutHooks";
 import * as v4 from "uuid/v4";
+import { getURLBySamplingCondition } from "src/shared/fetch";
 interface State {
   iter?: number[];
   svgWidth: number | null;
   svgHeight: number | null;
 }
-
 interface Props {
   setData: typeof setData;
   setCurTopic: typeof setCurTopic;
   original: number[];
   sampling: number[];
   curTopic: CurTopic;
+  samplingCondition: SAMPLING_CONDITION;
 }
 
 interface fetchedBarData {
@@ -31,8 +32,13 @@ interface fetchedBarData {
 
 const mapStateToProps = (state: any, ownProps: any) => {
   const { originalBarData, samplingBarData } = state.dataTree;
-  const { curTopic } = state.uiState;
-  return { original: originalBarData, sampling: samplingBarData, curTopic };
+  const { curTopic, samplingCondition } = state.uiState;
+  return {
+    original: originalBarData,
+    sampling: samplingBarData,
+    curTopic,
+    samplingCondition
+  };
 };
 
 const mapDispatchToProps = {
@@ -41,7 +47,14 @@ const mapDispatchToProps = {
 };
 
 function GroupBar(props: Props) {
-  const { setData, setCurTopic, original, sampling, curTopic } = props;
+  const {
+    setData,
+    setCurTopic,
+    original,
+    sampling,
+    curTopic,
+    samplingCondition
+  } = props;
 
   const [width, height] = useWidthAndHeight("groupbar-svg");
 
@@ -53,6 +66,17 @@ function GroupBar(props: Props) {
       setData("SAMPLING_BARDATA", data.sampling);
     });
   }, []);
+
+  React.useLayoutEffect(() => {
+    const samplingURL = getURLBySamplingCondition(
+      url.barDataURL,
+      samplingCondition
+    );
+    fetchJsonData(samplingURL).then((data: fetchedBarData) => {
+      setData("ORIGINAL_BARDATA", data.original);
+      setData("SAMPLING_BARDATA", data.sampling);
+    });
+  }, [samplingCondition]);
 
   if (width && height && sampling.length !== 0 && original.length !== 0) {
     const pad = 0.1;

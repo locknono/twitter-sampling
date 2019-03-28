@@ -7,11 +7,13 @@ import {
   SET_IF_SHOW_MAP_POINTS,
   SET_SELECTED_MAP_IDS,
   SET_SAMPLING_CONDITION,
-  SET_WHEEL_DAY
+  SET_WHEEL_DAY,
+  SAMPLING_CONDITION
 } from "../actions/setUIState";
 
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
 import { pythonServerURL } from "../constants/constants";
+
 interface UIState {
   curTopic: CurTopic;
   ifDrawScatterCenters: boolean;
@@ -20,7 +22,7 @@ interface UIState {
   samplingFlag: boolean;
   ifShowMapPoints: boolean;
   selectedMapIDs: string[];
-  samplingCondition: [boolean, boolean];
+  samplingCondition: SAMPLING_CONDITION;
   wheelDay: number;
 }
 
@@ -32,7 +34,7 @@ const initialState: UIState = {
   samplingFlag: false,
   ifShowMapPoints: false,
   selectedMapIDs: [],
-  samplingCondition: [false, false],
+  samplingCondition: SAMPLING_CONDITION.spaceAndTime,
   wheelDay: 11
 };
 

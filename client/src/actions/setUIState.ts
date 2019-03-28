@@ -10,6 +10,13 @@ export const SET_SELECTED_MAP_IDS = "SET_SELECTED_MAP_IDS";
 export const SET_SAMPLING_CONDITION = "SET_SAMPLING_CONDITION";
 export const SET_WHEEL_DAY = "SET_WHEEL_DAY";
 
+export enum SAMPLING_CONDITION {
+  random = 0,
+  blue,
+  space,
+  spaceAndTime
+}
+
 export function setCurTopic(index: CurTopic) {
   return {
     type: SET_CUR_TOPIC,
@@ -59,7 +66,7 @@ export function setSelectedMapIDs(ids: string[]) {
   };
 }
 
-export function setSamplingCondition(condition: [boolean, boolean]) {
+export function setSamplingCondition(condition: SAMPLING_CONDITION) {
   return {
     type: SET_SAMPLING_CONDITION,
     condition

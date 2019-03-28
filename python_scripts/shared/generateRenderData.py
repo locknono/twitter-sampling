@@ -1,7 +1,7 @@
 import json
 import math
 import g
-
+import os
 
 def readJsonFile(path):
     with open(path, 'r', encoding='utf-8') as f:
@@ -103,8 +103,8 @@ def getWordCloud(idTextDict, idClassDict, topicCount, ids=None):
 # bound:[[top,left],[bottom,right]]
 # points:{[id:string]:[number,number]}
 def getHexes(bound, idLocationDict, ids=None, sideLength=None):
-    if ids==None:
-        ids=idLocationDict.keys()
+    if ids == None:
+        ids = idLocationDict.keys()
     top, left = bound[0]
     bottom, right = bound[1]
     if not sideLength:
@@ -153,13 +153,13 @@ def getRiverData(idTimeDict, idClassDict, ids=None):
         ids = idClassDict.keys()
     topicTimeValueDict = {}
     for topic in range(g.topicNumber):
-        for t in range(g.startDay+1, g.startDay + g.dataDays):
+        for t in range(g.startDay + 1, g.startDay + g.dataDays):
             time = '2016/11/{0}'.format(t)
             topicTimeTuple = (topic, time)
-            topicTimeValueDict[topicTimeTuple]=0
+            topicTimeValueDict[topicTimeTuple] = 0
     for id in ids:
         maxIndex = idClassDict[id]
-        time=idTimeDict[id]
+        time = idTimeDict[id]
         topicTimeTuple = (maxIndex, time)
         if topicTimeTuple in topicTimeValueDict:
             # topicTimeValueDict[topicTimeTuple] += maxValue
@@ -179,3 +179,36 @@ def getRiverData(idTimeDict, idClassDict, ids=None):
             singleList = [time, value, str(topic)]
             riverData.append(singleList)
     return riverData
+
+
+def saveAllSamplingData(originalEstimates, estimates, idLocationDict, idClassDict, idScatterData, idTextDict,
+                        riverIDTimeDict, samplingIDs, path1, path2):
+    try:
+        os.mkdir(path1)
+    except Exception as e:
+        print(e)
+
+    try:
+        os.mkdir(path2)
+    except Exception as e:
+        print(e)
+
+    barData = {"original": originalEstimates, "sampling": estimates}
+    writeToJsonFile(barData, path1 + 'barData.json')
+    writeToJsonFile(barData, path2 + 'barData.json')
+
+    samplingMapPoints = getMapPoints(idLocationDict, idClassDict, samplingIDs)
+    writeToJsonFile(samplingMapPoints, path1 + 'samplingMapPoints.json')
+    writeToJsonFile(samplingMapPoints, path2 + 'samplingMapPoints.json')
+
+    samplingScatterPoints = getScatterPoints(idScatterData, idClassDict, samplingIDs)
+    writeToJsonFile(samplingScatterPoints, path1 + 'samplingScatterPoints.json')
+    writeToJsonFile(samplingScatterPoints, path2 + 'samplingScatterPoints.json')
+
+    samplingCloudData = getWordCloud(idTextDict, idClassDict, g.topicNumber, samplingIDs)
+    writeToJsonFile(samplingCloudData, path1 + 'samplingCloudData.json')
+    writeToJsonFile(samplingCloudData, path2 + 'samplingCloudData.json')
+
+    samplingRiverData = getRiverData(riverIDTimeDict, idClassDict, samplingIDs)
+    writeToJsonFile(samplingRiverData, path1 + 'samplingRiverData.json')
+    writeToJsonFile(samplingRiverData, path2 + 'samplingRiverData.json')

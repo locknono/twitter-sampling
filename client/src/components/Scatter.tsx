@@ -91,6 +91,7 @@ function LdaScatterCanvasCanvas(props: Props) {
   }, []);
 
   React.useEffect(() => {
+    console.log("samplingFlag: ", samplingFlag);
     if (samplingFlag === true) {
       fetchAndSetScatterData(url.samplingScatterPointsURL, setData);
     } else {

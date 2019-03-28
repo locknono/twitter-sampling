@@ -2,12 +2,12 @@ import * as React from "react";
 import * as d3 from "d3";
 import { padding, color, url } from "../constants/constants";
 import { setData } from "../actions/setDataAction";
-import { setCurTopic } from "../actions/setUIState";
+import { setCurTopic, SAMPLING_CONDITION } from "../actions/setUIState";
 import { connect } from "react-redux";
 import { fetchJsonData } from "../shared";
 import { updateQueue } from "src/fiber/updateQueue";
 import Heading from "../components/Heading";
-
+import { getURLBySamplingCondition } from "../shared/fetch";
 interface Props {}
 
 interface State {
@@ -22,6 +22,7 @@ interface Props {
   original: number[];
   sampling: number[];
   curTopic: CurTopic;
+  samplingCondition: SAMPLING_CONDITION;
 }
 
 interface fetchedBarData {
@@ -32,8 +33,13 @@ interface fetchedBarData {
 
 const mapStateToProps = (state: any, ownProps: any) => {
   const { originalBarData, samplingBarData } = state.dataTree;
-  const { curTopic } = state.uiState;
-  return { original: originalBarData, sampling: samplingBarData, curTopic };
+  const { curTopic, samplingCondition } = state.uiState;
+  return {
+    original: originalBarData,
+    sampling: samplingBarData,
+    curTopic,
+    samplingCondition
+  };
 };
 
 const mapDispatchToProps = {
@@ -62,11 +68,22 @@ class Matrix extends React.Component<Props, State> {
       setData("ORIGINAL_BARDATA", data.original);
       setData("SAMPLING_BARDATA", data.sampling);
     });
-
     const svgWidth = parseFloat(d3.select("#matrix-svg").style("width"));
     const svgHeight = parseFloat(d3.select("#matrix-svg").style("height"));
-
     this.setState({ svgWidth, svgHeight });
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.samplingCondition !== this.props.samplingCondition) {
+      const samplingURL = getURLBySamplingCondition(
+        url.barDataURL,
+        this.props.samplingCondition
+      );
+      fetchJsonData(samplingURL).then((data: fetchedBarData) => {
+        setData("ORIGINAL_BARDATA", data.original);
+        setData("SAMPLING_BARDATA", data.sampling);
+      });
+    }
   }
 
   render() {

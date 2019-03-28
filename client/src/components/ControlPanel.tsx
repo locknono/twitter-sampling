@@ -8,12 +8,14 @@ import {
   setSelectedIDs,
   setCurSystem,
   setSamplingFlag,
-  setSamplingCondition
+  setSamplingCondition,
+  SAMPLING_CONDITION
 } from "../actions/setUIState";
 import SliderWithLabel from "./SliderWithLabel";
 import "../css/awesome-bootstrap-checkbox.css";
 import { url } from "src/constants/constants";
 import Checkbox from "./Checkbox";
+import SamplingButton from "./SamplingButton";
 interface Props {
   setCurSystem: typeof setCurSystem;
   setSamplingFlag: typeof setSamplingFlag;
@@ -46,8 +48,10 @@ function ControlPanel(props: Props) {
     setSelectedIDs,
     selectedIDs
   } = props;
-  const [spaceChecked, setSpaceChecked] = React.useState(false);
-  const [timeChecked, setTimeChecked] = React.useState(false);
+  const [
+    unPatchedSamplingCondition,
+    setUnPatchedSamplingCondition
+  ] = React.useState(SAMPLING_CONDITION.spaceAndTime);
   const [originalSelectedIDs, setOriginalSelectedIDs] = React.useState<
     string[]
   >([]);
@@ -55,8 +59,13 @@ function ControlPanel(props: Props) {
     setCurSystem(name);
   }
 
+  console.log(samplingCondition);
   function handleSamplingClick(flag: boolean) {
     setSamplingFlag(flag);
+    console.log("unPatchedSamplingCondition: ", unPatchedSamplingCondition);
+    if (flag == true) {
+      setSamplingCondition(unPatchedSamplingCondition);
+    }
     if (selectedIDs.length > 0) {
       if (flag === true) {
         (async () => {
@@ -80,10 +89,15 @@ function ControlPanel(props: Props) {
 
   function handleCheck(e: React.SyntheticEvent) {
     const id = (e.target as any).id;
-    if (id === "space") {
-      setSamplingCondition([!samplingCondition[0], samplingCondition[1]]);
-    } else {
-      setSamplingCondition([samplingCondition[0], !samplingCondition[1]]);
+    console.log("id: ", id);
+    if (id === "random") {
+      setUnPatchedSamplingCondition(SAMPLING_CONDITION.random);
+    } else if (id === "bl") {
+      setUnPatchedSamplingCondition(SAMPLING_CONDITION.blue);
+    } else if (id === "spatial") {
+      setUnPatchedSamplingCondition(SAMPLING_CONDITION.space);
+    } else if (id === "temporal") {
+      setUnPatchedSamplingCondition(SAMPLING_CONDITION.spaceAndTime);
     }
   }
   return (
@@ -92,20 +106,16 @@ function ControlPanel(props: Props) {
 
       <div className="buttons-div" id="buttons-div2">
         <span>Status:</span>
-        <button
+        <SamplingButton
           id="original"
-          onClick={handleSamplingClick.bind(null, false)}
-          className="btn btn-default btn-sm white-button"
-        >
-          original
-        </button>
-        <button
+          text="original"
+          clickMethod={handleSamplingClick.bind(null, false)}
+        />
+        <SamplingButton
           id="sampling"
-          onClick={handleSamplingClick.bind(null, true)}
-          className="btn btn-default btn-sm white-button"
-        >
-          sampling
-        </button>
+          text="sampling"
+          clickMethod={handleSamplingClick.bind(null, true)}
+        />
       </div>
 
       <div className="control-panel-content-div">
@@ -114,14 +124,18 @@ function ControlPanel(props: Props) {
           style={{ position: "relative", top: 10 }}
         >
           <span>Methods:</span>
-          <Checkbox id="random" text="random" />
-          <Checkbox id="br" text="blue noise sampling" />
+          <Checkbox id="random" text="random" clickFunc={handleCheck} />
+          <Checkbox
+            id="bl"
+            text="blue noise sampling"
+            clickFunc={handleCheck}
+          />
         </div>
 
         <div className="checkbox-div method-div">
-          <Checkbox id="rp" text="rapid sampling" />
-          <Checkbox id="spatial" text="spatial" />
-          <Checkbox id="temporal" text="temporal" />
+          <Checkbox id="rp" text="rapid sampling" clickFunc={handleCheck} />
+          <Checkbox id="spatial" text="spatial" clickFunc={handleCheck} />
+          <Checkbox id="temporal" text="temporal" clickFunc={handleCheck} />
         </div>
 
         <SliderWithLabel

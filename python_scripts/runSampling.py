@@ -4,7 +4,7 @@ from docAlgo.runDoc2vec import runDoc2vec
 from docAlgo.runTsne import runTsne
 from docAlgo.runKmeans import runKmeans
 from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile, \
-    getHexes, getRiverData
+    getHexes, getRiverData, saveAllSamplingData
 import os
 from blueRapidEstimate import getRalationshipList, compareRelationshipList
 from ldbr import ldbr
@@ -13,7 +13,7 @@ from shared.constant import nyBound
 import copy
 from ldbr import getKDE, setRadius
 from kdeIndicator import getKDEIndicator
-
+from randomSampling import getRandomIDs
 
 if __name__ == '__main__':
     idTextDict = {}
@@ -36,11 +36,13 @@ if __name__ == '__main__':
     idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
 
     points = getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict)
+    maxRatio = -1
     for t in range(100):
-        c = 0.03+0.005*t
+        c = 0.03 + 0.005 * t
         copyPoints = copy.deepcopy(points)
         estimates, sampleGroups = ldbr(copyPoints, g.topicNumber, 1000, 0.08, c, 0.0005)
 
+        """
         samplingPoints = []
         for sg in sampleGroups:
             for p in sg:
@@ -59,7 +61,7 @@ if __name__ == '__main__':
                     continue
         with open(g.dataPath + 'kdeValue.json', 'w', encoding='utf-8') as f:
             f.write(json.dumps({"sum": sum, "values": values}))
-
+        """
         if estimates != None or sampleGroups != None:
             originalEstimates = getOriginalEstimates(points, g.topicNumber)
 
@@ -67,29 +69,19 @@ if __name__ == '__main__':
             r2 = getRalationshipList(originalEstimates)
             ratio = compareRelationshipList(r2, r1)
             samplingIDs = getSamplingIDs(sampleGroups)
-            if ratio>0.9:
-                print(ratio)
-                print(len(samplingIDs))
+            randomIDs = getRandomIDs(copy.deepcopy(points), len(samplingIDs))
+            if ratio > maxRatio:
+                path1 = '../client/public/'
+                path2 = g.dataPath
+                saveAllSamplingData(originalEstimates, estimates, idLocationDict, idClassDict, idScatterData,
+                                    idTextDict,
+                                    riverIDTimeDict, samplingIDs, path1, path2)
 
-                barData = {"original": originalEstimates, "sampling": estimates}
-                writeToJsonFile(barData, '../client/public/barData.json')
-                writeToJsonFile(barData, g.dataPath + 'barData.json')
-
-                samplingMapPoints = getMapPoints(idLocationDict, idClassDict, samplingIDs)
-                writeToJsonFile(samplingMapPoints, '../client/public/samplingMapPoints.json')
-                writeToJsonFile(samplingMapPoints, g.dataPath + 'samplingMapPoints.json')
-
-                samplingScatterPoints = getScatterPoints(idScatterData, idClassDict, samplingIDs)
-                writeToJsonFile(samplingScatterPoints, '../client/public/samplingScatterPoints.json')
-                writeToJsonFile(samplingScatterPoints, g.dataPath + 'samplingScatterPoints.json')
-
-                samplingCloudData = getWordCloud(idTextDict, idClassDict, g.topicNumber, samplingIDs)
-                writeToJsonFile(samplingCloudData, '../client/public/samplingCloudData.json')
-                writeToJsonFile(samplingCloudData, g.dataPath + 'samplingCloudData.json')
-
-                samplingRiverData = getRiverData(riverIDTimeDict, idClassDict, samplingIDs)
-                writeToJsonFile(samplingRiverData, '../client/public/samplingRiverData.json')
-                writeToJsonFile(samplingRiverData, g.dataPath + 'samplingRiverData.json')
+                randomPath1 = '../client/public/random'
+                randomPath2 = g.dataPath + 'random/'
+                saveAllSamplingData(originalEstimates, estimates, idLocationDict, idClassDict, idScatterData,
+                                    idTextDict,
+                                    riverIDTimeDict, randomIDs, randomPath1, randomPath2)
 
         else:
             print('sampling fail')

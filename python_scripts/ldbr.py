@@ -168,8 +168,10 @@ def ifActive(estimates: List[float], topic: int, epsilon: float, A: List[int]):
 def ldbr(points: List[Point], k: int, r: float, delta: float, c: float, timeR: float):
     timeKDE = getTimeKDE(points)
     kde = getKDE(points)
-    print('start set radius')
-    for p in points:
+    print('start setting radius')
+    for index, p in enumerate(points):
+        if index % int(len(points) / 10) == 0:
+            print(index)
         setTimeRadius(p, timeR, timeKDE)
         setRadius(p, r, kde)
     A = []
