@@ -21,13 +21,48 @@ import Heading from "../components/Heading";
 interface Props {
   text: string;
   index: number;
+  id: string;
+  time: string;
 }
 export default function SingleText(props: Props) {
-  const { text, index } = props;
+  const { text, index, id, time } = props;
 
   return (
-    <a href="#" className="list-group-item" style={{ paddingLeft: 10 }}>
-      {text}
-    </a>
+    <div
+      style={{ display: "flex", borderBottom: "solid 1px rgb(222,222,222)" }}
+    >
+      <div
+        style={{
+          width: 50,
+          flex: "1 0 auto",
+          display: "flex",
+          alignItems: "center"
+        }}
+      >
+        <img
+          src={`./imgs/${index}.jpg`}
+          style={{ width: 50, height: 50, margin: "auto", borderRadius: "50%" }}
+        />
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "start"
+        }}
+      >
+        <div
+          style={{
+            borderBottom: "solid 1px rgb(222,222,222)",
+            fontWeight: "bold"
+          }}
+        >
+          {id}
+        </div>
+        <div style={{ borderBottom: "solid 1px rgb(222,222,222)" }}>{time}</div>
+        <div style={{ borderBottom: "solid 1px rgb(222,222,222)" }}>{text}</div>
+      </div>
+    </div>
   );
 }

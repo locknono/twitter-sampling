@@ -10,7 +10,7 @@ if __name__ == '__main__':
     os.chdir(wd)
 
     idTimeDict = {}
-    with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8') as f:
+    with open(g.dataPath + 'finalExtractedData.txt', 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip('\t\n').split('\t')
             id = line[0]

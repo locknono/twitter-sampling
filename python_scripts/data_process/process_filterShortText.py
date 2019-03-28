@@ -16,7 +16,7 @@ def matchFinalAndOriginal():
             idTextDict[id] = text
 
     idTextDict2 = {}
-    with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8') as f:
+    with open(g.dataPath + 'finalExtractedData.txt', 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip('\t\n').split('\t')
             id = line[0]

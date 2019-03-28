@@ -39,7 +39,7 @@ if __name__ == '__main__':
     wd = os.path.split(cwd)[0]
     os.chdir(wd)
 
-    with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8') as f:
+    with open(g.dataPath + 'finalExtractedData.txt', 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip('\t\n').split('\t')
             time = line[2].split(' ')[0].replace('-', '/')

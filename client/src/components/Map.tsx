@@ -124,7 +124,8 @@ function Map(props: Props) {
   const [wheelCenter, setWheelCenter] = React.useState<any | [number, number]>(
     null
   );
-  <div className="" />;
+
+  let dayControler = null;
   function handleShowPointsClick(flag: boolean, e: React.SyntheticEvent) {
     setIfShowMapPoints(flag);
     if (!map || !pointsLayerGroup) return;
@@ -404,6 +405,7 @@ function Map(props: Props) {
         e1.layer._latlng.lat,
         e1.layer._latlng.lng
       ];
+
       setWheelRadius(radius);
       setWheelCenter(center);
       (async function drawWheel() {
@@ -452,14 +454,15 @@ function Map(props: Props) {
           radius,
           wheelLayerHeight
         );
+        console.log("arcDatas: ", arcDatas);
         for (let arcData of arcDatas) {
           svgLayer
             .append("path")
             .attr("class", "wheel-path")
             .attr("d", arc(arcData))
-            .attr("stroke", arcData.color)
             .attr("stroke-width", "0.1psx")
             .attr("fill", arcData.color)
+            .attr("fill-opacity", arcData.opacity)
             .attr(
               "transform",
               `translate(${curWheelCenter[0]},${curWheelCenter[1]})`
@@ -555,17 +558,27 @@ function Map(props: Props) {
       controlLayer.addOverlay(layerGroup, "original hex");
     })();
   }, []);
+
+  if (wheelCenter) {
+    dayControler = (
+      <div
+        id="day-control-div"
+        style={{
+          width: 200,
+          height: 10,
+          backgroundColor: "red",
+          position: "absolute",
+          top: wheelCenter[1],
+          left: wheelCenter[0],
+          fill: "red",
+          zIndex: 99999
+        }}
+      />
+    );
+  }
   return (
     <div className="map-view panel panel-default">
-      <div className="panel-heading heading map-heading">
-        Map View
-        <button
-          className="btn btn-default heading-button"
-          onClick={handleShowPointsClick.bind(null, !ifShowMapPoints)}
-        >
-          show points
-        </button>
-      </div>
+      <div className="panel-heading heading map-heading">Map View</div>
       <div
         id="map"
         className="panel panel-default"

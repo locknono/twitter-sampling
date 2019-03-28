@@ -37,3 +37,9 @@ interface SingleWheelData {
 }
 
 type WheelData = SingleWheelData[];
+
+interface Text {
+  text: string;
+  id: string;
+  time: string;
+}

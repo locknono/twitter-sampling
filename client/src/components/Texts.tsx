@@ -32,7 +32,7 @@ interface Props {
   setSelectedIDs: typeof setSelectedIDs;
   selectedIDs: string[];
   samplingFlag: boolean;
-  texts: string[];
+  texts: Text[];
 }
 
 const mapState = (state: any) => {
@@ -97,7 +97,15 @@ function Texts(props: Props) {
   } else {
     renderTexts = texts.map((e, i) => {
       if (i > 50) return;
-      return <SingleText key={v4()} text={e} index={i} />;
+      return (
+        <SingleText
+          key={v4()}
+          text={e.text}
+          index={i}
+          id={e.id}
+          time={e.time}
+        />
+      );
     });
   }
   return (

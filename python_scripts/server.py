@@ -39,11 +39,13 @@ originalIDTextDict = readJsonFile(g.dataPath + 'originalTexts.json')
 
 idTimeDict = readJsonFile(g.dataPath + 'idTimeDict.json')
 riverIDTimeDict = {}
+originalIDTimeDict = {}
 with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8') as f:
     for line in f:
         line = line.strip('\t\n').split('\t')
         time = line[2].split(' ')[0].replace('-', '/')
         id = line[0]
+        originalIDTimeDict[id] = line[2]
         riverIDTimeDict[id] = time
 
 
@@ -92,7 +94,7 @@ def getTextsByID():
     ids = json.loads(request.data)
     texts = []
     for id in ids:
-        text = originalIDTextDict[id]
+        text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
         texts.append(text)
     res = Response(json.dumps(texts))
     res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
@@ -108,12 +110,13 @@ def getInitialTexts():
         number += 1
         if number > 100:
             break
-        text = originalIDTextDict[id]
+        text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
         texts.append(text)
     res = Response(json.dumps(texts))
     res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res
+
 
 """
 @app.route("/runSamplingOnIDs", methods=['GET', 'POST'])

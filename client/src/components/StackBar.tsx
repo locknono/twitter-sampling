@@ -12,6 +12,7 @@ import { connect } from "react-redux";
 import { fetchJsonData } from "src/shared";
 import { topicNumber, url } from "src/constants/constants";
 import { color } from "../constants/constants";
+import { createRiverOption } from "src/constants/riverOptions";
 
 const mapState = (state: any) => {
   const { riverData, samplingRiverData } = state.dataTree;
@@ -55,72 +56,37 @@ function StackBar(props: Props) {
 
   React.useEffect(() => {
     if (!samplingRiverData || !riverData) return;
-    const days: string[] = Array.from(
-      new Set(
-        riverData.map((e: [string, number, string]) => {
-          return `${e[0].split("/")[1]}-${e[0].split("/")[2]}`;
-        })
-      )
-    );
-    days.sort((a, b) => {
-      return parseInt(a.split("-")[1]) - parseInt(b.split("-")[1]);
-    });
-    const s1 = getStackData(riverData);
-    const s2 = getStackData(samplingRiverData);
-    const stackData = [];
-    for (let i = 0; i < s1.length; i++) {
-      //m topics,n days  <=> m stackobj,stackobj.data.length===n
-      const stackObj: {
-        [index: string]: any;
-      } = {
-        name: i,
-        type: "bar",
-        stack: "总量",
-        data: []
-      };
-      for (let j = 0; j < s1[i].length; j++) {
-        stackObj.data.push(s1[i][j] - s2[i][j]);
-      }
-      stackData.push(stackObj);
-    }
-
-    const option = {
-      tooltip: {
-        trigger: "axis",
-        axisPointer: {
-          type: "shadow"
+    console.log("riverData: ", riverData);
+    console.log("samplingRiverData: ", samplingRiverData);
+    const diffRiverData: [string, number, string][] = [];
+    for (let i = 0; i < riverData.length; i++) {
+      const date = riverData[i][0];
+      const value = riverData[i][1];
+      const topic = riverData[i][2];
+      let diff = -1;
+      for (let j = 0; j < samplingRiverData.length; j++) {
+        if (
+          samplingRiverData[j][0] === date &&
+          samplingRiverData[j][2] === topic
+        ) {
+          diff = value - samplingRiverData[j][1];
         }
-      },
-      grid: {
-        top: "10px",
-        left: "10px",
-        right: "10px",
-        bottom: "5px",
-        containLabel: true
-      },
-      xAxis: {
-        type: "category",
-        data: days,
-        margin: 0
-      },
-      yAxis: {
-        type: "value"
-      },
-      series: stackData,
-      color: color.nineColors
-    };
-
-    chart.on("click", function() {});
-    chart.setOption(option as any);
-  }, [samplingRiverData]);
-
-  React.useEffect(() => {
-    if (!riverData) return;
+      }
+      if (diff === -1) {
+        diff = value;
+      }
+      diffRiverData.push([date, diff, topic]);
+    }
+    console.log("diffRiverData: ", diffRiverData);
     const myChart = echarts.init(document.getElementById(
       "stack-bar"
     ) as HTMLDivElement);
-    setChart(myChart);
-  }, [riverData]);
+    const option = createRiverOption(diffRiverData);
+    myChart.on("click", function() {});
+    myChart.setOption(option as any);
+  }, [samplingRiverData]);
+
+  React.useEffect(() => {}, [riverData]);
 
   return (
     <div className="stack-bar-div panel panel-default">
