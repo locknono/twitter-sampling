@@ -22,17 +22,23 @@ import {
   RIVER_DATA,
   SAMPLING_RIVER_DATA
 } from "../actions/setDataAction";
-import { connect } from "react-redux";
+import { connect, ReactReduxContext } from "react-redux";
 import "leaflet.pm";
 import {
   setSelectedIDs,
   setIfShowMapPoints,
   setSelectedMapIDs,
-  setWheelDay
+  setWheelDay,
+  SAMPLING_CONDITION,
+  setIfShowHeatMap
 } from "../actions/setUIState";
 import Heading from "./Heading";
-import { fetchWordCloudDataByIDs } from "../shared/fetch";
+import {
+  fetchWordCloudDataByIDs,
+  getURLBySamplingCondition
+} from "../shared/fetch";
 import { getArcGenerator, getLineGenerator } from "src/shared/renderer";
+import MapControl from "./MapControl";
 const mapState = (state: any) => {
   const { mapPoints } = state.dataTree;
   const {
@@ -41,7 +47,9 @@ const mapState = (state: any) => {
     systemName,
     ifShowMapPoints,
     samplingFlag,
-    wheelDay
+    wheelDay,
+    samplingCondition,
+    ifShowHeatMap
   } = state.uiState;
   return {
     mapPoints,
@@ -50,7 +58,9 @@ const mapState = (state: any) => {
     systemName,
     ifShowMapPoints,
     samplingFlag,
-    wheelDay
+    wheelDay,
+    samplingCondition,
+    ifShowHeatMap
   };
 };
 const mapDispatch = {
@@ -74,6 +84,8 @@ interface Props {
   samplingFlag: boolean;
   wheelDay: number;
   setWheelDay: typeof setWheelDay;
+  samplingCondition: SAMPLING_CONDITION;
+  ifShowHeatMap: boolean;
 }
 
 interface Map {
@@ -94,7 +106,9 @@ function Map(props: Props) {
     setSelectedMapIDs,
     samplingFlag,
     wheelDay,
-    setWheelDay
+    setWheelDay,
+    samplingCondition,
+    ifShowHeatMap
   } = props;
   const [
     lastSelectedLayer,
@@ -118,7 +132,11 @@ function Map(props: Props) {
     pointsLayerGroup,
     setPointsLayerGroup
   ] = React.useState<null | L.LayerGroup>(null);
+  const [heatLayerGroup, setHeatLayerGroup] = React.useState<any>(null);
 
+  const [selectedPointsGroup, setSelectedPointsGroup] = React.useState<any>(
+    null
+  );
   const [wheelRadius, setWheelRadius] = React.useState<null | number>(null);
   const [wheelCenter, setWheelCenter] = React.useState<any | [number, number]>(
     null
@@ -166,6 +184,10 @@ function Map(props: Props) {
   //set map points
   React.useEffect(() => {
     (async function setMapPoints() {
+      const newURL = getURLBySamplingCondition(
+        url.mapPointsURL,
+        samplingCondition
+      );
       const res = await fetch(url.mapPointsURL);
       const mapPoints = await res.json();
       setData(MAP_POINTS, mapPoints);
@@ -175,6 +197,7 @@ function Map(props: Props) {
   //draw selected ids
   React.useEffect(() => {
     if (!map || !mapPoints) return;
+    if (!ifShowMapPoints) return;
     (async function drawSelectedIDs() {
       const res = await fetch(pythonServerURL + "getCoorsByIDs", {
         method: "POST",
@@ -192,16 +215,21 @@ function Map(props: Props) {
           })
         );
       });
-      const layerGroup = L.layerGroup(layers).addTo(map);
-      controlLayer.addOverlay(layerGroup, "selected points");
       if (lastSelectedLayer) {
-        controlLayer.removeLayer(lastSelectedLayer);
         map.removeLayer(lastSelectedLayer);
       }
+      const layerGroup = L.layerGroup(layers).addTo(map);
       setLastSelectedLayer(layerGroup);
     })();
   }, [selectedIDs]);
-
+  React.useEffect(() => {
+    if (selectedIDs.length === 0 || !map || !lastSelectedLayer) return;
+    if (ifShowMapPoints) {
+      lastSelectedLayer.addTo(map);
+    } else {
+      map.removeLayer(lastSelectedLayer);
+    }
+  }, [ifShowMapPoints]);
   //click sampling button
   React.useEffect(() => {
     if (!map) return;
@@ -242,8 +270,17 @@ function Map(props: Props) {
     });
     const layerGroup = L.layerGroup(allPointsLayer);
     setPointsLayerGroup(layerGroup);
-    controlLayer.addOverlay(layerGroup, `all points`);
   }, [mapPoints]);
+
+  React.useEffect(() => {
+    if (!pointsLayerGroup || !map) return;
+    if (selectedIDs.length !== 0) return;
+    if (ifShowMapPoints) {
+      pointsLayerGroup.addTo(map);
+    } else {
+      map.removeLayer(pointsLayerGroup);
+    }
+  }, [ifShowMapPoints]);
 
   //points for one topic
   React.useEffect(() => {
@@ -323,39 +360,23 @@ function Map(props: Props) {
   }, [mapPoints]); */
 
   React.useEffect(() => {
-    (async function addSamplingPoints() {
-      const res = await fetch(url.ldbrPointsURL);
-      const data = await res.json();
-      const layers: L.Layer[] = [];
-      data.map((e: any) => {
-        layers.push(
-          L.circle(e, {
-            radius: mapCircleRadius,
-            color: color.mapPointColor
-          })
-        );
+    fetch(`./heatData.json`)
+      .then(res => res.json())
+      .then(data => {
+        const heatLayer = (L as any).heatLayer(data, { radius: 15 });
+        setHeatLayerGroup(heatLayer);
       });
-      const layerGroup = L.layerGroup(layers);
-      controlLayer.addOverlay(layerGroup, "sampling points");
-    })();
   }, []);
 
-  /*  for (let i = 0; i < 10; i++) {
-  fetch(`./heatmapData/heat-${i}.json`)
-    .then(res => res.json())
-    .then(data => {
-      var heatmap = new (L as any).WebGLHeatMap({
-        size: 500,
-        autoresize: true
-      });
-      heatmap.setData(data);
-      controlLayer.addOverlay(heatmap, `heatmap-${i}`);
-
-
-      //const heatLayer = (L as any).heatLayer(data, { radius: 15 });
-      //controlLayer.addOverlay(heatLayer, `heatmap-${i}`);
-    });
-}*/
+  React.useEffect(() => {
+    if (!map || !heatLayerGroup) return;
+    console.log("ifShowHeatMap: ", ifShowHeatMap);
+    if (ifShowHeatMap) {
+      heatLayerGroup.addTo(map);
+    } else {
+      map.removeLayer(heatLayerGroup);
+    }
+  }, [ifShowHeatMap]);
 
   React.useEffect(() => {
     const map = L.map("map", options);
@@ -363,9 +384,7 @@ function Map(props: Props) {
     setMap(map);
     map.on("click", function(e) {});
     controlLayer.addTo(map);
-    const bounds = [tl, rb];
-    const bound = L.rectangle(bounds);
-    controlLayer.addOverlay(bound, "bound");
+
     map.pm.addControls(options);
     //map.pm.enableDraw("Circle", drawOptions as any);
   }, []);
@@ -523,41 +542,6 @@ function Map(props: Props) {
     }
   }, [systemName]);
 
-  React.useEffect(() => {
-    (async function addSamplingPoints() {
-      const res = await fetch(url.hexURL);
-      const data = await res.json();
-      const layers: L.Layer[] = [];
-      const minvalue = d3.min(data, function(e: any) {
-        return e.value as number;
-      }) as number;
-
-      const maxValue = d3.max(data, function(e: any) {
-        return e.value as number;
-      }) as number;
-      const logFunc = Math.floor;
-      const valueScale = d3
-        .scaleLinear()
-        .domain([logFunc(minvalue), logFunc(maxValue)])
-        .range([0, 1]);
-
-      data.map((e: any) => {
-        if (e.value === 0) {
-          return;
-        }
-        layers.push(
-          L.polygon(e.path, {
-            stroke: false,
-            fillColor: color.hexColorScale(valueScale(logFunc(e.value))),
-            fillOpacity: 0.8
-          })
-        );
-      });
-      const layerGroup = L.layerGroup(layers);
-      controlLayer.addOverlay(layerGroup, "original hex");
-    })();
-  }, []);
-
   if (wheelCenter) {
     dayControler = (
       <div
@@ -575,9 +559,31 @@ function Map(props: Props) {
       />
     );
   }
+
+  let colorBars = [];
+  for (let i = 0; i < topicNumber; i++) {
+    colorBars.push(
+      <div
+        key={i}
+        style={{
+          width: 15,
+          height: 15,
+          marginTop: 2,
+          marginRight: 5,
+          borderRadius: "50%",
+          backgroundColor: color.nineColors[i],
+          float: "right"
+        }}
+      />
+    );
+  }
   return (
     <div className="map-view panel panel-default">
-      <div className="panel-heading heading map-heading">Map View</div>
+      <div className="panel-heading heading map-heading">
+        Map View{colorBars}
+        <span style={{ float: "right", marginRight: 7 }}>9 topics</span>
+      </div>
+      <MapControl />
       <div
         id="map"
         className="panel panel-default"

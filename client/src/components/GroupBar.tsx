@@ -106,7 +106,7 @@ function GroupBar(props: Props) {
 
     const yScale = d3
       .scaleLinear()
-      .domain([0, maxValue])
+      .domain([0, 0.3])
       .range([yEnd, yStart]);
 
     for (let i = 0; i < original.length; i++) {

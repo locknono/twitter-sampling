@@ -9,6 +9,7 @@ export const SET_IF_SHOW_MAP_POINTS = "SET_IF_SHOW_MAP_POINTS";
 export const SET_SELECTED_MAP_IDS = "SET_SELECTED_MAP_IDS";
 export const SET_SAMPLING_CONDITION = "SET_SAMPLING_CONDITION";
 export const SET_WHEEL_DAY = "SET_WHEEL_DAY";
+export const SET_IF_SHOW_HEATMAP = "SET_IF_SHOW_HEATMAP";
 
 export enum SAMPLING_CONDITION {
   random = 0,
@@ -77,5 +78,12 @@ export function setWheelDay(day: number) {
   return {
     type: SET_WHEEL_DAY,
     day
+  };
+}
+
+export function setIfShowHeatMap(flag: boolean) {
+  return {
+    type: SET_IF_SHOW_HEATMAP,
+    flag
   };
 }

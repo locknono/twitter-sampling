@@ -13,6 +13,7 @@ import time
 import g
 import os
 import logging
+from shared.generateRenderData import readJsonFile, writeToJsonFile
 
 
 def getDistance(p1, p2):
@@ -244,14 +245,10 @@ if __name__ == '__main__':
         r = 100
         t1 = time.time()
         points = []
-        with open(g.dataPath + 'finalIDLocation.csv', 'r', encoding='utf-8') as f:
-            csvF = csv.reader(f)
-            for row in islice(csvF, 1, None):
-                pID = row[0]
-                lat = float(row[1])
-                lng = float(row[2])
-                points.append({'id': pID, 'lat': lat, 'lng': lng})
 
+        idLocationDict = readJsonFile(g.dataPath + 'finalIDLocation.json')
+        for id in idLocationDict:
+            points.append({"lat": idLocationDict[id][0], "lng": idLocationDict[id][1], "id": id})
         samplePoints = blueNoise(points, r)
         try:
             os.mkdir(g.dataPath + 'blueNoise/')
@@ -268,5 +265,5 @@ if __name__ == '__main__':
             if (len(samplePoints) > maxCount):
                 maxCount = len(samplePoints)
                 maxR = r
-                with open('../client/public/samplePoints.json', 'w', encoding='utf-8') as f2:
+                with open('../client/public/blueNoisePoints.json', 'w', encoding='utf-8') as f2:
                     f2.write(json.dumps(samplePoints))

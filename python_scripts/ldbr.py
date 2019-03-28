@@ -166,6 +166,7 @@ def ifActive(estimates: List[float], topic: int, epsilon: float, A: List[int]):
 
 
 def ldbr(points: List[Point], k: int, r: float, delta: float, c: float, timeR: float):
+    """
     timeKDE = getTimeKDE(points)
     kde = getKDE(points)
     print('start setting radius')
@@ -174,8 +175,9 @@ def ldbr(points: List[Point], k: int, r: float, delta: float, c: float, timeR: f
             print(index)
         setTimeRadius(p, timeR, timeKDE)
         setRadius(p, r, kde)
-    A = []
     print('set all radius')
+    """
+    A = []
     sampleGroups: List[List[Point]] = []
     for i in range(k):
         A.append(i)

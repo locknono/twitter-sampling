@@ -212,3 +212,9 @@ def saveAllSamplingData(originalEstimates, estimates, idLocationDict, idClassDic
     samplingRiverData = getRiverData(riverIDTimeDict, idClassDict, samplingIDs)
     writeToJsonFile(samplingRiverData, path1 + 'samplingRiverData.json')
     writeToJsonFile(samplingRiverData, path2 + 'samplingRiverData.json')
+
+def getHeatData(idLocationDict):
+    heat = []
+    for id in idLocationDict:
+        heat.append([idLocationDict[id][0], idLocationDict[id][1], 1])
+    return heat

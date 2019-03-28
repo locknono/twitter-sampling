@@ -47,6 +47,7 @@ const mapDispatchToProps = {
   setCurTopic
 };
 
+let initialScale: any;
 class Matrix extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -130,10 +131,16 @@ class Matrix extends React.Component<Props, State> {
       const minDiff = Math.min(...allDiffs);
       const maxDiff = Math.max(...allDiffs);
 
-      const scale = d3
-        .scaleLinear()
-        .domain([minDiff, maxDiff])
-        .range([0, 0.7]);
+      let scale;
+      if (!initialScale) {
+        initialScale = d3
+          .scaleLinear()
+          .domain([minDiff, maxDiff])
+          .range([0, 0.7]);
+        scale = initialScale;
+      } else {
+        scale = initialScale;
+      }
 
       color1 = d3.interpolateBlues(0.0);
       color2 = d3.interpolateBlues(0.7);

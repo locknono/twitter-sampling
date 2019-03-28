@@ -4,6 +4,7 @@ import numpy as np
 import random
 import math
 import json
+import copy
 
 
 # one sample for one disk ,starts from the fewest count
@@ -64,7 +65,8 @@ def getTimeKDE(points: List[Point]):
 
 
 def setRadius(point: Point, r: float, kde):
-    radius = r / kde([point.lat, point.lng])[0]
+    point.kdeValue = kde([point.lat, point.lng])[0]
+    radius = r / point.kdeValue
     point.r = radius
 
 
@@ -160,11 +162,7 @@ def ifActive(estimates: List[float], topic: int, epsilon: float, A: List[int]):
 
 
 def ldbrOnlySpace(points: List[Point], k: int, r: float, delta: float, c: float):
-    kde = getKDE(points)
-    for p in points:
-        setRadius(p, r, kde)
     A = []
-    print('set all radius')
     sampleGroups: List[List[Point]] = []
     for i in range(k):
         A.append(i)
@@ -185,7 +183,6 @@ def ldbrOnlySpace(points: List[Point], k: int, r: float, delta: float, c: float)
         estimates.append(getEstimateForOneGroup(group))
 
     while (len(A) > 0):
-        print(A)
         N = getMaxNInActiveGroups(A, points)
         m = m + 1
         try:
@@ -211,7 +208,7 @@ def ldbrOnlySpace(points: List[Point], k: int, r: float, delta: float, c: float)
             if ifActive(estimates, A[i], epsilon, A) == False:
                 A.pop(i)
         # print(str(A))
-    return [estimates, sampleGroups]
+    return [estimates, copy.deepcopy(sampleGroups)]
 
 
 if __name__ == '__main__':

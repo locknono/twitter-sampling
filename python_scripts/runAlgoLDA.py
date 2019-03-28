@@ -4,7 +4,7 @@ from docAlgo.runDoc2vec import runDoc2vec
 from docAlgo.runTsne import runTsne
 from docAlgo.runKmeans import runKmeans
 from docAlgo.runLDA import runLDA
-from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile
+from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile,getHeatData
 from docAlgo.getClass import getIDClassDict
 
 if __name__ == '__main__':
@@ -48,3 +48,7 @@ if __name__ == '__main__':
     cloudData = getWordCloud(idTextDict, idClassDict, g.topicNumber)
     writeToJsonFile(cloudData, g.dataPath + 'allWordCloudData.json')
     writeToJsonFile(cloudData, '../client/public/allWordCloudData.json')
+
+    heatData=getHeatData(idLocationDict)
+    writeToJsonFile(heatData, g.dataPath + 'heatData.json')
+    writeToJsonFile(heatData, '../client/public/heatData.json')

@@ -194,7 +194,7 @@ function LdaScatterCanvasCanvas(props: Props) {
   }, [curTopic, backgroudCtx, scales]);
 
   //color bars
-  React.useEffect(() => {
+  /*   React.useEffect(() => {
     if (!backgroudCtx || !width || !height) return;
     const indices = [];
     for (let i = 0; i < topicNumber; i++) {
@@ -226,7 +226,7 @@ function LdaScatterCanvasCanvas(props: Props) {
       (xScale((topicNumber - 1).toString()) as number) + xScale.bandwidth() + 1,
       height * (1 - padding.scatterPadding / 2) + xScale.bandwidth() - 2.5
     );
-  }, [backgroudCtx, scales]);
+  }, [backgroudCtx, scales]); */
 
   //centers
   React.useEffect(() => {

@@ -23,7 +23,7 @@ export const createRiverOption = function(
       data: legends
     }, */
     singleAxis: {
-      top: 20,
+      top: 10,
       bottom: 20,
       axisTick: {},
       axisLabel: {},

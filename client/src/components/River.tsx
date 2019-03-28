@@ -42,7 +42,6 @@ function River(props: Props) {
       samplingFlag === true
         ? getURLBySamplingCondition(url.samplingRiverDataURL, samplingCondition)
         : url.riverDataURL;
-    console.log("fetchURL: ", fetchURL);
     fetchJsonData(fetchURL).then(data => {
       setData(RIVER_DATA, data);
     });
