@@ -19,9 +19,9 @@ export const createRiverOption = function(
         }
       }
     },
-    legend: {
+    /*     legend: {
       data: legends
-    },
+    }, */
     singleAxis: {
       top: 20,
       bottom: 20,
@@ -54,4 +54,6 @@ export const createRiverOption = function(
     },
     color: color.nineColors
   };
+
+  return option;
 };

@@ -4,33 +4,8 @@ import os
 import sys
 
 from shared.lda_op import findMaxIndexAndValueForOneDoc
+from shared.generateRenderData import getRiverData
 
-
-def getRiverData(idTimeDict, idClassDict, ids=None):
-    if ids == None:
-        ids = idClassDict.keys()
-    topicTimeValueDict = {}
-    for id in ids:
-        maxIndex = idClassDict[id]
-        time = idTimeDict[id]
-        topicTimeTuple = (maxIndex, time)
-        if topicTimeTuple in topicTimeValueDict:
-            # topicTimeValueDict[topicTimeTuple] += maxValue
-            topicTimeValueDict[topicTimeTuple] += 1
-        else:
-            # topicTimeValueDict[topicTimeTuple] = maxValue
-            topicTimeValueDict[topicTimeTuple] = 1
-    riverData = []
-    for i in range(0, g.topicNumber):
-        for k in topicTimeValueDict:
-            topic = k[0]
-            if topic != i:
-                continue
-            time = k[1]
-            value = topicTimeValueDict[k]
-            singleList = [time, value, str(topic)]
-            riverData.append(singleList)
-    return riverData
 
 if __name__ == '__main__':
     idTimeDict = {}

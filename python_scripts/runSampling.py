@@ -14,6 +14,7 @@ import copy
 from ldbr import getKDE, setRadius
 from kdeIndicator import getKDEIndicator
 
+
 if __name__ == '__main__':
     idTextDict = {}
     riverIDTimeDict = {}
@@ -35,59 +36,60 @@ if __name__ == '__main__':
     idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
 
     points = getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict)
-    c = 0.03
-    copyPoints = copy.deepcopy(points)
-    estimates, sampleGroups = ldbr(copyPoints, g.topicNumber, 1000, 0.08, c, 0.0005)
+    for t in range(100):
+        c = 0.03+0.005*t
+        copyPoints = copy.deepcopy(points)
+        estimates, sampleGroups = ldbr(copyPoints, g.topicNumber, 1000, 0.08, c, 0.0005)
 
-    samplingPoints = []
-    for sg in sampleGroups:
-        for p in sg:
-            samplingPoints.append(p)
-    samplingKDE = getKDE(samplingPoints)
-    for p in samplingPoints:
-        setRadius(p, 1000, samplingKDE)
-    sum = 0
-    values = []
-    for p1 in samplingPoints:
-        for p2 in copyPoints:
-            if p1.id == p2.id:
-                value = getKDEIndicator(p1, p2)
-                values.append([p1.kdeValue, p2.kdeValue])
-                sum += value
-                continue
-    print(sum)
-    with open(g.dataPath + 'kdeValue.json', 'w', encoding='utf-8') as f:
-        f.write(json.dumps({"sum": sum, "values": values}))
+        samplingPoints = []
+        for sg in sampleGroups:
+            for p in sg:
+                samplingPoints.append(p)
+        samplingKDE = getKDE(samplingPoints)
+        for p in samplingPoints:
+            setRadius(p, 1000, samplingKDE)
+        sum = 0
+        values = []
+        for p1 in samplingPoints:
+            for p2 in copyPoints:
+                if p1.id == p2.id:
+                    value = getKDEIndicator(p1, p2)
+                    values.append([p1.kdeValue, p2.kdeValue])
+                    sum += value
+                    continue
+        with open(g.dataPath + 'kdeValue.json', 'w', encoding='utf-8') as f:
+            f.write(json.dumps({"sum": sum, "values": values}))
 
-    if estimates != None or sampleGroups != None:
-        originalEstimates = getOriginalEstimates(points, g.topicNumber)
+        if estimates != None or sampleGroups != None:
+            originalEstimates = getOriginalEstimates(points, g.topicNumber)
 
-        r1 = getRalationshipList(estimates)
-        r2 = getRalationshipList(originalEstimates)
-        ratio = compareRelationshipList(r2, r1)
-        samplingIDs = getSamplingIDs(sampleGroups)
-        print(ratio)
-        print(len(samplingIDs))
+            r1 = getRalationshipList(estimates)
+            r2 = getRalationshipList(originalEstimates)
+            ratio = compareRelationshipList(r2, r1)
+            samplingIDs = getSamplingIDs(sampleGroups)
+            if ratio>0.9:
+                print(ratio)
+                print(len(samplingIDs))
 
-        barData = {"original": originalEstimates, "sampling": estimates}
-        writeToJsonFile(barData, '../client/public/barData.json')
-        writeToJsonFile(barData, g.dataPath + 'barData.json')
+                barData = {"original": originalEstimates, "sampling": estimates}
+                writeToJsonFile(barData, '../client/public/barData.json')
+                writeToJsonFile(barData, g.dataPath + 'barData.json')
 
-        samplingMapPoints = getMapPoints(idLocationDict, idClassDict, samplingIDs)
-        writeToJsonFile(samplingMapPoints, '../client/public/samplingMapPoints.json')
-        writeToJsonFile(samplingMapPoints, g.dataPath + 'samplingMapPoints.json')
+                samplingMapPoints = getMapPoints(idLocationDict, idClassDict, samplingIDs)
+                writeToJsonFile(samplingMapPoints, '../client/public/samplingMapPoints.json')
+                writeToJsonFile(samplingMapPoints, g.dataPath + 'samplingMapPoints.json')
 
-        samplingScatterPoints = getScatterPoints(idScatterData, idClassDict, samplingIDs)
-        writeToJsonFile(samplingScatterPoints, '../client/public/samplingScatterPoints.json')
-        writeToJsonFile(samplingScatterPoints, g.dataPath + 'samplingScatterPoints.json')
+                samplingScatterPoints = getScatterPoints(idScatterData, idClassDict, samplingIDs)
+                writeToJsonFile(samplingScatterPoints, '../client/public/samplingScatterPoints.json')
+                writeToJsonFile(samplingScatterPoints, g.dataPath + 'samplingScatterPoints.json')
 
-        samplingCloudData = getWordCloud(idTextDict, idClassDict, g.topicNumber, samplingIDs)
-        writeToJsonFile(samplingCloudData, '../client/public/samplingCloudData.json')
-        writeToJsonFile(samplingCloudData, g.dataPath + 'samplingCloudData.json')
+                samplingCloudData = getWordCloud(idTextDict, idClassDict, g.topicNumber, samplingIDs)
+                writeToJsonFile(samplingCloudData, '../client/public/samplingCloudData.json')
+                writeToJsonFile(samplingCloudData, g.dataPath + 'samplingCloudData.json')
 
-        samplingRiverData = getRiverData(riverIDTimeDict, idClassDict, samplingIDs)
-        writeToJsonFile(samplingRiverData, '../client/public/samplingRiverData.json')
-        writeToJsonFile(samplingRiverData, g.dataPath + 'samplingRiverData.json')
+                samplingRiverData = getRiverData(riverIDTimeDict, idClassDict, samplingIDs)
+                writeToJsonFile(samplingRiverData, '../client/public/samplingRiverData.json')
+                writeToJsonFile(samplingRiverData, g.dataPath + 'samplingRiverData.json')
 
-    else:
-        print('sampling fail')
+        else:
+            print('sampling fail')

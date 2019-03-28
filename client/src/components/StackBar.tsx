@@ -77,7 +77,6 @@ function StackBar(props: Props) {
       }
       diffRiverData.push([date, diff, topic]);
     }
-    console.log("diffRiverData: ", diffRiverData);
     const myChart = echarts.init(document.getElementById(
       "stack-bar"
     ) as HTMLDivElement);
