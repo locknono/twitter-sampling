@@ -59,10 +59,9 @@ function ControlPanel(props: Props) {
     setCurSystem(name);
   }
 
-  console.log(samplingCondition);
   function handleSamplingClick(flag: boolean) {
     setSamplingFlag(flag);
-    console.log("unPatchedSamplingCondition: ", unPatchedSamplingCondition);
+
     if (flag == true) {
       setSamplingCondition(unPatchedSamplingCondition);
     }
@@ -89,7 +88,7 @@ function ControlPanel(props: Props) {
 
   function handleCheck(e: React.SyntheticEvent) {
     const id = (e.target as any).id;
-    console.log("id: ", id);
+
     if (id === "random") {
       setUnPatchedSamplingCondition(SAMPLING_CONDITION.random);
     } else if (id === "bl") {

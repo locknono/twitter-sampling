@@ -1,5 +1,6 @@
 import { pythonServerURL } from "./constants/constants";
 export async function fetchJsonData(url: string) {
+  console.log("url: ", url);
   const res = await fetch(url);
   const data = await res.json();
   return data;

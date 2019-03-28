@@ -196,7 +196,6 @@ def ldbr(points: List[Point], k: int, r: float, delta: float, c: float, timeR: f
         estimates.append(getEstimateForOneGroup(group))
 
     while (len(A) > 0):
-        print(A)
         N = getMaxNInActiveGroups(A, points)
         m = m + 1
         try:

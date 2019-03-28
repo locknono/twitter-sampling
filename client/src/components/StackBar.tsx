@@ -13,11 +13,19 @@ import { fetchJsonData } from "src/shared";
 import { topicNumber, url } from "src/constants/constants";
 import { color } from "../constants/constants";
 import { createRiverOption } from "src/constants/riverOptions";
+import { SAMPLING_CONDITION } from "src/actions/setUIState";
+import { getURLBySamplingCondition } from "src/shared/fetch";
 
 const mapState = (state: any) => {
   const { riverData, samplingRiverData } = state.dataTree;
-  const { curTopic, samplingFlag } = state.uiState;
-  return { riverData, curTopic, samplingFlag, samplingRiverData };
+  const { curTopic, samplingFlag, samplingCondition } = state.uiState;
+  return {
+    riverData,
+    curTopic,
+    samplingFlag,
+    samplingRiverData,
+    samplingCondition
+  };
 };
 const mapDispatch = {
   setData
@@ -29,6 +37,7 @@ interface Props {
   curTopic: CurTopic;
   setData: typeof setData;
   samplingFlag: boolean;
+  samplingCondition: SAMPLING_CONDITION;
 }
 function StackBar(props: Props) {
   const {
@@ -36,7 +45,8 @@ function StackBar(props: Props) {
     samplingRiverData,
     curTopic,
     setData,
-    samplingFlag
+    samplingFlag,
+    samplingCondition
   } = props;
 
   const [chart, setChart] = React.useState();
@@ -47,12 +57,14 @@ function StackBar(props: Props) {
         setData(RIVER_DATA, data);
       })
       .then(function() {
-        return fetchJsonData(url.samplingRiverDataURL);
+        return fetchJsonData(
+          getURLBySamplingCondition(url.samplingRiverDataURL, samplingCondition)
+        );
       })
       .then(data => {
         setData(SAMPLING_RIVER_DATA, data);
       });
-  }, []);
+  }, [samplingCondition]);
 
   React.useEffect(() => {
     if (!samplingRiverData || !riverData) return;

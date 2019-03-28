@@ -9,11 +9,13 @@ import { fetchJsonData } from "src/shared";
 import { topicNumber, url } from "src/constants/constants";
 import { color } from "../constants/constants";
 import { createRiverOption } from "src/constants/riverOptions";
+import { SAMPLING_CONDITION } from "src/actions/setUIState";
+import { getURLBySamplingCondition } from "src/shared/fetch";
 
 const mapState = (state: any) => {
   const { riverData } = state.dataTree;
-  const { curTopic, samplingFlag } = state.uiState;
-  return { riverData, curTopic, samplingFlag };
+  const { curTopic, samplingFlag, samplingCondition } = state.uiState;
+  return { riverData, curTopic, samplingFlag, samplingCondition };
 };
 const mapDispatch = {
   setData
@@ -24,17 +26,27 @@ interface Props {
   curTopic: CurTopic;
   setData: typeof setData;
   samplingFlag: boolean;
+  samplingCondition: SAMPLING_CONDITION;
 }
 function River(props: Props) {
-  const { riverData, curTopic, setData, samplingFlag } = props;
+  const {
+    riverData,
+    curTopic,
+    setData,
+    samplingFlag,
+    samplingCondition
+  } = props;
 
   React.useEffect(() => {
     const fetchURL =
-      samplingFlag === true ? url.samplingRiverDataURL : url.riverDataURL;
+      samplingFlag === true
+        ? getURLBySamplingCondition(url.samplingRiverDataURL, samplingCondition)
+        : url.riverDataURL;
+    console.log("fetchURL: ", fetchURL);
     fetchJsonData(fetchURL).then(data => {
       setData(RIVER_DATA, data);
     });
-  }, [samplingFlag]);
+  }, [samplingFlag, samplingCondition]);
 
   React.useEffect(() => {
     if (!riverData) return;

@@ -15,11 +15,13 @@ from ldbr import getKDE, setRadius
 from kdeIndicator import getKDEIndicator
 import random
 
-def getRandomIDs(points,count):
-    randomIDs=[]
-    while(len(randomIDs)<count):
-        randomIndex=random.randint(0,len(points))
-        randomIDs.append(randomIndex)
-        points.pop(randomIndex)
-    return randomIDs
 
+def getRandomPointsAndIDs(points, count):
+    randomIDs = []
+    randomPoints = []
+    while (len(randomIDs) < count):
+        randomIndex = random.randint(0, len(points) - 1)
+        randomIDs.append(points[randomIndex].id)
+        randomPoints.append(points[randomIndex])
+        points.pop(randomIndex)
+    return [randomPoints, randomIDs]

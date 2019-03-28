@@ -96,7 +96,6 @@ function Map(props: Props) {
     wheelDay,
     setWheelDay
   } = props;
-  console.log("wheelDay: ", wheelDay);
   const [
     lastSelectedLayer,
     setLastSelectedLayer

@@ -4,7 +4,8 @@ import { setData, SCATTER_DATA, CLOUD_DATA } from "../actions/setDataAction";
 import {
   setIfDrawCenters,
   setSelectedIDs,
-  setCurTopic
+  setCurTopic,
+  SAMPLING_CONDITION
 } from "../actions/setUIState";
 import {
   color,
@@ -21,7 +22,10 @@ import { updateQueue } from "../fiber/updateQueue";
 import createFiber from "../fiber/fiber";
 import * as v4 from "uuid/v4";
 import Heading from "../components/Heading";
-import { fetchWordCloudDataByIDs } from "src/shared/fetch";
+import {
+  fetchWordCloudDataByIDs,
+  getURLBySamplingCondition
+} from "src/shared/fetch";
 interface Props {
   scatterData: ScatterPoint[];
   curTopic: CurTopic;
@@ -32,6 +36,7 @@ interface Props {
   selectedIDs: string[];
   samplingFlag: boolean;
   setCurTopic: typeof setCurTopic;
+  samplingCondition: SAMPLING_CONDITION;
 }
 
 const mapState = (state: any) => {
@@ -40,14 +45,16 @@ const mapState = (state: any) => {
     curTopic,
     ifDrawScatterCenters,
     selectedIDs,
-    samplingFlag
+    samplingFlag,
+    samplingCondition
   } = state.uiState;
   return {
     scatterData,
     curTopic,
     ifDrawScatterCenters,
     selectedIDs,
-    samplingFlag
+    samplingFlag,
+    samplingCondition
   };
 };
 const mapDispatch = {
@@ -65,7 +72,8 @@ function LdaScatterCanvasCanvas(props: Props) {
     setSelectedIDs,
     selectedIDs,
     samplingFlag,
-    setCurTopic
+    setCurTopic,
+    samplingCondition
   } = props;
   const [o1, setO1] = React.useState<[number, number] | null>(null);
   const [o2, setO2] = React.useState<[number, number] | null>(null);
@@ -91,13 +99,21 @@ function LdaScatterCanvasCanvas(props: Props) {
   }, []);
 
   React.useEffect(() => {
-    console.log("samplingFlag: ", samplingFlag);
     if (samplingFlag === true) {
-      fetchAndSetScatterData(url.samplingScatterPointsURL, setData);
+      const samplingURL = getURLBySamplingCondition(
+        url.samplingScatterPointsURL,
+        samplingCondition
+      );
+      console.log("samplingURL: ", samplingURL);
+      fetchAndSetScatterData(samplingURL, setData);
     } else {
-      fetchAndSetScatterData(url.scatterPointsURL, setData);
+      const scatterURL = getURLBySamplingCondition(
+        url.scatterPointsURL,
+        samplingCondition
+      );
+      fetchAndSetScatterData(scatterURL, setData);
     }
-  }, [samplingFlag]);
+  }, [samplingFlag, samplingCondition]);
 
   React.useEffect(() => {
     if (!scatterData || !width || !height) return;

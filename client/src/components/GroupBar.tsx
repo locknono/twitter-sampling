@@ -32,6 +32,7 @@ interface fetchedBarData {
 
 const mapStateToProps = (state: any, ownProps: any) => {
   const { originalBarData, samplingBarData } = state.dataTree;
+
   const { curTopic, samplingCondition } = state.uiState;
   return {
     original: originalBarData,
@@ -55,7 +56,7 @@ function GroupBar(props: Props) {
     curTopic,
     samplingCondition
   } = props;
-
+  console.log("original: ", original);
   const [width, height] = useWidthAndHeight("groupbar-svg");
 
   let bars: JSX.Element[] = [];

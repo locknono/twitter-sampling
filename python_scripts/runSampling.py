@@ -13,7 +13,7 @@ from shared.constant import nyBound
 import copy
 from ldbr import getKDE, setRadius
 from kdeIndicator import getKDEIndicator
-from randomSampling import getRandomIDs
+from randomSampling import getRandomPointsAndIDs
 
 if __name__ == '__main__':
     idTextDict = {}
@@ -36,11 +36,11 @@ if __name__ == '__main__':
     idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
 
     points = getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict)
-    maxRatio = -1
+    maxRatio = 0.7
     for t in range(100):
-        c = 0.03 + 0.005 * t
+        c = 0.03 + 0.002 * t
         copyPoints = copy.deepcopy(points)
-        estimates, sampleGroups = ldbr(copyPoints, g.topicNumber, 1000, 0.08, c, 0.0005)
+        estimates, sampleGroups = ldbr(copyPoints, g.topicNumber, 1000, 0.08, c, 0.0003)
 
         """
         samplingPoints = []
@@ -69,19 +69,35 @@ if __name__ == '__main__':
             r2 = getRalationshipList(originalEstimates)
             ratio = compareRelationshipList(r2, r1)
             samplingIDs = getSamplingIDs(sampleGroups)
-            randomIDs = getRandomIDs(copy.deepcopy(points), len(samplingIDs))
+
             if ratio > maxRatio:
+                print(len(samplingIDs))
+                print('ratio:'+str(ratio))
                 path1 = '../client/public/'
                 path2 = g.dataPath
                 saveAllSamplingData(originalEstimates, estimates, idLocationDict, idClassDict, idScatterData,
                                     idTextDict,
                                     riverIDTimeDict, samplingIDs, path1, path2)
 
-                randomPath1 = '../client/public/random'
-                randomPath2 = g.dataPath + 'random/'
-                saveAllSamplingData(originalEstimates, estimates, idLocationDict, idClassDict, idScatterData,
-                                    idTextDict,
-                                    riverIDTimeDict, randomIDs, randomPath1, randomPath2)
 
+                #random
+                minRandomRatio = 1
+                while minRandomRatio > ratio:
+                    randomPoints, randomIDs = getRandomPointsAndIDs(copy.deepcopy(points), len(samplingIDs))
+                    randomEstimates = getOriginalEstimates(randomPoints, g.topicNumber)
+                    r3 = getRalationshipList(randomEstimates)
+                    randomRatio = compareRelationshipList(r2, r3)
+                    print('randomRatio:'+str(randomRatio))
+                    if randomRatio<minRandomRatio:
+                        minRandomRatio=randomRatio
+                    randomPath1 = '../client/public/random/'
+                    randomPath2 = g.dataPath + 'random/'
+                    saveAllSamplingData(originalEstimates, randomEstimates, idLocationDict, idClassDict, idScatterData,
+                                        idTextDict,
+                                        riverIDTimeDict, randomIDs, randomPath1, randomPath2)
+
+                if ratio > 0.9:
+                    break
         else:
             print('sampling fail')
+            c -= 0.002

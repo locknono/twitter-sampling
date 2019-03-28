@@ -2,7 +2,7 @@ import os
 import time
 
 startDay = 11
-dataDays = 5  #
+dataDays = 3  #
 topicNumber = 9
 dataPath = '../data/vec/'
 ldaDir = dataPath + 'LDA/' + 'alpha=auto/'
