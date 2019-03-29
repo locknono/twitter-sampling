@@ -194,6 +194,18 @@ function Map(props: Props) {
     })();
   }, []);
 
+  React.useEffect(() => {
+    (async function setMapPoints() {
+      const baseURL = samplingFlag
+        ? url.samplingMapPointsURL
+        : url.mapPointsURL;
+      const newURL = getURLBySamplingCondition(baseURL, samplingCondition);
+      const res = await fetch(newURL);
+      const mapPoints = await res.json();
+      setData(MAP_POINTS, mapPoints);
+    })();
+  }, [samplingCondition, samplingFlag]);
+
   //draw selected ids
   React.useEffect(() => {
     if (!map || !mapPoints) return;
@@ -224,6 +236,7 @@ function Map(props: Props) {
       setLastSelectedLayer(layerGroup);
     })();
   }, [selectedIDs]);
+
   React.useEffect(() => {
     if (selectedIDs.length === 0 || !map || !lastSelectedLayer) return;
     if (ifShowMapPoints) {
@@ -232,6 +245,7 @@ function Map(props: Props) {
       map.removeLayer(lastSelectedLayer);
     }
   }, [ifShowMapPoints]);
+
   //click sampling button
   React.useEffect(() => {
     if (!map) return;
@@ -239,7 +253,8 @@ function Map(props: Props) {
 
   //add all points to map
   React.useEffect(() => {
-    if (!mapPoints) return;
+    if (!mapPoints || !map) return;
+    console.log("mapPoints: ", mapPoints);
     const allPoints: MapPoint[] = [];
 
     const pointsSet = new Set();
@@ -270,8 +285,14 @@ function Map(props: Props) {
         })
       );
     });
+    if (pointsLayerGroup) {
+      map.removeLayer(pointsLayerGroup);
+    }
     const layerGroup = L.layerGroup(allPointsLayer);
     setPointsLayerGroup(layerGroup);
+    if (ifShowMapPoints) {
+      layerGroup.addTo(map);
+    }
   }, [mapPoints]);
 
   React.useEffect(() => {
@@ -328,51 +349,28 @@ function Map(props: Props) {
     controlLayer.addOverlay(layerGroup, `points for topic${curTopic}`);
   }, [curTopic]);
 
-  /* React.useEffect(() => {
-    if (!mapPoints) return;
-    const allPointsLayer: L.Layer[] = [];
-    mapPoints.map(e => {
-      allPointsLayer.push(
-        L.circle(e, {
-          radius: mapCircleRadius,
-          color: color.nineColors[e.topic]
-        })
-      );
-    });
-    const layerGroup = L.layerGroup(allPointsLayer);
-    controlLayer.addOverlay(layerGroup, `all points with topic`);
-  }, [mapPoints]); */
-
-  /* React.useEffect(() => {
-    if (!mapPoints) return;
-    for (let i = 0; i < topicNumber; i++) {
-      const curTopicPoints = mapPoints.filter(e => e.topic === i);
-      const curTopicPointsLayer: L.Layer[] = [];
-      curTopicPoints.map(e => {
-        curTopicPointsLayer.push(
-          L.circle(e, {
-            radius: mapCircleRadius,
-            color: color.nineColors[i]
-          })
-        );
-      });
-      const layerGroup = L.layerGroup(curTopicPointsLayer);
-      controlLayer.addOverlay(layerGroup, `points for topic${i}`);
-    }
-  }, [mapPoints]); */
-
   React.useEffect(() => {
-    fetch(`./heatData.json`)
+    if (!map) return;
+    const baseURL = samplingFlag ? url.samplingHeatURL : url.heatURL;
+    const newURL = getURLBySamplingCondition(baseURL, samplingCondition);
+    console.log("newURL: ", newURL);
+    fetch(newURL)
       .then(res => res.json())
       .then(data => {
+        console.log("data: ", data);
+        if (heatLayerGroup) {
+          map.removeLayer(heatLayerGroup);
+        }
         const heatLayer = (L as any).heatLayer(data, { radius: 15 });
+        if (ifShowHeatMap) {
+          heatLayer.addTo(map);
+        }
         setHeatLayerGroup(heatLayer);
       });
-  }, []);
+  }, [map, samplingCondition, samplingFlag]);
 
   React.useEffect(() => {
     if (!map || !heatLayerGroup) return;
-    console.log("ifShowHeatMap: ", ifShowHeatMap);
     if (ifShowHeatMap) {
       heatLayerGroup.addTo(map);
     } else {

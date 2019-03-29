@@ -13,7 +13,7 @@ from typing import List
 
 def getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict, ids=None):
     if ids == None:
-        ids = idLocationDict.keys()
+        ids = idClassDict.keys()
     centers = getCenters(idScatterData, idClassDict, ids)
     minDis, maxDis = getMinMaxDis(idScatterData, centers, idClassDict, ids)
     points = []

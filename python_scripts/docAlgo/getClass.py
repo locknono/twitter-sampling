@@ -7,7 +7,6 @@ def getIDClassDict(idVectorDict):
     for k in idVectorDict:
         maxIndex,maxV=findMaxIndexAndValueForOneDoc(idVectorDict[k])
         idClassDict[k]=maxIndex
-    print(idClassDict)
     return idClassDict
 
 

@@ -85,7 +85,7 @@ function GroupBar(props: Props) {
     const pad = 0.1;
     const xStart = width * pad;
     const xEnd = width * (1 - pad / 2);
-    const yStart = height * pad;
+    const yStart = height * (pad + 0.13);
     const yEnd = height * (1 - pad);
 
     let minValue = Number.MAX_SAFE_INTEGER;
@@ -106,10 +106,11 @@ function GroupBar(props: Props) {
       .range([xStart, xEnd])
       .paddingInner(0.2);
 
+    const minValueY = 0.05;
     if (!initialScale) {
       initialScale = d3
         .scaleLinear()
-        .domain([0, maxValue])
+        .domain([minValueY, maxValue])
         .range([yEnd, yStart]);
     }
 
@@ -121,7 +122,7 @@ function GroupBar(props: Props) {
           x={xScale(i.toString())}
           y={initialScale(maxValue)}
           width={xScale.bandwidth()}
-          height={initialScale(0) - initialScale(maxValue)}
+          height={initialScale(minValueY) - initialScale(maxValue)}
           fill="rgb(223,223,223)"
           opacity={i === curTopic ? 0.7 : 0}
           rx={2}
@@ -138,7 +139,7 @@ function GroupBar(props: Props) {
           x={xScale(i.toString())}
           y={initialScale(original[i])}
           width={xScale.bandwidth() / 2}
-          height={initialScale(0) - initialScale(original[i])}
+          height={initialScale(minValueY) - initialScale(original[i])}
           fill={color.originalBarColor}
           rx={2}
           ry={2}
@@ -154,7 +155,7 @@ function GroupBar(props: Props) {
           x={(xScale(i.toString()) as number) + xScale.bandwidth() / 2}
           y={initialScale(sampling[i])}
           width={xScale.bandwidth() / 2}
-          height={initialScale(0) - initialScale(sampling[i])}
+          height={initialScale(minValueY) - initialScale(sampling[i])}
           fill={color.samplingColor}
           rx={2}
           ry={2}

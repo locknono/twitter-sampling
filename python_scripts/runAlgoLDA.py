@@ -26,12 +26,12 @@ if __name__ == '__main__':
 
     idVectorDict = runLDA(texts, ids)
     writeToJsonFile(idVectorDict, g.dataPath + 'idVectorDict.json')
-
     idClassDict = getIDClassDict(idVectorDict)
     writeToJsonFile(idClassDict, g.dataPath + 'idClassDict.json')
 
     idScatterData = runTsne(idVectorDict)
     writeToJsonFile(idScatterData, g.dataPath + 'idScatterData.json')
+
 
 
 
@@ -51,6 +51,6 @@ if __name__ == '__main__':
     writeToJsonFile(cloudData, g.dataPath + 'allWordCloudData.json')
     writeToJsonFile(cloudData, '../client/public/allWordCloudData.json')
 
-    heatData=getHeatData(idLocationDict)
+    heatData=getHeatData(idLocationDict,idClassDict)
     writeToJsonFile(heatData, g.dataPath + 'heatData.json')
     writeToJsonFile(heatData, '../client/public/heatData.json')

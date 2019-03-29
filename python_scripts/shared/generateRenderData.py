@@ -3,6 +3,7 @@ import math
 import g
 import os
 
+
 def readJsonFile(path):
     with open(path, 'r', encoding='utf-8') as f:
         data = json.loads(f.read())
@@ -16,7 +17,7 @@ def writeToJsonFile(jsonData, path):
 
 def getScatterPoints(idScatterData, idClassDict, ids=None):
     if ids == None:
-        ids = idScatterData.keys()
+        ids = idClassDict.keys()
     points = []
     for id in ids:
         x = idScatterData[id][0]
@@ -29,7 +30,7 @@ def getScatterPoints(idScatterData, idClassDict, ids=None):
 
 def getMapPoints(idLocationDict, idClassDict, ids=None):
     if ids == None:
-        ids = idLocationDict.keys()
+        ids = idClassDict.keys()
     points = []
     for id in ids:
         try:
@@ -51,7 +52,7 @@ def sortByWordFrequncy(wordDict):
 # texts:string[]
 def getWordCloud(idTextDict, idClassDict, topicCount, ids=None):
     if ids == None:
-        ids = idTextDict.keys()
+        ids = idClassDict.keys()
     wordCloudData = []
     allCloudData = {}
     for i in range(topicCount):
@@ -213,8 +214,16 @@ def saveAllSamplingData(originalEstimates, estimates, idLocationDict, idClassDic
     writeToJsonFile(samplingRiverData, path1 + 'samplingRiverData.json')
     writeToJsonFile(samplingRiverData, path2 + 'samplingRiverData.json')
 
-def getHeatData(idLocationDict):
+    samplingHeatData = getHeatData(idLocationDict, idClassDict,samplingIDs)
+
+    writeToJsonFile(samplingHeatData, path1 + 'samplingHeatData.json')
+    writeToJsonFile(samplingHeatData, path2 + 'samplingHeatData.json')
+
+
+def getHeatData(idLocationDict, idClassDict, ids=None):
+    if ids == None:
+        ids = idClassDict.keys()
     heat = []
-    for id in idLocationDict:
+    for id in ids:
         heat.append([idLocationDict[id][0], idLocationDict[id][1], 1])
     return heat

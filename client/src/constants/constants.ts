@@ -63,6 +63,7 @@ export namespace color {
 
 export namespace url {
   export const mapPointsURL = "./mapPoints.json";
+  export const samplingMapPointsURL = "./samplingMapPoints.json";
   export const ldbrPointsURL = "./samplingMapPoints.json";
   export const riverDataURL = "./riverData.json";
   export const samplingRiverDataURL = "./samplingRiverData.json";
@@ -73,6 +74,8 @@ export namespace url {
   export const samplingCloudDataURL = "./samplingCloudData.json";
   export const barDataURL = "./barData.json";
   export const hexURL = "./hex.json";
+  export const heatURL = "./heatData.json";
+  export const samplingHeatURL = "./samplingHeatData.json";
 }
 
 export const scatterRadius = 1.5;

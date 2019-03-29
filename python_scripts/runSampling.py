@@ -61,7 +61,7 @@ if __name__ == '__main__':
     idTimeDict = readJsonFile(g.dataPath + 'idTimeDict.json')
     idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
 
-    heatData = getHeatData(idLocationDict)
+    heatData = getHeatData(idLocationDict, idClassDict)
     writeToJsonFile(heatData, g.dataPath + 'heatData.json')
     writeToJsonFile(heatData, '../client/public/heatData.json')
 
@@ -176,6 +176,7 @@ if __name__ == '__main__':
                             idTextDict,
                             riverIDTimeDict, samplingIDs, path1, path2)
         if ratio > 0.9:
+            print('final space ratio:' + str(ratio))
             kl3 = getKL(samplingPoints, copy.deepcopy(points))
             with open(g.dataPath + 'kl.json', 'w', encoding='utf-8') as f:
                 f.write(json.dumps({"spaceAndTime": kl1, "random": kl2, "onlySpace": kl3}))

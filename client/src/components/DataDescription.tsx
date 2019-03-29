@@ -2,20 +2,27 @@ import * as React from "react";
 import { useState } from "react";
 import Heading from "../components/Heading";
 import { connect } from "react-redux";
+import { SAMPLING_CONDITION } from "src/actions/setUIState";
+import { getURLBySamplingCondition } from "src/shared/fetch";
 interface Props {
   count: number | undefined;
   samplingFlag: boolean;
+  samplingCondition: SAMPLING_CONDITION;
 }
 const mapState = (state: any) => {
   const { scatterData } = state.dataTree;
-  const { samplingFlag } = state.uiState;
+  const { samplingFlag, samplingCondition } = state.uiState;
   if (!scatterData) return {};
-  return { count: scatterData ? scatterData.length : undefined, samplingFlag };
+  return {
+    count: scatterData ? scatterData.length : undefined,
+    samplingFlag,
+    samplingCondition
+  };
 };
 const mapDispatch = {};
 
 function DataDescription(props: Props) {
-  const { count, samplingFlag } = props;
+  const { count, samplingFlag, samplingCondition } = props;
   const [allTweetsCount, setAllTweetsCount] = useState<undefined | number>(
     undefined
   );
@@ -23,6 +30,17 @@ function DataDescription(props: Props) {
     undefined | number
   >(undefined);
 
+  React.useEffect(() => {
+    const pointsURL = getURLBySamplingCondition(
+      "./samplingMapPoints.json",
+      samplingCondition
+    );
+    fetch(pointsURL)
+      .then(res => res.json())
+      .then(data => {
+        setSamplingTweetsCount(data.length);
+      });
+  });
   React.useEffect(() => {
     if (!count) return;
     if (samplingFlag === false && count !== allTweetsCount) {
