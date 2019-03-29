@@ -77,9 +77,9 @@ function MapControl(props: Props) {
   function handleHeatMapClick() {
     setIfShowHeatMap(!ifShowHeatMap);
   }
-  
+
   function slideToSetDay(day: number) {
-    
+    setWheelDay(day);
   }
 
   const pointsText = ifShowMapPoints ? "Hide Points" : "Show Points";

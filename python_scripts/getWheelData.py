@@ -6,6 +6,7 @@ import math
 import time
 import os
 
+
 def getStartEndMinuteForOneDay(day):
     startTime = time.strptime('2016-11-{0} 00:00:00'.format(day + 1), '%Y-%m-%d %H:%M:%S')
     startMinute = int(math.floor(math.floor(time.mktime(startTime) / 60)))
@@ -47,29 +48,31 @@ def getTimeNumberDictForOneClassOneDay(classIDs, idTimeDict, minValue, timeInter
         else:
             avg = sum / (slice[1] - slice[0])
             for t in range(slice[0], slice[1]):
-                if t in timeNumberDict:
-                    timeNumberDict[t] = avg
+                timeNumberDict[t] = avg
     return timeNumberDict
 
 
-if __name__ == '__main__':
-    idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
-    idTimeDict = readJsonFile(g.dataPath + 'idTimeDict.json')
+def getWheelData(idClassDict, idTimeDict, ids=None):
+    if ids == None:
+        ids = idClassDict.keys()
     allClassIDs = []
     try:
         os.mkdir('../client/public/wheelData/')
-    except Exception as e :
+    except Exception as e:
         print(e)
     for i in range(g.topicNumber):
         allClassIDs.append([])
-    for id in idClassDict:
+    for id in ids:
         allClassIDs[idClassDict[id]].append(id)
 
+    metas = []
+    wheelDatas = []
     for day in range(g.startDay, g.startDay + g.dataDays):
         minTime, maxTime = getStartEndMinuteForOneDay(day)
         wheelData = []
         for classIDs in allClassIDs:
-            timeNumberDict = getTimeNumberDictForOneClassOneDay(classIDs, idTimeDict, 30, 30, day)
+            timeNumberDict = getTimeNumberDictForOneClassOneDay(classIDs, idTimeDict, minValue=10, timeInterval=30,
+                                                                day=day)
             wheelData.append(timeNumberDict)
         maxValue = -1
         for timeNumberDict in wheelData:
@@ -78,5 +81,16 @@ if __name__ == '__main__':
                     maxValue = timeNumberDict[t]
         meta = {'minTime': minTime, 'maxTime': maxTime, 'maxValue': maxValue}
 
-        writeToJsonFile(wheelData, '../client/public/wheelData/{0}.json'.format(day))
-        writeToJsonFile(meta, '../client/public/wheelData/{0}-meta.json'.format(day))
+        metas.append(meta)
+        wheelDatas.append(wheelData)
+    return [metas, wheelDatas]
+
+
+if __name__ == '__main__':
+    idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
+    idTimeDict = readJsonFile(g.dataPath + 'idTimeDict.json')
+    metas, wheelDatas = getWheelData(idClassDict, idTimeDict)
+    index = 0
+    for i in range(len(wheelDatas)):
+        writeToJsonFile(wheelDatas[i], '../client/public/wheelData/{0}.json'.format(g.startDay + i))
+        writeToJsonFile(metas[i], '../client/public/wheelData/{0}-meta.json'.format(g.startDay + i))

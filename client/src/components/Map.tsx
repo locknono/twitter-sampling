@@ -254,7 +254,7 @@ function Map(props: Props) {
   //add all points to map
   React.useEffect(() => {
     if (!mapPoints || !map) return;
-    console.log("mapPoints: ", mapPoints);
+
     const allPoints: MapPoint[] = [];
 
     const pointsSet = new Set();
@@ -430,6 +430,7 @@ function Map(props: Props) {
         const res1 = await fetch1;
         const res2 = await fetch2;
         const data: WheelData = await res1.json();
+
         const meta = await res2.json();
         const { minTime, maxTime, maxValue } = meta;
 
@@ -493,7 +494,7 @@ function Map(props: Props) {
     if (!svgLayer || !wheelRadius || !wheelCenter) return;
     const radius = wheelRadius;
     const center = wheelCenter;
-    console.log("wheelDay: ", wheelDay);
+    console.log(wheelDay);
     (async function drawWheel() {
       const fetch1 = fetch(`./wheelData/${wheelDay}.json`);
       const fetch2 = fetch(`./wheelData/${wheelDay}-meta.json`);

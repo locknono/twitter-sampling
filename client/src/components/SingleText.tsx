@@ -40,7 +40,7 @@ export default function SingleText(props: Props) {
         }}
       >
         <img
-          src={`./imgs/${index}.jpg`}
+          src={`./imgs/0 (${index + 1}).jpg`}
           style={{ width: 50, height: 50, margin: "auto", borderRadius: "50%" }}
         />
       </div>

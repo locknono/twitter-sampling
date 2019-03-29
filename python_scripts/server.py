@@ -183,5 +183,16 @@ def selectIDsOnMap():
     return res
 
 
+@app.route("/getWheelDataByIDs", methods=['GET', 'POST'])
+def getWheelDataByIDs():
+    returnData = {}
+    ids = json.loads(request.data)
+    res = Response(json.dumps(ids))
+
+    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
+    return res
+
+
 if __name__ == '__main__':
     app.run(port=8000)

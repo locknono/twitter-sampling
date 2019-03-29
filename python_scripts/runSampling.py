@@ -71,12 +71,7 @@ if __name__ == '__main__':
     points = getLdbrPoints(idLocationDict, idScatterData, idTimeDict, idClassDict)
 
     # blue noise
-    """
-    blueNoisePoints = []
-    for id in idLocationDict:
-        blueNoisePoints.append({"lat": idLocationDict[id][0], "lng": idLocationDict[id][1], "id": id})
-    sampledBlueNoisePoints = blueNoise(blueNoisePoints, spaceR)
-    """
+
     kde = getKDE(points)
     timeKDE = getTimeKDE(points)
     for index, p in enumerate(points):
@@ -181,3 +176,38 @@ if __name__ == '__main__':
             with open(g.dataPath + 'kl.json', 'w', encoding='utf-8') as f:
                 f.write(json.dumps({"spaceAndTime": kl1, "random": kl2, "onlySpace": kl3}))
             break
+    # blue noise
+
+    maxBlueRatio = 1
+    blueRatio = 1
+    while (blueRatio > maxRatio - 0.1):
+        print('start blue noise')
+        spaceR = spaceR * 2
+        blueNoisePoints = []
+        for id in idLocationDict:
+            if id not in idClassDict:
+                continue
+            blueNoisePoints.append({"lat": idLocationDict[id][0], "lng": idLocationDict[id][1], "id": id})
+        sampledBlueNoisePoints = blueNoise(blueNoisePoints, spaceR)
+
+        bluePoints = []
+        idSet = set()
+        for p1 in sampledBlueNoisePoints:
+            idSet.add(p1['id'])
+        for p2 in copy.deepcopy(points):
+            if p2.id in idSet:
+                bluePoints.append(p2)
+        blueIDs = [p.id for p in bluePoints]
+
+        blueEstimates = getOriginalEstimates(bluePoints)
+        blueRelation = getRalationshipList(blueEstimates)
+        blueRatio = compareRelationshipList(r2, blueRelation)
+        print(len(bluePoints))
+        print('blue ratio:' + str(blueRatio))
+        if blueRatio < maxBlueRatio:
+            maxBlueRatio = blueRatio
+            path1 = '../client/public/blue/'
+            path2 = g.dataPath + 'blue/'
+            saveAllSamplingData(originalEstimates, blueEstimates, idLocationDict, idClassDict, idScatterData,
+                                idTextDict,
+                                riverIDTimeDict, blueIDs, path1, path2)

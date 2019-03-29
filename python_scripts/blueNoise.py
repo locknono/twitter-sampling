@@ -127,7 +127,7 @@ def ifAllPointsInDisk(points, samplePoints):
 
 
 # if `points` list is lat-lng ordered,shuffle first.
-def getRandomPoint(points, samplePoints, kde):
+def getRandomPoint(points, samplePoints, kde, r):
     if (len(samplePoints) == 0):
         return points[random.randint(0, len(points) - 1)]
     for p in points:
@@ -171,7 +171,7 @@ def blueNoise(originalPoints, r):
         p['status'] = None
         p['coverByDisk'] = False
 
-    initialActivePoint = getRandomPoint(points, samplePoints, kde)
+    initialActivePoint = getRandomPoint(points, samplePoints, kde,r)
     initialActivePoint['status'] = 1
     initialActivePoint['coverByDisk'] = True
     samplePoints.append(initialActivePoint)
@@ -179,7 +179,7 @@ def blueNoise(originalPoints, r):
 
     while (len(activePoints) > 0 or ifAllPointsInDisk(points, samplePoints) == False):
         if len(activePoints) == 0:
-            initialActivePoint = getRandomPoint(points, samplePoints, kde)
+            initialActivePoint = getRandomPoint(points, samplePoints, kde,r)
             if initialActivePoint == None:
                 break
             initialActivePoint['status'] = 1
@@ -217,7 +217,6 @@ def blueNoise(originalPoints, r):
         else:
             randomActivePoint['status'] = 0
             activePoints.remove(randomActivePoint)
-    print(ifAllPointsInDisk(points, samplePoints))
     setSamplePointsToOutputFormat(points, samplePoints)
 
     for p in samplePoints:
@@ -240,30 +239,11 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
     maxCount = 0
     maxR = 0
-    # for r in range(30000, 0, -10000):
-    for r in [100000, 25000, 6000, 1250, 300]:
-        r = 100
-        t1 = time.time()
-        points = []
 
-        idLocationDict = readJsonFile(g.dataPath + 'finalIDLocation.json')
-        for id in idLocationDict:
-            points.append({"lat": idLocationDict[id][0], "lng": idLocationDict[id][1], "id": id})
-        samplePoints = blueNoise(points, r)
-        try:
-            os.mkdir(g.dataPath + 'blueNoise/')
-        except Exception as e:
-            print(e)
-        recentBlueNoiseFilePath = g.dataPath + 'blueNoise/samplePoints-{0}-{1}-{2}.json'.format(r, len(samplePoints),
-                                                                                                len(samplePoints) / len(
-                                                                                                    points))
-        with open(recentBlueNoiseFilePath, 'w',
-                  encoding='utf-8') as f:
-            logging.info(str(r) + ' is ok,' + str((time.time() - t1) / 60))
-            logging.info('-------------------')
-            f.write(json.dumps(samplePoints))
-            if (len(samplePoints) > maxCount):
-                maxCount = len(samplePoints)
-                maxR = r
-                with open('../client/public/blueNoisePoints.json', 'w', encoding='utf-8') as f2:
-                    f2.write(json.dumps(samplePoints))
+    idLocationDict = readJsonFile(g.dataPath + 'finalIDLocation.json')
+    idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
+    points = []
+    for id in idClassDict:
+        p = {"id": id, "lat": idLocationDict[id][0], "lng": idLocationDict[id][1], }
+        points.append(p)
+    samplePoints = blueNoise(points, 300)

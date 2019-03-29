@@ -37,7 +37,7 @@ const initialState: UIState = {
   ifShowMapPoints: false,
   selectedMapIDs: [],
   samplingCondition: SAMPLING_CONDITION.spaceAndTime,
-  wheelDay: 11,
+  wheelDay: 12,
   ifShowHeatMap: false
 };
 

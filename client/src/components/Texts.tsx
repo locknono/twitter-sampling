@@ -91,6 +91,11 @@ function Texts(props: Props) {
     })();
   }, [selectedIDs]);
 
+  const imgIndices = [];
+  for (let i = 0; i < 50; i++) {
+    imgIndices.push(i);
+  }
+  const shuffledIndices = shuffle(imgIndices);
   let renderTexts;
   if (ifFetchSuccess === false) {
     renderTexts = <div>!!!START SERVER!!!</div>;
@@ -101,7 +106,7 @@ function Texts(props: Props) {
         <SingleText
           key={v4()}
           text={e.text}
-          index={i}
+          index={shuffledIndices[i]}
           id={e.id}
           time={e.time}
         />
@@ -121,3 +126,12 @@ export default connect(
   mapState,
   mapDispatch
 )(Texts);
+
+function shuffle(input: number[]) {
+  for (var i = input.length - 1; i >= 0; i--) {
+    const randomIndex = Math.floor(Math.random() * (i + 1));
+    const itemAtIndex = input[randomIndex];
+    input[randomIndex] = input[i];
+    input[i] = itemAtIndex;
+  }
+}
