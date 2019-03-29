@@ -55,6 +55,13 @@ function ControlPanel(props: Props) {
   const [originalSelectedIDs, setOriginalSelectedIDs] = React.useState<
     string[]
   >([]);
+
+  const [ifRandomChecked, setIfRandomChecked] = React.useState(false);
+  const [ifBlueChecked, setIfBlueChecked] = React.useState(false);
+  const [ifRapidChecked, setIfRapidChecked] = React.useState(false);
+  const [ifSpaceChecked, setIfSpaceChecked] = React.useState(false);
+  const [ifTimeChecked, setIfTimeChecked] = React.useState(false);
+
   function handleSystemNameClick(name: "twitter" | "yelp") {
     setCurSystem(name);
   }
@@ -86,19 +93,69 @@ function ControlPanel(props: Props) {
     }
   }
 
+  function closeOurMethod() {
+    setIfRapidChecked(false);
+    setIfSpaceChecked(false);
+    setIfTimeChecked(false);
+  }
+  function closeCompareMethod() {
+    setIfRandomChecked(false);
+    setIfBlueChecked(false);
+  }
   function handleCheck(e: React.SyntheticEvent) {
     const id = (e.target as any).id;
-
     if (id === "random") {
-      setUnPatchedSamplingCondition(SAMPLING_CONDITION.random);
+      setIfRandomChecked(!ifRandomChecked);
+      setIfBlueChecked(false);
+      closeOurMethod();
     } else if (id === "bl") {
-      setUnPatchedSamplingCondition(SAMPLING_CONDITION.blue);
+      setIfBlueChecked(!ifBlueChecked);
+      setIfRandomChecked(false);
+      closeOurMethod();
     } else if (id === "spatial") {
-      setUnPatchedSamplingCondition(SAMPLING_CONDITION.space);
+      closeCompareMethod();
+      setIfSpaceChecked(!ifSpaceChecked);
+      setIfRapidChecked(true);
     } else if (id === "temporal") {
-      setUnPatchedSamplingCondition(SAMPLING_CONDITION.spaceAndTime);
+      closeCompareMethod();
+      if (ifTimeChecked === false) {
+        setIfSpaceChecked(true);
+      }
+      setIfTimeChecked(!ifTimeChecked);
+      setIfRapidChecked(true);
+    } else if (id === "rp") {
+      if (ifRapidChecked === false) {
+        setIfSpaceChecked(true);
+        setIfTimeChecked(true);
+        closeCompareMethod();
+      } else {
+        setIfSpaceChecked(false);
+        setIfTimeChecked(false);
+      }
+      setIfRapidChecked(!ifRapidChecked);
     }
   }
+
+  React.useEffect(() => {
+    if (ifRandomChecked) {
+      setUnPatchedSamplingCondition(SAMPLING_CONDITION.random);
+    } else if (ifBlueChecked) {
+      setUnPatchedSamplingCondition(SAMPLING_CONDITION.blue);
+    } else if (ifSpaceChecked && !ifTimeChecked) {
+      setUnPatchedSamplingCondition(SAMPLING_CONDITION.space);
+    } else if (ifSpaceChecked && ifTimeChecked) {
+      setUnPatchedSamplingCondition(SAMPLING_CONDITION.spaceAndTime);
+    } else if (!ifSpaceChecked && ifTimeChecked) {
+      setUnPatchedSamplingCondition(SAMPLING_CONDITION.spaceAndTime);
+    }
+  }, [
+    ifRandomChecked,
+    ifBlueChecked,
+    ifSpaceChecked,
+    ifTimeChecked,
+    ifRapidChecked
+  ]);
+
   return (
     <div className="panel panel-default control-panel-div">
       <Heading title="Control Panel" />
@@ -123,18 +180,39 @@ function ControlPanel(props: Props) {
           style={{ position: "relative", top: 10 }}
         >
           <span>Methods:</span>
-          <Checkbox id="random" text="random" clickFunc={handleCheck} />
+          <Checkbox
+            id="random"
+            text="random"
+            clickFunc={handleCheck}
+            ifChecked={ifRandomChecked}
+          />
           <Checkbox
             id="bl"
             text="blue noise sampling"
             clickFunc={handleCheck}
+            ifChecked={ifBlueChecked}
           />
         </div>
 
         <div className="checkbox-div method-div">
-          <Checkbox id="rp" text="rapid sampling" clickFunc={handleCheck} />
-          <Checkbox id="spatial" text="spatial" clickFunc={handleCheck} />
-          <Checkbox id="temporal" text="temporal" clickFunc={handleCheck} />
+          <Checkbox
+            id="rp"
+            text="rapid sampling"
+            clickFunc={handleCheck}
+            ifChecked={ifRapidChecked}
+          />
+          <Checkbox
+            id="spatial"
+            text="spatial"
+            clickFunc={handleCheck}
+            ifChecked={ifSpaceChecked}
+          />
+          <Checkbox
+            id="temporal"
+            text="temporal"
+            clickFunc={handleCheck}
+            ifChecked={ifTimeChecked}
+          />
         </div>
 
         <SliderWithLabel

@@ -353,11 +353,9 @@ function Map(props: Props) {
     if (!map) return;
     const baseURL = samplingFlag ? url.samplingHeatURL : url.heatURL;
     const newURL = getURLBySamplingCondition(baseURL, samplingCondition);
-    console.log("newURL: ", newURL);
     fetch(newURL)
       .then(res => res.json())
       .then(data => {
-        console.log("data: ", data);
         if (heatLayerGroup) {
           map.removeLayer(heatLayerGroup);
         }
