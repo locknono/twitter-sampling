@@ -197,7 +197,6 @@ function Map(props: Props) {
   //draw selected ids
   React.useEffect(() => {
     if (!map || !mapPoints) return;
-    if (!ifShowMapPoints) return;
     (async function drawSelectedIDs() {
       const res = await fetch(pythonServerURL + "getCoorsByIDs", {
         method: "POST",
@@ -218,7 +217,10 @@ function Map(props: Props) {
       if (lastSelectedLayer) {
         map.removeLayer(lastSelectedLayer);
       }
-      const layerGroup = L.layerGroup(layers).addTo(map);
+      const layerGroup = L.layerGroup(layers);
+      if (ifShowMapPoints) {
+        layerGroup.addTo(map);
+      }
       setLastSelectedLayer(layerGroup);
     })();
   }, [selectedIDs]);

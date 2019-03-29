@@ -160,6 +160,7 @@ if __name__ == '__main__':
         r4 = getRalationshipList(spaceEstimates)
         ratio = compareRelationshipList(r2, r4)
         if ratio < maxRatio:
+            print(ratio)
             base -= 0.003
             continue
 

@@ -7,7 +7,7 @@ export const colorScale = d3.scaleOrdinal(d3.schemeSet1);
 export const mapCircleRadius = 3;
 export namespace padding {
   export const barChartPadding = 0.1;
-  export const scatterPadding = 0.08;
+  export const scatterPadding = 0.05;
 }
 
 export namespace color {

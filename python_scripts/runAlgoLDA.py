@@ -27,11 +27,13 @@ if __name__ == '__main__':
     idVectorDict = runLDA(texts, ids)
     writeToJsonFile(idVectorDict, g.dataPath + 'idVectorDict.json')
 
+    idClassDict = getIDClassDict(idVectorDict)
+    writeToJsonFile(idClassDict, g.dataPath + 'idClassDict.json')
+
     idScatterData = runTsne(idVectorDict)
     writeToJsonFile(idScatterData, g.dataPath + 'idScatterData.json')
 
-    idClassDict = getIDClassDict(idVectorDict)
-    writeToJsonFile(idClassDict, g.dataPath + 'idClassDict.json')
+
 
     """
     idClassDict = runKmeans(idScatterData,g.topicNumber)

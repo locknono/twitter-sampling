@@ -30,6 +30,8 @@ interface fetchedBarData {
   iter?: number[];
 }
 
+let initialScale: any;
+
 const mapStateToProps = (state: any, ownProps: any) => {
   const { originalBarData, samplingBarData } = state.dataTree;
 
@@ -104,10 +106,12 @@ function GroupBar(props: Props) {
       .range([xStart, xEnd])
       .paddingInner(0.2);
 
-    const yScale = d3
-      .scaleLinear()
-      .domain([0, 0.3])
-      .range([yEnd, yStart]);
+    if (!initialScale) {
+      initialScale = d3
+        .scaleLinear()
+        .domain([0, maxValue])
+        .range([yEnd, yStart]);
+    }
 
     for (let i = 0; i < original.length; i++) {
       borders.push(
@@ -115,9 +119,9 @@ function GroupBar(props: Props) {
           className="svg-border-rect"
           key={i}
           x={xScale(i.toString())}
-          y={yScale(maxValue)}
+          y={initialScale(maxValue)}
           width={xScale.bandwidth()}
-          height={yScale(0) - yScale(maxValue)}
+          height={initialScale(0) - initialScale(maxValue)}
           fill="rgb(223,223,223)"
           opacity={i === curTopic ? 0.7 : 0}
           rx={2}
@@ -132,9 +136,9 @@ function GroupBar(props: Props) {
           className="group-rect"
           key={v4()}
           x={xScale(i.toString())}
-          y={yScale(original[i])}
+          y={initialScale(original[i])}
           width={xScale.bandwidth() / 2}
-          height={yScale(0) - yScale(original[i])}
+          height={initialScale(0) - initialScale(original[i])}
           fill={color.originalBarColor}
           rx={2}
           ry={2}
@@ -148,9 +152,9 @@ function GroupBar(props: Props) {
           className="group-rect"
           key={v4()}
           x={(xScale(i.toString()) as number) + xScale.bandwidth() / 2}
-          y={yScale(sampling[i])}
+          y={initialScale(sampling[i])}
           width={xScale.bandwidth() / 2}
-          height={yScale(0) - yScale(sampling[i])}
+          height={initialScale(0) - initialScale(sampling[i])}
           fill={color.samplingColor}
           rx={2}
           ry={2}
@@ -178,7 +182,7 @@ function GroupBar(props: Props) {
       .attr("transform", `translate(${xStart},0)`)
       .call(
         d3
-          .axisLeft(yScale)
+          .axisLeft(initialScale)
           .ticks(5)
           .tickSizeOuter(0)
           .tickSize(3)

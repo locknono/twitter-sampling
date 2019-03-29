@@ -11,7 +11,8 @@ import {
   setSamplingCondition,
   SAMPLING_CONDITION,
   setIfShowMapPoints,
-  setIfShowHeatMap
+  setIfShowHeatMap,
+  setWheelDay
 } from "../actions/setUIState";
 import SliderWithLabel from "./SliderWithLabel";
 import "../css/awesome-bootstrap-checkbox.css";
@@ -29,6 +30,7 @@ interface Props {
   setIfShowMapPoints: typeof setIfShowMapPoints;
   ifShowHeatMap: boolean;
   setIfShowHeatMap: typeof setIfShowHeatMap;
+  setWheelDay: typeof setWheelDay;
 }
 const mapState = (state: any) => {
   const {
@@ -49,7 +51,8 @@ const mapDispatch = {
   setSamplingCondition,
   setSelectedIDs,
   setIfShowMapPoints,
-  setIfShowHeatMap
+  setIfShowHeatMap,
+  setWheelDay
 };
 
 function MapControl(props: Props) {
@@ -63,7 +66,8 @@ function MapControl(props: Props) {
     ifShowMapPoints,
     setIfShowMapPoints,
     ifShowHeatMap,
-    setIfShowHeatMap
+    setIfShowHeatMap,
+    setWheelDay
   } = props;
 
   function handlePointsClick() {
@@ -73,19 +77,26 @@ function MapControl(props: Props) {
   function handleHeatMapClick() {
     setIfShowHeatMap(!ifShowHeatMap);
   }
+  
+  function slideToSetDay(day: number) {
+    
+  }
+
+  const pointsText = ifShowMapPoints ? "Hide Points" : "Show Points";
+  const heatText = ifShowHeatMap ? "Hide Heatmap" : "Show Heatmap";
   return (
     <div className="panel panel-default map-control">
       <button
         className="btn btn-default btn-sm white-button"
         onClick={handlePointsClick}
       >
-        show points
+        {pointsText}
       </button>
       <button
         className="btn btn-default btn-sm white-button"
         onClick={handleHeatMapClick}
       >
-        show heatmap
+        {heatText}
       </button>
       <SliderWithLabel
         name="select date"
@@ -94,6 +105,7 @@ function MapControl(props: Props) {
         defaultValue={12}
         color="blue"
         step={1}
+        sliderMethod={slideToSetDay}
       />
     </div>
   );

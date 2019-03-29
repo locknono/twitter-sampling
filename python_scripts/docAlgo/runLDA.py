@@ -11,7 +11,7 @@ import os
 import time
 import json
 
-
+from shared.lda_op import findMaxIndexAndValueForOneDoc
 
 # texts:string[]
 # stopWords:string[]
@@ -69,5 +69,8 @@ def runLDA(texts, ids):
         ldaList = json.loads(str(item).replace('(', '[').replace(')', ']'))
         for item in ldaList:
             vectorList[item[0]] = item[1]
+        maxIndex,maxV=findMaxIndexAndValueForOneDoc(vectorList)
+        if maxV<0.5:
+            continue
         idVectorDict[id] = vectorList
     return idVectorDict

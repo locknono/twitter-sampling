@@ -11,6 +11,7 @@ interface Props {
   defaultValue?: number;
   changeOneWeight?: any;
   index?: number;
+  sliderMethod?: any;
 }
 interface State {
   value: number;
@@ -28,13 +29,13 @@ class SliderWithLabel extends React.Component<Props, State> {
   }
 
   handleSlide(e: number) {
-    const { changeOneWeight, index } = this.props;
+    const { sliderMethod } = this.props;
+    sliderMethod(e);
     this.setState({ value: e });
-    if (changeOneWeight && index !== undefined) {
-      changeOneWeight(index, e);
-    }
   }
   handleChange(e: number) {
+    const { sliderMethod } = this.props;
+    sliderMethod(e);
     this.setState({ value: e });
   }
   render() {
