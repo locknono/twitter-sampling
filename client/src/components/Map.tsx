@@ -445,8 +445,6 @@ function Map(props: Props) {
         setWheelCenter(curWheelCenter);
         svgLayer.selectAll("path").remove();
 
-        const line = getLineGenerator();
-
         for (let i = 0; i < data.length; i++) {
           const layerArc = {
             innerRadius: radius + wheelLayerHeight * i,
@@ -457,6 +455,7 @@ function Map(props: Props) {
           svgLayer
             .append("path")
             .attr("d", arc(layerArc))
+            .attr("opacity", 0.3)
             .attr("stroke", color.nineColors[i])
             .attr("stroke-width", "0.1psx")
             .attr("fill", "none")
@@ -471,14 +470,15 @@ function Map(props: Props) {
           radius,
           wheelLayerHeight
         );
-        console.log("arcDatas: ", arcDatas);
+
         for (let arcData of arcDatas) {
           svgLayer
             .append("path")
             .attr("class", "wheel-path")
             .attr("d", arc(arcData))
-            .attr("stroke-width", "0.1psx")
+            .attr("stroke-width", "0.5psx")
             .attr("fill", arcData.color)
+            .attr("stroke", arcData.color)
             .attr("fill-opacity", arcData.opacity)
             .attr(
               "transform",
@@ -494,7 +494,7 @@ function Map(props: Props) {
     if (!svgLayer || !wheelRadius || !wheelCenter) return;
     const radius = wheelRadius;
     const center = wheelCenter;
-    console.log(wheelDay);
+
     (async function drawWheel() {
       const fetch1 = fetch(`./wheelData/${wheelDay}.json`);
       const fetch2 = fetch(`./wheelData/${wheelDay}-meta.json`);
@@ -518,13 +518,9 @@ function Map(props: Props) {
       svgLayer
         .selectAll(".wheel-path")
         .data(arcDatas)
-        .attr("stroke", function(d: any) {
-          return d.color;
-        })
-        .attr("stroke-width", "0.1psx")
-        .attr("fill", function(d: any) {
-          return d.color;
-        })
+        .attr("stroke", (d: any) => d.color)
+        .attr("fill", (d: any) => d.color)
+        .attr("stroke-width", "0.5psx")
         .attr("transform", `translate(${wheelCenter[0]},${wheelCenter[1]})`)
         .transition(t)
         .attr("d", function(d: any) {

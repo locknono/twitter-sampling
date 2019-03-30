@@ -118,7 +118,11 @@ if __name__ == '__main__':
 
     # random
     minRandomRatio = 1
+    randomTime=0
     while minRandomRatio > maxRatio - 0.1:
+        randomTime+=1
+        if randomTime>50:
+            break
         randomPoints, randomIDs = getRandomPointsAndIDs(copy.deepcopy(points), len(samplingIDs))
         randomEstimates = getOriginalEstimates(randomPoints, g.topicNumber)
         r3 = getRalationshipList(randomEstimates)

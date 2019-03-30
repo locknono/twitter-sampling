@@ -15,3 +15,6 @@ public/
 
 #vscode settings
 .vscode/
+
+#build
+build/

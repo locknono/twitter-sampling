@@ -17,16 +17,16 @@ class App extends React.Component {
   public render() {
     return (
       <div className="App">
-        <div className="left-side panel panel-default">
+        <div className="left-side">
           <DataDescription />
           <ControlPanel />
           <GroupBar />
           <Matrix />
         </div>
-        <div className="whole-right">
-          <div className="above-div panel panel-default">
+        <div className="whole-right ">
+          <div className="above-div ">
             <Map />
-            <div className="right-side panel panel-default">
+            <div className="right-side">
               <WordCloud />
               <Texts />
             </div>

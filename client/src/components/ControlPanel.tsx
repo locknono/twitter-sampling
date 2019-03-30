@@ -197,7 +197,7 @@ function ControlPanel(props: Props) {
         <div className="checkbox-div method-div">
           <Checkbox
             id="rp"
-            text="rapid sampling"
+            text="semantics"
             clickFunc={handleCheck}
             ifChecked={ifRapidChecked}
           />
@@ -225,7 +225,7 @@ function ControlPanel(props: Props) {
         />
 
         <SliderWithLabel
-          name="disk radius"
+          name="Disk radius"
           min={0}
           max={1}
           color="blue"

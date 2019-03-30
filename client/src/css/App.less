@@ -10,9 +10,9 @@
 
 @height: 700px;
 
-@dataHeight: @mapHeight / 5;
+@dataHeight: @mapHeight / 4;
 
-@controlPanelHeight: @mapHeight / 2;
+@controlPanelHeight: @mapHeight / 2- (@mapHeight / 4 - @mapHeight / 5);
 
 @wordCloudHeight: @rightSideWidth - @headingHeight - 10px;
 
@@ -172,6 +172,7 @@
   flex-direction: column;
   height: @matrixDivHeight;
   width: @matrixDivHeight;
+  margin-bottom: 0;
 }
 .scatter-canvas-div {
   flex: 1 1 auto;
@@ -228,7 +229,7 @@
   width: @middileWidth;
   height: @height - @mapHeight;
   position: absolute;
-  bottom: 16px;
+  bottom: 17px;
   display: flex;
 }
 
@@ -242,9 +243,7 @@
 #texts-div {
   width: 100%;
   height: @height - @wordCloudHeight;
-  border-bottom: none;
   border-left: none;
-  border-right: none;
 }
 
 .data-description-content-div {
@@ -331,4 +330,10 @@
 
 .checkbox-label {
   padding-left: 0;
+}
+
+.bottom-right-div {
+  height: @matrixDivHeight;
+  display: flex;
+  flex-direction: column;
 }

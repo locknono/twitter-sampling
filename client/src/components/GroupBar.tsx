@@ -58,7 +58,7 @@ function GroupBar(props: Props) {
     curTopic,
     samplingCondition
   } = props;
-  console.log("original: ", original);
+  
   const [width, height] = useWidthAndHeight("groupbar-svg");
 
   let bars: JSX.Element[] = [];

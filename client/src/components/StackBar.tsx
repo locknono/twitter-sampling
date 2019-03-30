@@ -68,8 +68,7 @@ function StackBar(props: Props) {
 
   React.useEffect(() => {
     if (!samplingRiverData || !riverData) return;
-    console.log("riverData: ", riverData);
-    console.log("samplingRiverData: ", samplingRiverData);
+
     const diffRiverData: [string, number, string][] = [];
     for (let i = 0; i < riverData.length; i++) {
       const date = riverData[i][0];

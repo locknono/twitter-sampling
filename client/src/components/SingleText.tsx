@@ -29,20 +29,48 @@ export default function SingleText(props: Props) {
 
   return (
     <div
-      style={{ display: "flex", borderBottom: "solid 1px rgb(222,222,222)" }}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        borderBottom: "solid 1px rgb(222,222,222)"
+      }}
     >
-      <div
-        style={{
-          width: 50,
-          flex: "1 0 auto",
-          display: "flex",
-          alignItems: "center"
-        }}
-      >
-        <img
-          src={`./imgs/0 (${index + 1}).jpg`}
-          style={{ width: 50, height: 50, margin: "auto", borderRadius: "50%" }}
-        />
+      <div style={{ display: "flex" }}>
+        <div
+          style={{
+            flex: "0 1 auto",
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          <img
+            src={`./imgs/0 (${index + 1}).jpg`}
+            style={{
+              width: 50,
+              height: 50,
+              margin: "auto",
+              borderRadius: "50%"
+            }}
+          />
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            flex: "1 0 auto",
+            flexDirection: "column",
+            justifyContent: "space-around"
+          }}
+        >
+          <div
+            style={{
+              fontWeight: "bold"
+            }}
+          >
+            {id}
+          </div>
+          <div>{time}</div>
+        </div>
       </div>
 
       <div
@@ -52,16 +80,7 @@ export default function SingleText(props: Props) {
           alignItems: "start"
         }}
       >
-        <div
-          style={{
-            borderBottom: "solid 1px rgb(222,222,222)",
-            fontWeight: "bold"
-          }}
-        >
-          {id}
-        </div>
-        <div style={{ borderBottom: "solid 1px rgb(222,222,222)" }}>{time}</div>
-        <div style={{ borderBottom: "solid 1px rgb(222,222,222)" }}>{text}</div>
+        <div>{text}</div>
       </div>
     </div>
   );

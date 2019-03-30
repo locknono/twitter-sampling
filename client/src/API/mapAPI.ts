@@ -2,6 +2,15 @@ import * as L from "leaflet";
 import { color } from "src/constants/constants";
 import * as d3 from "d3";
 
+interface ArcData {
+  color: string;
+  opacity: number | null;
+  startAngle: number;
+  endAngle?: number;
+  innterRadius: number;
+  outerRadius: number;
+}
+
 export async function fetchAndAddGroupLayer(
   fileName: string,
   layerName: string,
@@ -26,7 +35,6 @@ export function getArcDatasByWheelData(
   radius: number,
   layerHeight: number
 ) {
-  console.log("data: ", data);
   const { minTime, maxTime, maxValue } = meta;
   const sliceCount = maxTime - minTime;
   const scale = d3
@@ -55,7 +63,8 @@ export function getArcDatasByWheelData(
           arcData.startAngle = angle;
         }
         if (!arcData.opacity) {
-          arcData.opacity = opScale(value);
+          //arcData.opacity = opScale(value);
+          arcData.opacity = 1;
         }
         arcData.endAngle = angle;
       } else {
@@ -68,3 +77,5 @@ export function getArcDatasByWheelData(
   }
   return arcDatas;
 }
+
+export function addArcsToMap(arcDatas: ArcData) {}

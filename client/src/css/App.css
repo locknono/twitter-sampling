@@ -21,8 +21,8 @@
   width: 280px;
 }
 .data-description-div {
-  height: 88px;
-  max-height: 88px;
+  height: 110px;
+  max-height: 110px;
   width: 280px;
   flex: 0 1 auto;
   display: flex;
@@ -35,7 +35,7 @@
   display: flex;
   flex-direction: column;
   width: 280px;
-  height: 220px;
+  height: 198px;
   padding-bottom: 0;
   margin-bottom: 0;
   margin-right: 0;
@@ -143,6 +143,7 @@
   flex-direction: column;
   height: 258px;
   width: 258px;
+  margin-bottom: 0;
 }
 .scatter-canvas-div {
   flex: 1 1 auto;
@@ -190,7 +191,7 @@
   width: 800px;
   height: 260px;
   position: absolute;
-  bottom: 16px;
+  bottom: 17px;
   display: flex;
 }
 .groupbar-div {
@@ -202,9 +203,7 @@
 #texts-div {
   width: 100%;
   height: 392px;
-  border-bottom: none;
   border-left: none;
-  border-right: none;
 }
 .data-description-content-div {
   display: flex;
@@ -212,13 +211,16 @@
   flex: auto;
   padding: 5px 15px;
   text-align: left;
+  justify-content: space-around;
   /*  display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: flex-start; */
 }
-.data-description-content-div p {
+
+.data-description-content-div > p {
   margin-bottom: 0;
+  /* line-height: 0.1; */
 }
 .heading-button {
   padding: 0;
@@ -278,4 +280,9 @@
 }
 .checkbox-label {
   padding-left: 0;
+}
+.bottom-right-div {
+  height: 258px;
+  display: flex;
+  flex-direction: column;
 }

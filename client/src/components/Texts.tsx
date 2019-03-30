@@ -67,9 +67,11 @@ function Texts(props: Props) {
           cache: "no-cache"
         });
         const ok = res.ok;
-        const texts = await res.json();
-        setData(TEXTS, texts);
-        setIfFetchSuccess(true);
+        if (ok) {
+          const texts = await res.json();
+          setData(TEXTS, texts);
+          setIfFetchSuccess(true);
+        }
       } catch (error) {
         setIfFetchSuccess(false);
       }
@@ -79,20 +81,24 @@ function Texts(props: Props) {
   React.useEffect(() => {
     if (selectedIDs.length === 0) return;
     (async () => {
-      const res = await fetch(pythonServerURL + "getTextsByIDs", {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        body: JSON.stringify(selectedIDs)
-      });
-      const texts = await res.json();
-      setData(TEXTS, texts);
-      setIfFetchSuccess(true);
+      try {
+        const res = await fetch(pythonServerURL + "getTextsByIDs", {
+          method: "POST",
+          mode: "cors",
+          cache: "no-cache",
+          body: JSON.stringify(selectedIDs)
+        });
+        const texts = await res.json();
+        setData(TEXTS, texts);
+        setIfFetchSuccess(true);
+      } catch (e) {
+        setIfFetchSuccess(false);
+      }
     })();
   }, [selectedIDs]);
 
   const imgIndices = [];
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 20; i++) {
     imgIndices.push(i);
   }
   const shuffledIndices = shuffle(imgIndices);
@@ -106,7 +112,7 @@ function Texts(props: Props) {
         <SingleText
           key={v4()}
           text={e.text}
-          index={shuffledIndices[i]}
+          index={shuffledIndices[i % 20]}
           id={e.id}
           time={e.time}
         />
@@ -128,10 +134,11 @@ export default connect(
 )(Texts);
 
 function shuffle(input: number[]) {
-  for (var i = input.length - 1; i >= 0; i--) {
+  for (let i = input.length - 1; i >= 0; i--) {
     const randomIndex = Math.floor(Math.random() * (i + 1));
     const itemAtIndex = input[randomIndex];
     input[randomIndex] = input[i];
     input[i] = itemAtIndex;
   }
+  return input;
 }
