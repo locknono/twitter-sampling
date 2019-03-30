@@ -1,7 +1,10 @@
 import { Fiber } from "./fiber";
-
+import priorityTree from "./priorityTree";
 const updateQueue = Object.create(Array.prototype);
+console.log("updateQueue: ", updateQueue);
 
+//优先级必须使用树结构
+//用户交互在上一层，背景渲染在下一层
 updateQueue.sortByPriority = function() {
   this.sort((a: Fiber, b: Fiber) => {
     return b.priority - a.priority;
@@ -20,8 +23,8 @@ updateQueue.clearSameStream = function() {
 
 updateQueue.flush = function(this: typeof updateQueue) {
   this.sortByPriority();
-  if (updateQueue.length > 0) {
-    requestAnimationFrame(updateQueue[0].renderMethod);
+  if (this.length > 0) {
+    requestAnimationFrame(this[0].renderMethod);
     updateQueue.splice(0, 1);
   }
   requestAnimationFrame(this.flush);

@@ -39,6 +39,12 @@ import {
 } from "../shared/fetch";
 import { getArcGenerator, getLineGenerator } from "src/shared/renderer";
 import MapControl from "./MapControl";
+import {
+  usePointsOnMap,
+  useHeat,
+  useSvgLayer,
+  useMap
+} from "src/hooks/mapHooks";
 const mapState = (state: any) => {
   const { mapPoints } = state.dataTree;
   const {
@@ -114,7 +120,6 @@ function Map(props: Props) {
     lastSelectedLayer,
     setLastSelectedLayer
   ] = React.useState<L.Layer | null>(null);
-  const [map, setMap] = React.useState<L.Map | null>(null);
 
   const initialControlLayer = L.control.layers(undefined, undefined, {
     collapsed: false
@@ -124,15 +129,7 @@ function Map(props: Props) {
     initialControlLayer
   );
 
-  const [svgLayer, setSvgLayer] = React.useState<any>(null);
-
   const [lastTopicPoints, setLastTopicPoints] = React.useState<any>(null);
-
-  const [
-    pointsLayerGroup,
-    setPointsLayerGroup
-  ] = React.useState<null | L.LayerGroup>(null);
-  const [heatLayerGroup, setHeatLayerGroup] = React.useState<any>(null);
 
   const [selectedPointsGroup, setSelectedPointsGroup] = React.useState<any>(
     null
@@ -142,46 +139,25 @@ function Map(props: Props) {
     null
   );
 
-  let dayControler = null;
-  function handleShowPointsClick(flag: boolean, e: React.SyntheticEvent) {
-    setIfShowMapPoints(flag);
-    if (!map || !pointsLayerGroup) return;
-    if (flag === true) {
-      pointsLayerGroup.addTo(map);
-    }
-  }
+  const map = useMap();
 
-  /*   React.useEffect(() => {
-    for (let i = 0; i <= 100; i++) {
-      setTimeout(() => {
-        setWheelDay(11 + (i % 3));
-      }, 5000 + 2000 * i);
-    }
-  }, []); */
-  React.useEffect(() => {
-    if (!map) return;
+  const [pointsLayerGroup, setPointsLayerGroup] = usePointsOnMap(
+    mapPoints,
+    map,
+    ifShowMapPoints,
+    selectedIDs
+  );
 
-    const svg = L.svg();
-    svg.addTo(map);
-    const d3Svg = d3.select(".leaflet-overlay-pane svg");
-    const g = d3Svg.append("g");
-    setSvgLayer(g);
-    const initialZoom = (map as any)._zoom;
-    const wgsOrigin = L.latLng([0, 0]);
-    const wgsInitialShift = map.latLngToLayerPoint(wgsOrigin);
-    map.on("zoom", function() {
-      const newZoom = (map as any)._zoom;
-      const zoomDiff = newZoom - initialZoom;
-      const scale = Math.pow(2, zoomDiff);
+  const [heatLayerGroup, setHeatLayerGroup] = useHeat(
+    map,
+    ifShowHeatMap,
+    samplingFlag,
+    samplingCondition
+  );
 
-      const shift = (map.latLngToLayerPoint(L.latLng(0, 0)) as any)._subtract(
-        wgsInitialShift.multiplyBy(scale)
-      );
-      g.attr("transform", `translate(${shift.x},${shift.y}) scale(${scale})`);
-    });
-  }, [map]);
+  const svgLayer = useSvgLayer(map);
 
-  //set map points
+  //set map points data
   React.useEffect(() => {
     (async function setMapPoints() {
       const newURL = getURLBySamplingCondition(
@@ -251,60 +227,6 @@ function Map(props: Props) {
     if (!map) return;
   }, [samplingFlag]);
 
-  //add all points to map
-  React.useEffect(() => {
-    if (!mapPoints || !map) return;
-
-    const allPoints: MapPoint[] = [];
-
-    const pointsSet = new Set();
-    mapPoints.map(e => {
-      const latlngStr = `${e.lat}_${e.lng}`;
-      if (pointsSet.has(latlngStr) === false) {
-        allPoints.push(e);
-        pointsSet.add(latlngStr);
-      }
-    });
-    const allPointsLayer: L.Layer[] = [];
-    allPoints.map(e => {
-      const id = e.id;
-      allPointsLayer.push(
-        L.circle(e, {
-          radius: mapCircleRadius,
-          color: color.mapPointColor
-        }).on("mouseover", () => {
-          (async function fechText() {
-            const res = await fetch(pythonServerURL + "getTextByID", {
-              method: "POST",
-              mode: "cors",
-              cache: "no-cache",
-              body: JSON.stringify(id)
-            });
-            const text = await res.json();
-          })();
-        })
-      );
-    });
-    if (pointsLayerGroup) {
-      map.removeLayer(pointsLayerGroup);
-    }
-    const layerGroup = L.layerGroup(allPointsLayer);
-    setPointsLayerGroup(layerGroup);
-    if (ifShowMapPoints) {
-      layerGroup.addTo(map);
-    }
-  }, [mapPoints]);
-
-  React.useEffect(() => {
-    if (!pointsLayerGroup || !map) return;
-    if (selectedIDs.length !== 0) return;
-    if (ifShowMapPoints) {
-      pointsLayerGroup.addTo(map);
-    } else {
-      map.removeLayer(pointsLayerGroup);
-    }
-  }, [ifShowMapPoints]);
-
   //points for one topic
   React.useEffect(() => {
     if (!mapPoints || !curTopic || !map) return;
@@ -346,46 +268,8 @@ function Map(props: Props) {
     const layerGroup = L.layerGroup(allPointsLayer);
     setLastTopicPoints(layerGroup);
     layerGroup.addTo(map);
-    controlLayer.addOverlay(layerGroup, `points for topic${curTopic}`);
   }, [curTopic]);
 
-  React.useEffect(() => {
-    if (!map) return;
-    const baseURL = samplingFlag ? url.samplingHeatURL : url.heatURL;
-    const newURL = getURLBySamplingCondition(baseURL, samplingCondition);
-    fetch(newURL)
-      .then(res => res.json())
-      .then(data => {
-        if (heatLayerGroup) {
-          map.removeLayer(heatLayerGroup);
-        }
-        const heatLayer = (L as any).heatLayer(data, { radius: 15 });
-        if (ifShowHeatMap) {
-          heatLayer.addTo(map);
-        }
-        setHeatLayerGroup(heatLayer);
-      });
-  }, [map, samplingCondition, samplingFlag]);
-
-  React.useEffect(() => {
-    if (!map || !heatLayerGroup) return;
-    if (ifShowHeatMap) {
-      heatLayerGroup.addTo(map);
-    } else {
-      map.removeLayer(heatLayerGroup);
-    }
-  }, [ifShowHeatMap]);
-
-  React.useEffect(() => {
-    const map = L.map("map", options);
-    L.tileLayer(tileLayerURL).addTo(map);
-    setMap(map);
-    map.on("click", function(e) {});
-    controlLayer.addTo(map);
-
-    map.pm.addControls(options);
-    //map.pm.enableDraw("Circle", drawOptions as any);
-  }, []);
   React.useEffect(() => {
     if (!map || !svgLayer || !mapPoints) return;
     map.on("pm:create", function(e1: any) {
@@ -528,6 +412,7 @@ function Map(props: Props) {
         });
     })();
   }, [wheelDay]);
+
   React.useEffect(() => {
     if (!map) return;
     if (systemName === "yelp") {
@@ -537,23 +422,21 @@ function Map(props: Props) {
     }
   }, [systemName]);
 
-  if (wheelCenter) {
-    dayControler = (
-      <div
-        id="day-control-div"
-        style={{
-          width: 200,
-          height: 10,
-          backgroundColor: "red",
-          position: "absolute",
-          top: wheelCenter[1],
-          left: wheelCenter[0],
-          fill: "red",
-          zIndex: 99999
-        }}
-      />
-    );
-  }
+  let dayControler = wheelCenter ? (
+    <div
+      id="day-control-div"
+      style={{
+        width: 200,
+        height: 10,
+        backgroundColor: "red",
+        position: "absolute",
+        top: wheelCenter[1],
+        left: wheelCenter[0],
+        fill: "red",
+        zIndex: 99999
+      }}
+    />
+  ) : null;
 
   let colorBars = [];
   for (let i = 0; i < topicNumber; i++) {
@@ -567,7 +450,9 @@ function Map(props: Props) {
           marginRight: 5,
           borderRadius: "50%",
           backgroundColor: color.nineColors[i],
-          float: "right"
+          float: "right",
+          transform: curTopic === i ? "scale(1.15)" : "scale(1)",
+          transformOrigin: "center"
         }}
       />
     );
