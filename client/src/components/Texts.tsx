@@ -58,6 +58,19 @@ function Texts(props: Props) {
 
   const [ifFetchSuccess, setIfFetchSuccess] = React.useState(false);
 
+  const textsRef = React.useRef<null | HTMLDivElement>(null);
+
+  const [renderTextCount, setRenderTextCount] = React.useState(20);
+
+  function handleScroll(e: React.SyntheticEvent) {
+    if (!textsRef.current) return;
+    const el = textsRef.current;
+    if (el.scrollTop + el.clientHeight > el.scrollHeight * 0.8) {
+      console.log("add texts");
+      setRenderTextCount(renderTextCount + 10);
+    }
+  }
+
   React.useEffect(() => {
     (async () => {
       try {
@@ -107,7 +120,7 @@ function Texts(props: Props) {
     renderTexts = <div>!!!START SERVER!!!</div>;
   } else {
     renderTexts = texts.map((e, i) => {
-      if (i > 50) return;
+      if (i > renderTextCount) return;
       return (
         <SingleText
           key={v4()}
@@ -123,7 +136,9 @@ function Texts(props: Props) {
     <div className="view-div panel panel-default" id="texts-div">
       <Heading title="Text Information" />
       <div className="texts-content-div"> </div>
-      <div className="list-group"> {renderTexts}</div>
+      <div className="list-group" onScroll={handleScroll} ref={textsRef}>
+        {renderTexts}
+      </div>
     </div>
   );
 }

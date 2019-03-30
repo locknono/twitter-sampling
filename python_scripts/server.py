@@ -1,27 +1,7 @@
 from flask import Flask, Response, Request, request, jsonify
 import json
-from shared.generateRenderData import getWordCloud, readJsonFile
-import json
-import g
-from docAlgo.runDoc2vec import runDoc2vec
-from docAlgo.runTsne import runTsne
-from docAlgo.runKmeans import runKmeans
-from docAlgo.runLDA import runLDA
-from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile
-from docAlgo.getClass import getIDClassDict
-import json
-import g
-from docAlgo.runDoc2vec import runDoc2vec
-from docAlgo.runTsne import runTsne
-from docAlgo.runKmeans import runKmeans
 from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile, \
     getHexes, getRiverData
-import os
-from blueRapidEstimate import getRalationshipList, compareRelationshipList
-from ldbr import ldbr
-from shared.getLdbrData import getLdbrPoints, getOriginalEstimates, getSamplingIDs
-from shared.constant import nyBound
-import copy
 
 app = Flask(__name__)
 import g
@@ -108,7 +88,7 @@ def getInitialTexts():
     number = 0
     for id in originalIDTextDict:
         number += 1
-        if number > 100:
+        if number > 200:
             break
         text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
         texts.append(text)
