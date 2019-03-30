@@ -2,10 +2,12 @@ from flask import Flask, Response, Request, request, jsonify
 import json
 from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile, \
     getHexes, getRiverData
+from getWheelData import getWheelData
 
 app = Flask(__name__)
 import g
 
+clientURL = 'http://localhost:3000'
 idTextDict = {}
 with open(g.dataPath + 'finalText.txt', 'r', encoding='utf-8')as f:
     for line in f:
@@ -39,7 +41,7 @@ def selectArea():
     ids = json.loads(request.data)
     renderData = getWordCloud(idTextDict, idClassDict, g.topicNumber, ids)
     res = Response(json.dumps(renderData))
-    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res
 
@@ -54,7 +56,7 @@ def getCoorsByIDs():
             coord = idLocationDict[id]
             latlngs.append(coord)
         res = Response(json.dumps(latlngs))
-        res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+        res.headers['Access-Control-Allow-Origin'] = clientURL
         res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
         return res
 
@@ -64,7 +66,7 @@ def getTextByID():
     id = json.loads(request.data)
     text = idTextDict[id]
     res = Response(json.dumps(text))
-    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res
 
@@ -77,7 +79,7 @@ def getTextsByID():
         text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
         texts.append(text)
     res = Response(json.dumps(texts))
-    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res
 
@@ -93,7 +95,7 @@ def getInitialTexts():
         text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
         texts.append(text)
     res = Response(json.dumps(texts))
-    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res
 
@@ -147,7 +149,7 @@ def runSamplingOnIDs():
 
     res = Response(json.dumps(returnData))
 
-    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res
 """
@@ -158,18 +160,19 @@ def selectIDsOnMap():
     returnData = {}
     ids = json.loads(request.data)
     res = Response(json.dumps(ids))
-    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res
 
 
 @app.route("/getWheelDataByIDs", methods=['GET', 'POST'])
 def getWheelDataByIDs():
-    returnData = {}
-    ids = json.loads(request.data)
-    res = Response(json.dumps(ids))
-
-    res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    postData = json.loads(request.data)
+    metas, wheelDatas = getWheelData(idClassDict, idTimeDict, postData['minValue'], postData['minInter'],
+                                     postData['selectedIDs'])
+    returnData = {'metas': metas, 'wheelDatas': wheelDatas, 'startDay': g.startDay + 1}
+    res = Response(json.dumps(returnData))
+    res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return res
 

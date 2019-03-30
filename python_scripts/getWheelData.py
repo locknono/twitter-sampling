@@ -31,7 +31,7 @@ def getTimeNumberDictForOneClassOneDay(classIDs, idTimeDict, minValue, timeInter
         else:
             continue
     timeSlices = []
-    for i in range(0, int((endMinute - startMinute) / timeInterval) + 1):
+    for i in range(0, int((endMinute - startMinute) / timeInterval) + 2):
         sm = startMinute + i * timeInterval
         em = startMinute + (i + 1) * timeInterval
         timeSlices.append([sm, em])
@@ -52,7 +52,7 @@ def getTimeNumberDictForOneClassOneDay(classIDs, idTimeDict, minValue, timeInter
     return timeNumberDict
 
 
-def getWheelData(idClassDict, idTimeDict, ids=None):
+def getWheelData(idClassDict, idTimeDict, minValue, minInterval, ids=None):
     if ids == None:
         ids = idClassDict.keys()
     allClassIDs = []
@@ -71,7 +71,8 @@ def getWheelData(idClassDict, idTimeDict, ids=None):
         minTime, maxTime = getStartEndMinuteForOneDay(day)
         wheelData = []
         for classIDs in allClassIDs:
-            timeNumberDict = getTimeNumberDictForOneClassOneDay(classIDs, idTimeDict, minValue=10, timeInterval=30,
+            timeNumberDict = getTimeNumberDictForOneClassOneDay(classIDs, idTimeDict, minValue=minValue,
+                                                                timeInterval=minInterval,
                                                                 day=day)
             wheelData.append(timeNumberDict)
         maxValue = -1

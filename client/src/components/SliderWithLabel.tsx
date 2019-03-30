@@ -12,6 +12,7 @@ interface Props {
   changeOneWeight?: any;
   index?: number;
   sliderMethod?: any;
+  endMethod?: any;
 }
 interface State {
   value: number;
@@ -24,18 +25,23 @@ class SliderWithLabel extends React.Component<Props, State> {
     this.state = {
       value: this.props.defaultValue ? this.props.defaultValue : 0.2
     };
-    this.handleSlide = this.handleSlide.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleEnd = this.handleEnd.bind(this);
   }
 
-  handleSlide(e: number) {
-    const { sliderMethod } = this.props;
-    sliderMethod(e);
-    this.setState({ value: e });
-  }
   handleChange(e: number) {
     const { sliderMethod } = this.props;
-    sliderMethod(e);
+    if (sliderMethod) {
+      sliderMethod(e);
+    }
+    this.setState({ value: e });
+  }
+
+  handleEnd(e: number) {
+    const { endMethod } = this.props;
+    if (endMethod) {
+      endMethod(e);
+    }
     this.setState({ value: e });
   }
   render() {
@@ -80,7 +86,7 @@ class SliderWithLabel extends React.Component<Props, State> {
             defaultValue={defaultValue}
             value={value}
             onChange={this.handleChange}
-            onAfterChange={this.handleSlide}
+            onAfterChange={this.handleEnd}
             trackStyle={{ backgroundColor: color }}
             handleStyle={{ borderColor: color, borderRadius: `25%` }}
           />

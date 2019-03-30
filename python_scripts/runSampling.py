@@ -43,13 +43,17 @@ if __name__ == '__main__':
     kl3 = None
     idTextDict = {}
     riverIDTimeDict = {}
-    with open(g.dataPath + 'finalExtractedData.txt', 'r', encoding='utf-8') as f:
-        for line in f:
-            line = line.strip('\t\n').split('\t')
-            time = line[2].split(' ')[0].replace('-', '/')
-            id = line[0]
-            riverIDTimeDict[id] = time
-
+    try:
+        with open(g.dataPath + 'finalExtractedData.txt', 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip('\t\n').split('\t')
+                time = line[2].split(' ')[0].replace('-', '/')
+                id = line[0]
+                riverIDTimeDict[id] = time
+    except:
+        riverIDTimeDict = readJsonFile(g.dataPath + 'riverIDTimeDict.json')
+        for id in riverIDTimeDict:
+            riverIDTimeDict[id] = riverIDTimeDict[id].replace('-', '/')
     with open(g.dataPath + 'finalText.txt', 'r', encoding='utf-8')as f:
         for line in f:
             line = line.strip('\t\n').split('\t')
@@ -118,10 +122,10 @@ if __name__ == '__main__':
 
     # random
     minRandomRatio = 1
-    randomTime=0
+    randomTime = 0
     while minRandomRatio > maxRatio - 0.1:
-        randomTime+=1
-        if randomTime>50:
+        randomTime += 1
+        if randomTime > 50:
             break
         randomPoints, randomIDs = getRandomPointsAndIDs(copy.deepcopy(points), len(samplingIDs))
         randomEstimates = getOriginalEstimates(randomPoints, g.topicNumber)
@@ -184,34 +188,40 @@ if __name__ == '__main__':
 
     maxBlueRatio = 1
     blueRatio = 1
+    spaceR = spaceR * 2000
     while (blueRatio > maxRatio - 0.1):
-        print('start blue noise')
-        spaceR = spaceR * 2
-        blueNoisePoints = []
-        for id in idLocationDict:
-            if id not in idClassDict:
-                continue
-            blueNoisePoints.append({"lat": idLocationDict[id][0], "lng": idLocationDict[id][1], "id": id})
-        sampledBlueNoisePoints = blueNoise(blueNoisePoints, spaceR)
+        try:
+            print('start blue noise')
+            spaceR = spaceR / 2
+            blueNoisePoints = []
+            for id in idLocationDict:
+                if id not in idClassDict:
+                    continue
+                blueNoisePoints.append({"lat": idLocationDict[id][0], "lng": idLocationDict[id][1], "id": id})
+            sampledBlueNoisePoints = blueNoise(blueNoisePoints, spaceR)
 
-        bluePoints = []
-        idSet = set()
-        for p1 in sampledBlueNoisePoints:
-            idSet.add(p1['id'])
-        for p2 in copy.deepcopy(points):
-            if p2.id in idSet:
+            bluePoints = []
+            idSet = set()
+            for p1 in sampledBlueNoisePoints:
+                idSet.add(p1['id'])
+            for p2 in copy.deepcopy(points):
+                if p2.id not in idSet:
+                    continue
                 bluePoints.append(p2)
-        blueIDs = [p.id for p in bluePoints]
+            blueIDs = [p.id for p in bluePoints]
 
-        blueEstimates = getOriginalEstimates(bluePoints)
-        blueRelation = getRalationshipList(blueEstimates)
-        blueRatio = compareRelationshipList(r2, blueRelation)
-        print(len(bluePoints))
-        print('blue ratio:' + str(blueRatio))
-        if blueRatio < maxBlueRatio:
+            blueEstimates = getOriginalEstimates(bluePoints)
+            blueRelation = getRalationshipList(blueEstimates)
+            blueRatio = compareRelationshipList(r2, blueRelation)
+            print(len(bluePoints))
+            print('blue ratio:' + str(blueRatio))
+            if blueRatio >= maxBlueRatio:
+                continue
             maxBlueRatio = blueRatio
             path1 = '../client/public/blue/'
             path2 = g.dataPath + 'blue/'
             saveAllSamplingData(originalEstimates, blueEstimates, idLocationDict, idClassDict, idScatterData,
                                 idTextDict,
                                 riverIDTimeDict, blueIDs, path1, path2)
+        except Exception as e:
+            print(e)

@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useState } from "react";
 import Heading from "../components/Heading";
-import { connect } from "react-redux";
-import { setData } from "src/actions/setDataAction";
+import { connect, ReactReduxContext } from "react-redux";
+import { setData, WHEEL_DATA } from "src/actions/setDataAction";
 import {
   setIfDrawCenters,
   setSelectedIDs,
@@ -16,21 +16,23 @@ import {
 } from "../actions/setUIState";
 import SliderWithLabel from "./SliderWithLabel";
 import "../css/awesome-bootstrap-checkbox.css";
-import { url } from "src/constants/constants";
+import {
+  url,
+  pythonServerURL,
+  defaultMinWheelInter,
+  defaultMinWheelValue
+} from "src/constants/constants";
 import Checkbox from "./Checkbox";
 import SamplingButton from "./SamplingButton";
 interface Props {
-  setCurSystem: typeof setCurSystem;
-  setSamplingFlag: typeof setSamplingFlag;
-  setSamplingCondition: typeof setSamplingCondition;
   samplingCondition: boolean;
-  setSelectedIDs: typeof setSelectedIDs;
   selectedIDs: string[];
   ifShowMapPoints: boolean;
   setIfShowMapPoints: typeof setIfShowMapPoints;
   ifShowHeatMap: boolean;
   setIfShowHeatMap: typeof setIfShowHeatMap;
   setWheelDay: typeof setWheelDay;
+  setData: typeof setData;
 }
 const mapState = (state: any) => {
   const {
@@ -46,29 +48,25 @@ const mapState = (state: any) => {
   return { samplingCondition, selectedIDs, ifShowMapPoints, ifShowHeatMap };
 };
 const mapDispatch = {
-  setCurSystem,
-  setSamplingFlag,
-  setSamplingCondition,
-  setSelectedIDs,
   setIfShowMapPoints,
   setIfShowHeatMap,
-  setWheelDay
+  setWheelDay,
+  setData
 };
 
 function MapControl(props: Props) {
   const {
-    setCurSystem,
-    setSamplingFlag,
-    setSamplingCondition,
-    samplingCondition,
-    setSelectedIDs,
     selectedIDs,
     ifShowMapPoints,
     setIfShowMapPoints,
     ifShowHeatMap,
     setIfShowHeatMap,
-    setWheelDay
+    setWheelDay,
+    setData
   } = props;
+
+  const [minValue, setMinValue] = React.useState(defaultMinWheelValue);
+  const [minInter, setMinInter] = React.useState(defaultMinWheelInter);
 
   function handlePointsClick() {
     setIfShowMapPoints(!ifShowMapPoints);
@@ -81,6 +79,32 @@ function MapControl(props: Props) {
   function slideToSetDay(day: number) {
     setWheelDay(day);
   }
+
+  function slideToSetMinValue(value: number) {
+    setMinValue(value);
+  }
+
+  function sliderToSetMinInter(value: number) {
+    setMinInter(value);
+  }
+
+  React.useEffect(() => {
+    const postData = {
+      selectedIDs,
+      minValue,
+      minInter
+    };
+    (async () => {
+      const res = await fetch(pythonServerURL + "getWheelDataByIDs", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        body: JSON.stringify(postData)
+      });
+      const wheelData = await res.json();
+      setData(WHEEL_DATA, wheelData);
+    })();
+  }, [minValue, minInter]);
 
   const pointsText = ifShowMapPoints ? "Hide Points" : "Show Points";
   const heatText = ifShowHeatMap ? "Hide Heatmap" : "Show Heatmap";
@@ -106,6 +130,26 @@ function MapControl(props: Props) {
         color="blue"
         step={1}
         sliderMethod={slideToSetDay}
+      />
+
+      <SliderWithLabel
+        name="min frequency"
+        min={0}
+        max={100}
+        defaultValue={defaultMinWheelValue}
+        color="blue"
+        step={1}
+        sliderMethod={slideToSetMinValue}
+      />
+
+      <SliderWithLabel
+        name="min interval"
+        min={1}
+        max={120}
+        defaultValue={defaultMinWheelInter}
+        color="blue"
+        step={1}
+        sliderMethod={sliderToSetMinInter}
       />
     </div>
   );

@@ -85,3 +85,7 @@ export const maxCloudWordSize = 70;
 export const pythonServerURL = "http://localhost:8000/";
 
 export const wheelLayerHeight = 10;
+
+export const defaultMinWheelValue = 10;
+
+export const defaultMinWheelInter = 60;

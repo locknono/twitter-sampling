@@ -11,7 +11,9 @@ import {
   url,
   topicNumber,
   mapCircleRadius,
-  wheelLayerHeight
+  wheelLayerHeight,
+  defaultMinWheelInter,
+  defaultMinWheelValue
 } from "../constants/constants";
 import { tl, rb, options, tileLayerURL } from "src/constants/mapOptions";
 import {
@@ -20,7 +22,8 @@ import {
   CLOUD_DATA,
   SCATTER_DATA,
   RIVER_DATA,
-  SAMPLING_RIVER_DATA
+  SAMPLING_RIVER_DATA,
+  WHEEL_DATA
 } from "../actions/setDataAction";
 import { connect, ReactReduxContext } from "react-redux";
 import "leaflet.pm";
@@ -46,7 +49,7 @@ import {
   useMap
 } from "src/hooks/mapHooks";
 const mapState = (state: any) => {
-  const { mapPoints } = state.dataTree;
+  const { mapPoints, wheelData } = state.dataTree;
   const {
     curTopic,
     selectedIDs,
@@ -66,7 +69,8 @@ const mapState = (state: any) => {
     samplingFlag,
     wheelDay,
     samplingCondition,
-    ifShowHeatMap
+    ifShowHeatMap,
+    wheelData
   };
 };
 const mapDispatch = {
@@ -92,6 +96,7 @@ interface Props {
   setWheelDay: typeof setWheelDay;
   samplingCondition: SAMPLING_CONDITION;
   ifShowHeatMap: boolean;
+  wheelData: WheelData | null;
 }
 
 interface Map {
@@ -114,7 +119,8 @@ function Map(props: Props) {
     wheelDay,
     setWheelDay,
     samplingCondition,
-    ifShowHeatMap
+    ifShowHeatMap,
+    wheelData
   } = props;
   const [
     lastSelectedLayer,
@@ -179,6 +185,7 @@ function Map(props: Props) {
       const res = await fetch(newURL);
       const mapPoints = await res.json();
       setData(MAP_POINTS, mapPoints);
+      location.href = "localhost:8000";
     })();
   }, [samplingCondition, samplingFlag]);
 
@@ -305,17 +312,36 @@ function Map(props: Props) {
         e1.layer._latlng.lat,
         e1.layer._latlng.lng
       ];
-
+      const ids: string[] = [];
+      mapPoints.map(e => {
+        if (ifInside([e.lat, e.lng], center, radius, map)) {
+          ids.push(e.id);
+        }
+      });
+      setSelectedIDs(ids);
       setWheelRadius(radius);
       setWheelCenter(center);
       (async function drawWheel() {
-        const fetch1 = fetch(`./wheelData/${wheelDay}.json`);
-        const fetch2 = fetch(`./wheelData/${wheelDay}-meta.json`);
-        const res1 = await fetch1;
-        const res2 = await fetch2;
-        const data: WheelData = await res1.json();
+        const postData = {
+          selectedIDs: ids,
+          minValue: defaultMinWheelValue,
+          minInter: defaultMinWheelInter
+        };
 
-        const meta = await res2.json();
+        const res = await fetch(pythonServerURL + "getWheelDataByIDs", {
+          method: "POST",
+          mode: "cors",
+          cache: "no-cache",
+          body: JSON.stringify(postData)
+        });
+        const wheelData = await res.json();
+        setData(WHEEL_DATA, wheelData);
+        const { metas, wheelDatas, startDay } = wheelData;
+        const [meta, data] = [
+          metas[wheelDay - startDay],
+          wheelDatas[wheelDay - startDay]
+        ];
+
         const { minTime, maxTime, maxValue } = meta;
 
         const sliceCount = maxTime - minTime;
@@ -375,18 +401,14 @@ function Map(props: Props) {
 
   //change wheel path
   React.useEffect(() => {
-    if (!svgLayer || !wheelRadius || !wheelCenter) return;
+    if (!svgLayer || !wheelRadius || !wheelCenter || !wheelData) return;
     const radius = wheelRadius;
-    const center = wheelCenter;
-
     (async function drawWheel() {
-      const fetch1 = fetch(`./wheelData/${wheelDay}.json`);
-      const fetch2 = fetch(`./wheelData/${wheelDay}-meta.json`);
-      const res1 = await fetch1;
-      const res2 = await fetch2;
-      const data: WheelData = await res1.json();
-      const meta = await res2.json();
-      const { minTime, maxTime, maxValue } = meta;
+      const { metas, wheelDatas, startDay } = wheelData;
+      const [meta, data] = [
+        metas[wheelDay - startDay],
+        wheelDatas[wheelDay - startDay]
+      ];
       const arc = getArcGenerator();
       const arcDatas = getArcDatasByWheelData(
         data,
@@ -398,20 +420,22 @@ function Map(props: Props) {
         .transition()
         .duration(200)
         .ease(d3.easeLinear);
-
+      svgLayer.selectAll(".wheel-path").remove();
       svgLayer
         .selectAll(".wheel-path")
         .data(arcDatas)
+        .enter()
+        .append("path")
+        .attr("class", "wheel-path")
         .attr("stroke", (d: any) => d.color)
         .attr("fill", (d: any) => d.color)
         .attr("stroke-width", "0.5psx")
         .attr("transform", `translate(${wheelCenter[0]},${wheelCenter[1]})`)
-        .transition(t)
         .attr("d", function(d: any) {
           return arc(d);
         });
     })();
-  }, [wheelDay]);
+  }, [wheelDay, wheelData]);
 
   React.useEffect(() => {
     if (!map) return;
@@ -421,22 +445,6 @@ function Map(props: Props) {
       map.panTo([40.74236688190866, -74.01489262003452]);
     }
   }, [systemName]);
-
-  let dayControler = wheelCenter ? (
-    <div
-      id="day-control-div"
-      style={{
-        width: 200,
-        height: 10,
-        backgroundColor: "red",
-        position: "absolute",
-        top: wheelCenter[1],
-        left: wheelCenter[0],
-        fill: "red",
-        zIndex: 99999
-      }}
-    />
-  ) : null;
 
   let colorBars = [];
   for (let i = 0; i < topicNumber; i++) {

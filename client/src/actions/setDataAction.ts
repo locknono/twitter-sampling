@@ -9,6 +9,7 @@ export const RIVER_DATA = "RIVER_DATA";
 export const MAP_POINTS = "MAP_POINTS";
 export const SAMPLING_RIVER_DATA = "SAMPLING_RIVER_DATA";
 export const TEXTS = "TEXTS";
+export const WHEEL_DATA = "WHEEL_DATA";
 
 export const SET_ORIGINAL_BARDATA = SET + ORIGINAL_BARDATA;
 export const SET_SAMPLING_BARDATA = SET + SAMPLING_BARDATA;
@@ -19,6 +20,7 @@ export const SET_RIVER_DATA = SET + RIVER_DATA;
 export const SET_MAP_POINTS = SET + MAP_POINTS;
 export const SET_SAMPLING_RIVER_DATA = SET + SAMPLING_RIVER_DATA;
 export const SET_TEXTS = SET + TEXTS;
+export const SET_WHEEL_DATA = SET + WHEEL_DATA;
 
 export function setData(dataName: string, data: any) {
   return {

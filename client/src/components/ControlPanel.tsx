@@ -71,7 +71,12 @@ function ControlPanel(props: Props) {
 
     if (flag == true) {
       setSamplingCondition(unPatchedSamplingCondition);
+    } else {
+      setSamplingCondition(SAMPLING_CONDITION.spaceAndTime);
+      closeOurMethod();
+      closeCompareMethod();
     }
+
     if (selectedIDs.length > 0) {
       if (flag === true) {
         (async () => {

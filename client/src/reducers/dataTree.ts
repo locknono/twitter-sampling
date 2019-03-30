@@ -10,7 +10,8 @@ import {
   SET_RIVER_DATA,
   SET_MAP_POINTS,
   SET_SAMPLING_RIVER_DATA,
-  SET_TEXTS
+  SET_TEXTS,
+  SET_WHEEL_DATA
 } from "../actions/setDataAction";
 
 const initialState = {
@@ -22,7 +23,8 @@ const initialState = {
   riverData: null,
   mapPoints: null,
   samplingRiverData: null,
-  texts: []
+  texts: [],
+  wheelData: null
 };
 
 export default function dataTree(state = initialState, action: any) {
@@ -50,8 +52,9 @@ export default function dataTree(state = initialState, action: any) {
     case SET_SAMPLING_RIVER_DATA:
       return { ...state, samplingRiverData: action.data };
     case SET_TEXTS:
-      console.log("action: ", action);
       return { ...state, texts: action.data };
+    case SET_WHEEL_DATA:
+      return { ...state, wheelData: action.data };
     default:
       return state;
   }

@@ -153,9 +153,10 @@ def getRiverData(idTimeDict, idClassDict, ids=None):
     if ids == None:
         ids = idClassDict.keys()
     topicTimeValueDict = {}
+    allTimes = [idTimeDict[id] for id in idTimeDict]
+
     for topic in range(g.topicNumber):
-        for t in range(g.startDay + 1, g.startDay + g.dataDays):
-            time = '2016/11/{0}'.format(t)
+        for time in allTimes:
             topicTimeTuple = (topic, time)
             topicTimeValueDict[topicTimeTuple] = 0
     for id in ids:
@@ -214,7 +215,7 @@ def saveAllSamplingData(originalEstimates, estimates, idLocationDict, idClassDic
     writeToJsonFile(samplingRiverData, path1 + 'samplingRiverData.json')
     writeToJsonFile(samplingRiverData, path2 + 'samplingRiverData.json')
 
-    samplingHeatData = getHeatData(idLocationDict, idClassDict,samplingIDs)
+    samplingHeatData = getHeatData(idLocationDict, idClassDict, samplingIDs)
 
     writeToJsonFile(samplingHeatData, path1 + 'samplingHeatData.json')
     writeToJsonFile(samplingHeatData, path2 + 'samplingHeatData.json')

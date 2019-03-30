@@ -36,10 +36,25 @@ interface SingleWheelData {
   [time: number]: number;
 }
 
-type WheelData = SingleWheelData[];
-
 interface Text {
   text: string;
   id: string;
   time: string;
+}
+
+interface meta {
+  minTime: number;
+  maxTime: number;
+  maxValue: number;
+}
+interface ClassWheelData {
+  [index: string]: number;
+}
+
+type OneDayWheelData = ClassWheelData[];
+
+interface WheelData {
+  metas: meta[];
+  wheelDatas: OneDayWheelData[];
+  startDay: number;
 }

@@ -56,6 +56,9 @@ export function getArcDatasByWheelData(
       //const height = value === 0 ? 0 : scale(value);
       let angle =
         (Math.PI / 180) * ((360 / sliceCount) * Math.floor(j - minTime));
+      if (angle > Math.PI * 2 - 0.1) {
+        console.log(angle);
+      }
       if (value > 0) {
         arcData.innerRadius = radius + layerHeight * i;
         arcData.outerRadius = radius + layerHeight * (i + 1) - 3;

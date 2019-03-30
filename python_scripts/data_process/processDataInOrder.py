@@ -2,6 +2,7 @@ import os
 import time
 import g
 
+"""
 os.system('python ./split.py')
 os.system('python ./clearFirstAndLastDay.py')
 os.system('python ./clean.py')
@@ -11,7 +12,7 @@ os.system('python ./getIDTimeDict.py')
 os.system('python ./getLocation.py')
 os.system('python ./getFinalLocation.py')
 os.system('python ./getFinalLocationJsonFormat.py')
-
+"""
 os.chdir('../')
 os.system('python ./runAlgoLDA.py')
 
