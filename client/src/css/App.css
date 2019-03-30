@@ -217,10 +217,8 @@
   justify-content: space-around;
   align-items: flex-start; */
 }
-
-.data-description-content-div > p {
+.data-description-content-div p {
   margin-bottom: 0;
-  /* line-height: 0.1; */
 }
 .heading-button {
   padding: 0;

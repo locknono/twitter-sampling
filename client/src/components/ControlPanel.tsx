@@ -194,7 +194,10 @@ function ControlPanel(props: Props) {
           />
         </div>
 
-        <div className="checkbox-div method-div">
+        <div
+          className="checkbox-div method-div"
+          style={{ paddingLeft: 0, paddingRight: 0 }}
+        >
           <Checkbox
             id="rp"
             text="semantics"

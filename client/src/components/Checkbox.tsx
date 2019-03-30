@@ -5,9 +5,10 @@ interface Props {
   text: string;
   clickFunc: any;
   ifChecked?: boolean;
+  labelStyle?: Object;
 }
 export default function Checkbox(props: Props) {
-  const { id, text, clickFunc, ifChecked } = props;
+  const { id, text, clickFunc, ifChecked, labelStyle } = props;
   return (
     <form role="form">
       <div className="checkbox">
@@ -20,8 +21,8 @@ export default function Checkbox(props: Props) {
         <label
           htmlFor={id}
           className="checkbox-label"
-          style={{ paddingLeft: 0 }}
           onClick={clickFunc}
+          style={Object.assign({}, { paddingLeft: 0 }, labelStyle)}
         >
           {text}
         </label>
