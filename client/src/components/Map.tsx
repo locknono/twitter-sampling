@@ -23,7 +23,8 @@ import {
   SCATTER_DATA,
   RIVER_DATA,
   SAMPLING_RIVER_DATA,
-  WHEEL_DATA
+  WHEEL_DATA,
+  SET_MAP_POINTS
 } from "../actions/setDataAction";
 import { connect, ReactReduxContext } from "react-redux";
 import "leaflet.pm";
@@ -33,7 +34,8 @@ import {
   setSelectedMapIDs,
   setWheelDay,
   SAMPLING_CONDITION,
-  setIfShowHeatMap
+  setIfShowHeatMap,
+  setHoverID
 } from "../actions/setUIState";
 import Heading from "./Heading";
 import {
@@ -46,7 +48,9 @@ import {
   usePointsOnMap,
   useHeat,
   useSvgLayer,
-  useMap
+  useMap,
+  useSelectedPoints,
+  useTopicPoints
 } from "src/hooks/mapHooks";
 const mapState = (state: any) => {
   const { mapPoints, wheelData } = state.dataTree;
@@ -58,7 +62,8 @@ const mapState = (state: any) => {
     samplingFlag,
     wheelDay,
     samplingCondition,
-    ifShowHeatMap
+    ifShowHeatMap,
+    hoverID
   } = state.uiState;
   return {
     mapPoints,
@@ -70,7 +75,8 @@ const mapState = (state: any) => {
     wheelDay,
     samplingCondition,
     ifShowHeatMap,
-    wheelData
+    wheelData,
+    hoverID
   };
 };
 const mapDispatch = {
@@ -78,7 +84,8 @@ const mapDispatch = {
   setSelectedIDs,
   setIfShowMapPoints,
   setSelectedMapIDs,
-  setWheelDay
+  setWheelDay,
+  setHoverID
 };
 
 interface Props {
@@ -97,6 +104,8 @@ interface Props {
   samplingCondition: SAMPLING_CONDITION;
   ifShowHeatMap: boolean;
   wheelData: WheelData | null;
+  setHoverID: typeof setHoverID;
+  hoverID: string | null;
 }
 
 interface Map {
@@ -120,12 +129,10 @@ function Map(props: Props) {
     setWheelDay,
     samplingCondition,
     ifShowHeatMap,
-    wheelData
+    wheelData,
+    hoverID,
+    setHoverID
   } = props;
-  const [
-    lastSelectedLayer,
-    setLastSelectedLayer
-  ] = React.useState<L.Layer | null>(null);
 
   const initialControlLayer = L.control.layers(undefined, undefined, {
     collapsed: false
@@ -135,11 +142,6 @@ function Map(props: Props) {
     initialControlLayer
   );
 
-  const [lastTopicPoints, setLastTopicPoints] = React.useState<any>(null);
-
-  const [selectedPointsGroup, setSelectedPointsGroup] = React.useState<any>(
-    null
-  );
   const [wheelRadius, setWheelRadius] = React.useState<null | number>(null);
   const [wheelCenter, setWheelCenter] = React.useState<any | [number, number]>(
     null
@@ -147,22 +149,31 @@ function Map(props: Props) {
 
   const map = useMap();
 
-  const [pointsLayerGroup, setPointsLayerGroup] = usePointsOnMap(
+  usePointsOnMap(
     mapPoints,
     map,
     ifShowMapPoints,
-    selectedIDs
+    selectedIDs,
+    curTopic,
+    setHoverID
   );
-
-  const [heatLayerGroup, setHeatLayerGroup] = useHeat(
-    map,
-    ifShowHeatMap,
-    samplingFlag,
-    samplingCondition
-  );
-
+  useHeat(map, ifShowHeatMap, samplingFlag, samplingCondition);
   const svgLayer = useSvgLayer(map);
-
+  const lastSelectedLayer = useSelectedPoints(
+    map,
+    mapPoints,
+    selectedIDs,
+    ifShowMapPoints,
+    setHoverID
+  );
+  useTopicPoints(
+    map,
+    mapPoints,
+    selectedIDs,
+    ifShowMapPoints,
+    curTopic,
+    setHoverID
+  );
   //set map points data
   React.useEffect(() => {
     (async function setMapPoints() {
@@ -189,37 +200,6 @@ function Map(props: Props) {
     })();
   }, [samplingCondition, samplingFlag]);
 
-  //draw selected ids
-  React.useEffect(() => {
-    if (!map || !mapPoints) return;
-    (async function drawSelectedIDs() {
-      const res = await fetch(pythonServerURL + "getCoorsByIDs", {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        body: JSON.stringify(selectedIDs)
-      });
-      const data = await res.json();
-      const layers: L.Layer[] = [];
-      data.map((e: any) => {
-        layers.push(
-          L.circle(e, {
-            radius: mapCircleRadius,
-            color: color.mapPointColor
-          })
-        );
-      });
-      if (lastSelectedLayer) {
-        map.removeLayer(lastSelectedLayer);
-      }
-      const layerGroup = L.layerGroup(layers);
-      if (ifShowMapPoints) {
-        layerGroup.addTo(map);
-      }
-      setLastSelectedLayer(layerGroup);
-    })();
-  }, [selectedIDs]);
-
   React.useEffect(() => {
     if (selectedIDs.length === 0 || !map || !lastSelectedLayer) return;
     if (ifShowMapPoints) {
@@ -228,54 +208,6 @@ function Map(props: Props) {
       map.removeLayer(lastSelectedLayer);
     }
   }, [ifShowMapPoints]);
-
-  //click sampling button
-  React.useEffect(() => {
-    if (!map) return;
-  }, [samplingFlag]);
-
-  //points for one topic
-  React.useEffect(() => {
-    if (!mapPoints || !curTopic || !map) return;
-    if (lastTopicPoints) {
-      map.removeLayer(lastTopicPoints);
-      controlLayer.removeLayer(lastTopicPoints);
-    }
-    const allPoints: MapPoint[] = [];
-
-    const pointsSet = new Set();
-    mapPoints.map(e => {
-      if (e.topic !== curTopic) return;
-      const latlngStr = `${e.lat}_${e.lng}`;
-      if (pointsSet.has(latlngStr) === false) {
-        allPoints.push(e);
-        pointsSet.add(latlngStr);
-      }
-    });
-    const allPointsLayer: L.Layer[] = [];
-    allPoints.map(e => {
-      const id = e.id;
-      allPointsLayer.push(
-        L.circle(e, {
-          radius: mapCircleRadius,
-          color: color.mapPointColor
-        }).on("mouseover", () => {
-          (async function fechText() {
-            const res = await fetch(pythonServerURL + "getTextByID", {
-              method: "POST",
-              mode: "cors",
-              cache: "no-cache",
-              body: JSON.stringify(id)
-            });
-            const text = await res.json();
-          })();
-        })
-      );
-    });
-    const layerGroup = L.layerGroup(allPointsLayer);
-    setLastTopicPoints(layerGroup);
-    layerGroup.addTo(map);
-  }, [curTopic]);
 
   React.useEffect(() => {
     if (!map || !svgLayer || !mapPoints) return;
@@ -447,7 +379,7 @@ function Map(props: Props) {
   }, [systemName]);
 
   let colorBars = [];
-  for (let i = 0; i < topicNumber; i++) {
+  for (let i = topicNumber - 1; i >= 0; i--) {
     colorBars.push(
       <div
         key={i}
@@ -459,7 +391,7 @@ function Map(props: Props) {
           borderRadius: "50%",
           backgroundColor: color.nineColors[i],
           float: "right",
-          transform: curTopic === i ? "scale(1.15)" : "scale(1)",
+          transform: curTopic === i ? "scale(1.16)" : "scale(1)",
           transformOrigin: "center"
         }}
       />

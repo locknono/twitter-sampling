@@ -33,16 +33,20 @@ interface Props {
   selectedIDs: string[];
   samplingFlag: boolean;
   texts: Text[];
+  mapPoints: MapPoint[];
+  hoverID: string | null;
 }
 
 const mapState = (state: any) => {
-  const { texts } = state.dataTree;
-  const { curTopic, selectedIDs, samplingFlag } = state.uiState;
+  const { texts, mapPoints } = state.dataTree;
+  const { curTopic, selectedIDs, samplingFlag, hoverID } = state.uiState;
   return {
     curTopic,
     selectedIDs,
     samplingFlag,
-    texts
+    texts,
+    mapPoints,
+    hoverID
   };
 };
 const mapDispatch = {
@@ -52,7 +56,7 @@ const mapDispatch = {
 };
 
 function Texts(props: Props) {
-  const { texts, setData } = props;
+  const { texts, setData, curTopic, mapPoints, hoverID } = props;
 
   const { selectedIDs } = props;
 
@@ -62,14 +66,40 @@ function Texts(props: Props) {
 
   const [renderTextCount, setRenderTextCount] = React.useState(20);
 
+  const [imgIndices, setImgIndices] = React.useState<number[]>([]);
+
+  const [hoverText, setHoverText] = React.useState<any>();
   function handleScroll(e: React.SyntheticEvent) {
     if (!textsRef.current) return;
     const el = textsRef.current;
     if (el.scrollTop + el.clientHeight > el.scrollHeight * 0.8) {
-      console.log("add texts");
       setRenderTextCount(renderTextCount + 10);
     }
   }
+
+  React.useEffect(() => {
+    if (hoverID === null) {
+      setHoverText(null);
+    }
+    (async () => {
+      const res = await fetch(pythonServerURL + "getTextByID", {
+        method: "POST",
+        mode: "cors",
+        body: JSON.stringify(hoverID)
+      });
+      const data = await res.json();
+      setHoverText(data);
+    })();
+  }, [hoverID]);
+
+  React.useEffect(() => {
+    const indx = [];
+    for (let i = 0; i < 30; i++) {
+      indx.push(i);
+    }
+    const shuffledIndices = shuffle(indx);
+    setImgIndices(shuffledIndices);
+  }, [texts]);
 
   React.useEffect(() => {
     (async () => {
@@ -93,28 +123,42 @@ function Texts(props: Props) {
 
   React.useEffect(() => {
     if (selectedIDs.length === 0) return;
-    (async () => {
-      try {
-        const res = await fetch(pythonServerURL + "getTextsByIDs", {
-          method: "POST",
-          mode: "cors",
-          cache: "no-cache",
-          body: JSON.stringify(selectedIDs)
-        });
-        const texts = await res.json();
-        setData(TEXTS, texts);
-        setIfFetchSuccess(true);
-      } catch (e) {
-        setIfFetchSuccess(false);
-      }
-    })();
+    fetchTextsByIDs(selectedIDs);
   }, [selectedIDs]);
 
-  const imgIndices = [];
-  for (let i = 0; i < 20; i++) {
-    imgIndices.push(i);
+  //topic texts
+  React.useEffect(() => {
+    if (!mapPoints) return;
+    const topicIDs: string[] = [];
+    mapPoints.map(e => {
+      if (e.topic !== curTopic) return;
+      topicIDs.push(e.id);
+    });
+    fetchTextsByIDs(topicIDs);
+  }, [curTopic]);
+
+  async function fetchTextsByIDs(ids: string[]) {
+    try {
+      const res = await fetch(pythonServerURL + "getTextsByIDs", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        body: JSON.stringify(ids)
+      });
+      const texts = await res.json();
+      texts.sort((a: any, b: any) => {
+        return (
+          parseInt(a.time.split(" ")[0].split("-")[2]) -
+          parseInt(b.time.split(" ")[0].split("-")[2])
+        );
+      });
+      setData(TEXTS, texts);
+      setIfFetchSuccess(true);
+    } catch (e) {
+      setIfFetchSuccess(false);
+    }
   }
-  const shuffledIndices = shuffle(imgIndices);
+
   let renderTexts;
   if (ifFetchSuccess === false) {
     renderTexts = <div>!!!START SERVER!!!</div>;
@@ -123,20 +167,30 @@ function Texts(props: Props) {
       if (i > renderTextCount) return;
       return (
         <SingleText
-          key={v4()}
+          key={e.text}
           text={e.text}
-          index={shuffledIndices[i % 20]}
+          index={imgIndices[i % 30]}
           id={e.id}
           time={e.time}
         />
       );
     });
   }
+  const renderHoverText = hoverText ? (
+    <SingleText
+      key={hoverText.text}
+      text={hoverText.text}
+      index={imgIndices[Math.floor(Math.random() * 30)]}
+      id={hoverText.id}
+      time={hoverText.time}
+    />
+  ) : null;
   return (
     <div className="view-div panel panel-default" id="texts-div">
       <Heading title="Text Information" />
       <div className="texts-content-div"> </div>
       <div className="list-group" onScroll={handleScroll} ref={textsRef}>
+        {renderHoverText}
         {renderTexts}
       </div>
     </div>

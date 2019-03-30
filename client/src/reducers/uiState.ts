@@ -9,7 +9,8 @@ import {
   SET_SAMPLING_CONDITION,
   SET_WHEEL_DAY,
   SAMPLING_CONDITION,
-  SET_IF_SHOW_HEATMAP
+  SET_IF_SHOW_HEATMAP,
+  SET_HOVER_ID
 } from "../actions/setUIState";
 
 import { setData, CLOUD_DATA } from "../actions/setDataAction";
@@ -26,6 +27,7 @@ interface UIState {
   samplingCondition: SAMPLING_CONDITION;
   wheelDay: number;
   ifShowHeatMap: boolean;
+  hoverID: string | null;
 }
 
 const initialState: UIState = {
@@ -38,7 +40,8 @@ const initialState: UIState = {
   selectedMapIDs: [],
   samplingCondition: SAMPLING_CONDITION.spaceAndTime,
   wheelDay: 12,
-  ifShowHeatMap: false
+  ifShowHeatMap: false,
+  hoverID: null
 };
 
 export function uiState(state = initialState, action: any) {
@@ -72,6 +75,9 @@ export function uiState(state = initialState, action: any) {
       break;
     case SET_IF_SHOW_HEATMAP:
       return { ...state, ifShowHeatMap: action.flag };
+      break;
+    case SET_HOVER_ID:
+      return { ...state, hoverID: action.id };
       break;
     default:
       return state;

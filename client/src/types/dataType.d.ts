@@ -19,8 +19,8 @@ type MapPoints = MapPoint[];
 interface DocPrData {
   [id: string]: number[];
 }
-
 type CurTopic = number | undefined;
+
 
 interface CloudWord {
   text: string;

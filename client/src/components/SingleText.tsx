@@ -23,6 +23,7 @@ interface Props {
   index: number;
   id: string;
   time: string;
+  textStyle?: Object;
 }
 export default function SingleText(props: Props) {
   const { text, index, id, time } = props;

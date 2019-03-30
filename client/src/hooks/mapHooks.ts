@@ -7,15 +7,30 @@ import {
   url
 } from "src/constants/constants";
 import { getURLBySamplingCondition } from "src/shared/fetch";
-import { SAMPLING_CONDITION } from "src/actions/setUIState";
+import { SAMPLING_CONDITION, setHoverID } from "src/actions/setUIState";
 import * as d3 from "d3";
 import { options, tileLayerURL } from "src/constants/mapOptions";
+
+export function useMap() {
+  const [map, setMap] = React.useState<L.Map | null>(null);
+  React.useEffect(() => {
+    const map = L.map("map", options);
+    L.tileLayer(tileLayerURL).addTo(map);
+    setMap(map);
+    map.on("click", function(e) {});
+    map.pm.addControls(options);
+    //map.pm.enableDraw("Circle", drawOptions as any);
+  }, []);
+  return map;
+}
 
 export function usePointsOnMap(
   mapPoints: MapPoint[],
   map: L.Map | null,
   ifShowMapPoints: boolean,
-  selectedIDs: string[]
+  selectedIDs: string[],
+  curTopic: CurTopic,
+  setHover: typeof setHoverID
 ) {
   const [
     pointsLayerGroup,
@@ -39,29 +54,15 @@ export function usePointsOnMap(
     const allPointsLayer: L.Layer[] = [];
     allPoints.map(e => {
       const id = e.id;
-      allPointsLayer.push(
-        L.circle(e, {
-          radius: mapCircleRadius,
-          color: color.mapPointColor
-        }).on("mouseover", () => {
-          (async function fechText() {
-            const res = await fetch(pythonServerURL + "getTextByID", {
-              method: "POST",
-              mode: "cors",
-              cache: "no-cache",
-              body: JSON.stringify(id)
-            });
-            const text = await res.json();
-          })();
-        })
-      );
+      allPointsLayer.push(createCircle(e.lat, e.lng, id, setHover));
     });
     if (pointsLayerGroup) {
       map.removeLayer(pointsLayerGroup);
     }
     const layerGroup = L.layerGroup(allPointsLayer);
     setPointsLayerGroup(layerGroup);
-    if (ifShowMapPoints) {
+
+    if (ifShowMapPoints && curTopic === undefined) {
       layerGroup.addTo(map);
     }
   }, [mapPoints]);
@@ -69,12 +70,12 @@ export function usePointsOnMap(
   React.useEffect(() => {
     if (!pointsLayerGroup || !map) return;
     if (selectedIDs.length !== 0) return;
-    if (ifShowMapPoints) {
+    if (ifShowMapPoints && curTopic === undefined) {
       pointsLayerGroup.addTo(map);
     } else {
       map.removeLayer(pointsLayerGroup);
     }
-  }, [ifShowMapPoints]);
+  }, [ifShowMapPoints, curTopic]);
 
   return [pointsLayerGroup, setPointsLayerGroup];
 }
@@ -142,15 +143,110 @@ export function useSvgLayer(map: L.Map | null) {
   return svgLayer;
 }
 
-export function useMap() {
-  const [map, setMap] = React.useState<L.Map | null>(null);
+export function useSelectedPoints(
+  map: L.Map | null,
+  mapPoints: MapPoint[],
+  selectedIDs: string[],
+  ifShowMapPoints: boolean,
+  setHover: typeof setHoverID
+) {
+  const [
+    lastSelectedLayer,
+    setLastSelectedLayer
+  ] = React.useState<L.Layer | null>(null);
+
   React.useEffect(() => {
-    const map = L.map("map", options);
-    L.tileLayer(tileLayerURL).addTo(map);
-    setMap(map);
-    map.on("click", function(e) {});
-    map.pm.addControls(options);
-    //map.pm.enableDraw("Circle", drawOptions as any);
-  }, []);
-  return map;
+    if (!map || !mapPoints) return;
+    (async function drawSelectedIDs() {
+      const res = await fetch(pythonServerURL + "getCoorsByIDs", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        body: JSON.stringify(selectedIDs)
+      });
+      const data = await res.json();
+      const layers: L.Layer[] = [];
+      data.map((e: any) => {
+        layers.push(createCircle(e[0], e[1], e.id, setHover));
+      });
+      if (lastSelectedLayer) {
+        map.removeLayer(lastSelectedLayer);
+      }
+      const layerGroup = L.layerGroup(layers);
+      if (ifShowMapPoints === true) {
+        layerGroup.addTo(map);
+      }
+      setLastSelectedLayer(layerGroup);
+    })();
+  }, [selectedIDs]);
+
+  return lastSelectedLayer;
+}
+
+export function useTopicPoints(
+  map: L.Map | null,
+  mapPoints: MapPoint[],
+  selectedIDs: string[],
+  ifShowMapPoints: boolean,
+  curTopic: CurTopic,
+  setHover: typeof setHoverID
+) {
+  const [lastTopicPoints, setLastTopicPoints] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    if (!mapPoints || !curTopic || !map) return;
+    const allPoints: MapPoint[] = [];
+    const pointsSet = new Set();
+    mapPoints.map(e => {
+      if (e.topic !== curTopic) return;
+      const latlngStr = `${e.lat}_${e.lng}`;
+      if (pointsSet.has(latlngStr) === false) {
+        allPoints.push(e);
+        pointsSet.add(latlngStr);
+      }
+    });
+    const allPointsLayer: L.Layer[] = [];
+    allPoints.map(e => {
+      const id = e.id;
+      allPointsLayer.push(createCircle(e.lat, e.lng, id, setHover));
+    });
+
+    if (lastTopicPoints) map.removeLayer(lastTopicPoints);
+
+    const layerGroup = L.layerGroup(allPointsLayer);
+    setLastTopicPoints(layerGroup);
+    if (ifShowMapPoints && curTopic !== undefined) {
+      layerGroup.addTo(map);
+    }
+  }, [curTopic]);
+
+  React.useEffect(() => {
+    if (!lastTopicPoints || !map) return;
+    if (selectedIDs.length !== 0) return;
+
+    if (ifShowMapPoints) {
+      lastTopicPoints.addTo(map);
+    } else {
+      map.removeLayer(lastTopicPoints);
+    }
+  }, [ifShowMapPoints]);
+}
+
+function createCircle(
+  lat: number,
+  lng: number,
+  id: string,
+  setDataAction: typeof setHoverID
+) {
+  const circle = L.circle([lat, lng], {
+    radius: mapCircleRadius,
+    color: color.mapPointColor
+  })
+    .on("mouseover", () => {
+      setDataAction(id);
+    })
+    .on("mouseout", () => {
+      setDataAction(null);
+    });
+  return circle;
 }

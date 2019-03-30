@@ -28,19 +28,11 @@ const mapState = (state: any) => {
   return { cloudData, curTopic, samplingFlag, selectedIDs };
 };
 const mapDispatch = {
-  setData,
-  setCurTopic
+  setData
 };
 
 function WordCloud(props: Props) {
-  const {
-    cloudData,
-    curTopic,
-    setData,
-    setCurTopic,
-    samplingFlag,
-    selectedIDs
-  } = props;
+  const { cloudData, curTopic, setData, samplingFlag, selectedIDs } = props;
   const [width, height] = useWidthAndHeight("cloud-svg");
   const [cloudLayout, setCloudLayout] = React.useState<any | undefined>(
     undefined

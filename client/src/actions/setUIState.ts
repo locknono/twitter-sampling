@@ -10,6 +10,7 @@ export const SET_SELECTED_MAP_IDS = "SET_SELECTED_MAP_IDS";
 export const SET_SAMPLING_CONDITION = "SET_SAMPLING_CONDITION";
 export const SET_WHEEL_DAY = "SET_WHEEL_DAY";
 export const SET_IF_SHOW_HEATMAP = "SET_IF_SHOW_HEATMAP";
+export const SET_HOVER_ID = "SET_HOVER_ID";
 
 export enum SAMPLING_CONDITION {
   random = 0,
@@ -85,5 +86,12 @@ export function setIfShowHeatMap(flag: boolean) {
   return {
     type: SET_IF_SHOW_HEATMAP,
     flag
+  };
+}
+
+export function setHoverID(id: string | null) {
+  return {
+    type: SET_HOVER_ID,
+    id
   };
 }

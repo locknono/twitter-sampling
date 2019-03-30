@@ -134,12 +134,12 @@ function MapControl(props: Props) {
 
       <SliderWithLabel
         name="min frequency"
-        min={0}
+        min={1}
         max={100}
         defaultValue={defaultMinWheelValue}
         color="blue"
         step={1}
-        sliderMethod={slideToSetMinValue}
+        endMethod={slideToSetMinValue}
       />
 
       <SliderWithLabel
@@ -149,7 +149,7 @@ function MapControl(props: Props) {
         defaultValue={defaultMinWheelInter}
         color="blue"
         step={1}
-        sliderMethod={sliderToSetMinInter}
+        endMethod={sliderToSetMinInter}
       />
     </div>
   );

@@ -58,7 +58,7 @@ function GroupBar(props: Props) {
     curTopic,
     samplingCondition
   } = props;
-  
+
   const [width, height] = useWidthAndHeight("groupbar-svg");
 
   let bars: JSX.Element[] = [];
@@ -112,7 +112,7 @@ function GroupBar(props: Props) {
         .scaleLinear()
         .domain([minValueY, maxValue])
         .range([yEnd, yStart])
-        .clamp(true)
+        .clamp(true);
     }
 
     for (let i = 0; i < original.length; i++) {
@@ -128,7 +128,8 @@ function GroupBar(props: Props) {
           opacity={i === curTopic ? 0.7 : 0}
           rx={2}
           ry={2}
-          onClick={() => {
+          onClick={e => {
+            e.stopPropagation();
             setCurTopic(i);
           }}
         />
@@ -144,7 +145,8 @@ function GroupBar(props: Props) {
           fill={color.originalBarColor}
           rx={2}
           ry={2}
-          onClick={() => {
+          onClick={e => {
+            e.stopPropagation();
             setCurTopic(i);
           }}
         />
@@ -160,7 +162,8 @@ function GroupBar(props: Props) {
           fill={color.samplingColor}
           rx={2}
           ry={2}
-          onClick={() => {
+          onClick={e => {
+            e.stopPropagation();
             setCurTopic(i);
           }}
         />
@@ -252,7 +255,7 @@ function GroupBar(props: Props) {
   return (
     <div className="groupbar-div view-div panel panel-default">
       <Heading title="Topic Difference" />
-      <svg id="groupbar-svg">
+      <svg id="groupbar-svg" onClick={() => setCurTopic(undefined)}>
         {borders}
         <g className="group-rects-g">
           {bars}
