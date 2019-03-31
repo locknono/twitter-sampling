@@ -1,7 +1,4 @@
 import math
-
-from ldbr import setRadius, setTimeRadius
-import json
 from ldbr import getKDE, setRadius
 
 

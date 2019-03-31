@@ -1,7 +1,5 @@
 import g
-from gensim.test.utils import common_texts
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-from gensim.test.utils import get_tmpfile
 import os
 import json
 import logging

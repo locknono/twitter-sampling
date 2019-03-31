@@ -2,16 +2,12 @@
 The algorithm could speed up by memorizing some calculating results
 """
 
-import csv
-from itertools import islice
 import random
 from scipy import stats
 import numpy as np
 import math
 import json
-import time
 import g
-import os
 import logging
 from shared.generateRenderData import readJsonFile, writeToJsonFile
 
@@ -171,7 +167,7 @@ def blueNoise(originalPoints, r):
         p['status'] = None
         p['coverByDisk'] = False
 
-    initialActivePoint = getRandomPoint(points, samplePoints, kde,r)
+    initialActivePoint = getRandomPoint(points, samplePoints, kde, r)
     initialActivePoint['status'] = 1
     initialActivePoint['coverByDisk'] = True
     samplePoints.append(initialActivePoint)
@@ -179,7 +175,7 @@ def blueNoise(originalPoints, r):
 
     while (len(activePoints) > 0 or ifAllPointsInDisk(points, samplePoints) == False):
         if len(activePoints) == 0:
-            initialActivePoint = getRandomPoint(points, samplePoints, kde,r)
+            initialActivePoint = getRandomPoint(points, samplePoints, kde, r)
             if initialActivePoint == None:
                 break
             initialActivePoint['status'] = 1

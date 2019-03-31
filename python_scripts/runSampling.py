@@ -9,7 +9,6 @@ import os
 from blueRapidEstimate import getRalationshipList, compareRelationshipList
 from ldbr import ldbr
 from shared.getLdbrData import getLdbrPoints, getOriginalEstimates, getSamplingIDs
-from shared.constant import nyBound
 import copy
 from ldbr import getKDE, setRadius, getTimeKDE, setTimeRadius
 from kdeIndicator import getKDEIndicator, getKL
@@ -86,7 +85,7 @@ if __name__ == '__main__':
     r2 = getRalationshipList(originalEstimates)
 
     samplingIDs = None
-    base = 0.3
+    base = 0.2
     for t in range(30):
         c = base + 0.002 * t
         print(c)

@@ -2,8 +2,6 @@ import g
 import json
 import numpy as np
 from sklearn.manifold import TSNE
-import os
-from shared.lda_op import findMaxIndexAndValueForOneDoc
 
 
 def runTsne(idVectorDict):

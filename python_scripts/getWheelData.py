@@ -1,6 +1,4 @@
 import g
-from flask import Flask, Response, Request, request, jsonify
-import json
 from shared.generateRenderData import getWordCloud, readJsonFile, writeToJsonFile
 import math
 import time

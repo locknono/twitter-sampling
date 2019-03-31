@@ -1,9 +1,4 @@
 # @author zhouxiaoyun,zhangxinlong
-import csv
-import codecs
-from nltk.stem.porter import PorterStemmer
-from nltk.stem.lancaster import LancasterStemmer
-from nltk.stem import SnowballStemmer
 from nltk.stem import WordNetLemmatizer
 import g
 import os

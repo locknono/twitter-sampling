@@ -2,12 +2,9 @@ import json
 import g
 from docAlgo.runDoc2vec import runDoc2vec
 from docAlgo.runTsne import runTsne
-from docAlgo.runKmeans import runKmeans
 from shared.generateRenderData import writeToJsonFile, getScatterPoints, getMapPoints, getWordCloud, readJsonFile, \
     getHexes
 import os
-from ldbr import ldbr
-from shared.getLdbrData import getLdbrPoints
 
 if __name__ == '__main__':
 

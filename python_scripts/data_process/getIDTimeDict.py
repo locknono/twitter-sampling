@@ -2,8 +2,6 @@ import json
 import g
 import os
 
-
-
 if __name__ == '__main__':
     cwd = os.getcwd()
     wd = os.path.split(cwd)[0]

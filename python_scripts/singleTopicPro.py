@@ -2,7 +2,6 @@ import json
 import g
 import numpy as np
 import matplotlib.pyplot as plt
-from iter import saveProbablityBarChart
 import random
 from blueRapidEstimate import getRalationshipList, compareRelationshipList
 import copy
