@@ -149,16 +149,18 @@ function Texts(props: Props) {
       });
       const texts = await res.json();
       const findDayRegx = /\d\s/g;
+      console.log("texts: ", texts);
       texts.sort((a: any, b: any) => {
         //2016-11-12 12:00:00
-        return (
+        /*  return (
           parseInt(a.time.match(findDayRegx)[0].trim()) -
           parseInt(b.time.match(findDayRegx)[0].trim())
-        );
+        ); */
       });
       setData(TEXTS, texts);
       setIfFetchSuccess(true);
     } catch (e) {
+      console.log(e);
       setIfFetchSuccess(false);
     }
   }

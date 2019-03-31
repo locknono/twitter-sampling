@@ -33,6 +33,7 @@ try:
             riverIDTimeDict[id] = time
 except Exception as e:
     riverIDTimeDict = readJsonFile(g.dataPath + 'riverIDTimeDict.json')
+    originalIDTimeDict = readJsonFile(g.dataPath + 'riverIDTimeDict.json')
 
 
 @app.route("/")
@@ -80,9 +81,20 @@ def getTextByID():
 def getTextsByID():
     ids = json.loads(request.data)
     texts = []
+
+    index = 300
+    keys = originalIDTimeDict.keys()
     for id in ids:
-        text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
-        texts.append(text)
+        try:
+            index += 1
+            text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
+            texts.append(text)
+        except Exception as e:
+            print(e)
+            text = {"text": originalIDTextDict[keys[index]], "id": id.strip('000000000000'),
+                    "time": originalIDTimeDict[keys[index]]}
+            texts.append(text)
+    print(len(texts))
     res = Response(json.dumps(texts))
     res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
@@ -101,12 +113,14 @@ def getInitialTexts():
         index = 0
         try:
             index += 1
-            text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
+            text = {"text": originalIDTextDict[id], "id": id.strip('000000000000'), "time": originalIDTimeDict[id]}
             texts.append(text)
         except Exception as e:
-            text = {"text": originalIDTextDict[keys[index]], "id": id, "time": originalIDTimeDict[id]}
+            print(e)
+            text = {"text": originalIDTextDict[keys[index]], "id": id.strip('000000000000'),
+                    "time": originalIDTimeDict[id]}
             texts.append(text)
-        print(texts)
+    print(len(texts))
     res = Response(json.dumps(texts))
     res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'

@@ -36,7 +36,7 @@ function River(props: Props) {
     samplingFlag,
     samplingCondition
   } = props;
-
+  const [myChart, setMyChart] = React.useState<any>(null);
   React.useEffect(() => {
     const fetchURL =
       samplingFlag === true
@@ -49,13 +49,16 @@ function River(props: Props) {
 
   React.useEffect(() => {
     if (!riverData) return;
+    const option = createRiverOption(riverData);
+    myChart.setOption(option as any);
+  }, [riverData]);
+
+  React.useEffect(() => {
     const myChart = echarts.init(document.getElementById(
       "river"
     ) as HTMLDivElement);
-    const option = createRiverOption(riverData);
-    myChart.on("click", function() {});
-    myChart.setOption(option as any);
-  }, [riverData]);
+    setMyChart(myChart);
+  }, []);
 
   return (
     <div className="river-view panel panel-default">

@@ -50,11 +50,11 @@ function StackBar(props: Props) {
   } = props;
 
   const [chart, setChart] = React.useState();
-
+  const [ownRiverData, setOwnRiverData] = React.useState<any>();
   React.useEffect(() => {
     fetchJsonData(url.riverDataURL)
       .then(data => {
-        setData(RIVER_DATA, data);
+        setOwnRiverData(data);
       })
       .then(function() {
         return fetchJsonData(
@@ -67,13 +67,13 @@ function StackBar(props: Props) {
   }, [samplingCondition]);
 
   React.useEffect(() => {
-    if (!samplingRiverData || !riverData) return;
+    if (!samplingRiverData || !ownRiverData) return;
 
     const diffRiverData: [string, number, string][] = [];
-    for (let i = 0; i < riverData.length; i++) {
-      const date = riverData[i][0];
-      const value = riverData[i][1];
-      const topic = riverData[i][2];
+    for (let i = 0; i < ownRiverData.length; i++) {
+      const date = ownRiverData[i][0];
+      const value = ownRiverData[i][1];
+      const topic = ownRiverData[i][2];
       let diff = -1;
       for (let j = 0; j < samplingRiverData.length; j++) {
         if (
@@ -95,8 +95,6 @@ function StackBar(props: Props) {
     myChart.on("click", function() {});
     myChart.setOption(option as any);
   }, [samplingRiverData]);
-
-  React.useEffect(() => {}, [riverData]);
 
   return (
     <div className="stack-bar-div panel panel-default">

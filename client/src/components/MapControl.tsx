@@ -125,7 +125,7 @@ function MapControl(props: Props) {
       <SliderWithLabel
         name="select date"
         min={11}
-        max={17}
+        max={28}
         defaultValue={12}
         color="blue"
         step={1}
