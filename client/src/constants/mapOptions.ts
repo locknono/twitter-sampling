@@ -1,8 +1,8 @@
 export const tl: [number, number] = [40.9328129198744, -74.32278448250146];
 export const rb: [number, number] = [40.49040846908216, -73.73446653597058];
-const center: [number, number] = [40.74236688190866, -74.01489262003452];
+//const center: [number, number] = [40.74236688190866, -74.01489262003452];
 
-/* const center: [number, number] = [40.42433253092038, -79.9375848304853]; */
+const center: [number, number] = [40.42433253092038, -79.9375848304853];
 const zoom = 11.5;
 const preferCanvas = true;
 const zoomControl = false;
