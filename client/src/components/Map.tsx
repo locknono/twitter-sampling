@@ -212,6 +212,7 @@ function Map(props: Props) {
   React.useEffect(() => {
     if (!map) return;
     let lastW: any = null;
+    map.removeEventListener("pm:create");
     map.on("pm:create", function(e1: any) {
       const layer = e1.layer;
       if (!lastW) {
@@ -401,8 +402,6 @@ export default connect(
   mapState,
   mapDispatch
 )(Map);
-
-async function fetchAndAddLayer() {}
 
 function ifInside(
   p: [number, number],

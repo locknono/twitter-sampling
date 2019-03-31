@@ -36,7 +36,7 @@ export function useMapPoints(
     pointsLayerGroup,
     setPointsLayerGroup
   ] = React.useState<null | L.LayerGroup<L.Circle>>(null);
-
+  console.log("mapPoints: ", mapPoints);
   React.useEffect(() => {
     if (!mapPoints || !map) return;
 
