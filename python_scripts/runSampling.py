@@ -37,6 +37,8 @@ def getSamplingPoints(sampleGroups):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+
     kl1 = None
     kl2 = None
     kl3 = None
@@ -84,8 +86,52 @@ if __name__ == '__main__':
     originalEstimates = getOriginalEstimates(points, g.topicNumber)
     r2 = getRalationshipList(originalEstimates)
 
+    maxBlueRatio = 1
+    blueRatio = 1
+    spaceR = spaceR * 250
+    blueNoisePoints = None
+    while (blueRatio > maxRatio - 0.1 or spaceR > 500):
+        try:
+            print('start blue noise')
+            spaceR = spaceR / 3
+            blueNoisePoints = []
+            for id in idLocationDict:
+                if id not in idClassDict:
+                    continue
+                blueNoisePoints.append({"lat": idLocationDict[id][0], "lng": idLocationDict[id][1], "id": id})
+            sampledBlueNoisePoints = blueNoise(blueNoisePoints, spaceR)
+
+            bluePoints = []
+            idSet = set()
+            for p1 in sampledBlueNoisePoints:
+                idSet.add(p1['id'])
+            for p2 in copy.deepcopy(points):
+                if p2.id not in idSet:
+                    continue
+                bluePoints.append(p2)
+            blueIDs = [p.id for p in bluePoints]
+
+            blueEstimates = getOriginalEstimates(bluePoints)
+            blueRelation = getRalationshipList(blueEstimates)
+            blueRatio = compareRelationshipList(r2, blueRelation)
+            # print(len(bluePoints))
+            # print('blue ratio:' + str(blueRatio))
+            if blueRatio >= maxBlueRatio:
+                print(len(blueIDs), blueRatio)
+                continue
+            maxBlueRatio = blueRatio
+            path1 = '../client/public/blue/'
+            path2 = g.dataPath + 'blue/'
+            saveAllSamplingData(originalEstimates, blueEstimates, idLocationDict, idClassDict, idScatterData,
+                                idTextDict,
+                                riverIDTimeDict, blueIDs, path1, path2)
+            print(len(blueIDs), blueRatio)
+        except Exception as e:
+            print(e)
+    print(len(blueIDs), blueRatio)
+
     samplingIDs = None
-    base = 0.35
+    base = 0.2
     for t in range(30):
         c = base + 0.002 * t
         print(c)

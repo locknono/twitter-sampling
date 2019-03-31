@@ -5,16 +5,24 @@
  */
 
 import { Fiber } from "./fiber";
-import priorityTree from "./priorityTree";
-
+import priorityTree, { TreeNode } from "./priorityTree";
+import { timeout } from "d3";
 interface UpdateQueue extends Array<Fiber> {
   sortByPriority: Function;
   clearSameStream: Function;
   flush: Function;
+  push: any;
 }
 const updateQueue: UpdateQueue = Object.create(Array.prototype);
 
 updateQueue.sortByPriority = function() {
+  const topStreams: string[] = [];
+  priorityTree.traverseDF((node: TreeNode) => {
+    const depth = priorityTree.getDepthOfNode(node);
+    if (depth !== 1) return;
+    topStreams.push(node.streamID);
+  });
+  console.log("topStreams: ", topStreams);
   this.sort((a: Fiber, b: Fiber) => {
     return b.priority - a.priority;
   });
@@ -31,13 +39,29 @@ updateQueue.clearSameStream = function() {
 };
 
 updateQueue.flush = function(this: typeof updateQueue) {
-  this.sortByPriority();
-  if (this.length > 0) {
-    requestAnimationFrame(this[0].renderMethod as FrameRequestCallback);
-    updateQueue.splice(0, 1);
-  }
-  requestAnimationFrame(this.flush as FrameRequestCallback);
+  const draw = () => {
+    this.sortByPriority();
+    if (this.length > 0) {
+      requestAnimationFrame(this[0].renderMethod as FrameRequestCallback);
+      updateQueue.splice(0, 1);
+    }
+    requestAnimationFrame(draw as FrameRequestCallback);
+  };
+  draw();
 }.bind(updateQueue);
+
+let timeoutID: number;
+updateQueue.push = function(this: typeof updateQueue, ...args: Fiber[]) {
+  Array.prototype.push.apply(this, args);
+  for (let i = 0; i < args.length; i++) {
+    priorityTree.add(args[i].streamID, 1);
+    priorityTree.setWeight();
+    /* clearTimeout(timeoutID);
+    timeoutID = window.setTimeout(() => {
+      priorityTree.setWeight();
+    }, 0); */
+  }
+};
 
 Object.defineProperty(updateQueue, "sortByPriority", {
   enumerable: false

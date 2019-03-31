@@ -1,15 +1,18 @@
 import * as v4 from "uuid/v4";
+
+type StreamID = string;
 export interface Fiber {
   renderMethod: Function;
   priority: number;
-  streamID: number | string;
-  frameID: number | string;
+  streamID: StreamID;
+  frameID: string;
 }
 
 export enum Priority {
   backgroud,
   interaction
 }
+
 export default function createFiber(
   renderMethod: Function,
   priority?: Priority,
