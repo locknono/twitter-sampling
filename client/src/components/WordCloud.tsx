@@ -105,7 +105,7 @@ function WordCloud(props: Props) {
     let topicIndex = curTopic === undefined ? topicNumber : curTopic;
 
     let newWords: CloudWord[];
-    if (topicIndex === lastTopicIndex) {
+    if (topicIndex === lastTopicIndex && selectedIDs.length === 0) {
       newWords = [];
 
       const newWordsSet = new Set();

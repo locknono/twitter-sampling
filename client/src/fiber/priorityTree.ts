@@ -95,18 +95,31 @@ export class Tree {
   };
 
   public setWeight() {
-    const weightNodesDict = {};
+    const depthSumDict = {};
+    const depthMinDict = {};
     this.traverseDF((node: TreeNode) => {
-      if (node.weight) return;
       const depth = this.getDepthOfNode(node);
-      weightNodesDict[depth]
-        ? (weightNodesDict[depth] += node.value)
-        : (weightNodesDict[depth] = node.value);
+      if (depth === 0) return;
+      depthSumDict[depth]
+        ? (depthSumDict[depth] = depthSumDict[depth] + node.value)
+        : (depthSumDict[depth] = node.value);
     });
     this.traverseDF((node: TreeNode) => {
-      if (node.weight) return;
       const depth = this.getDepthOfNode(node);
-      node.weight = node.value / weightNodesDict[depth];
+      if (depth === 0) return;
+      node.weight = node.value / depthSumDict[depth];
+      if (!depthMinDict[depth]) {
+        depthMinDict[depth] = node.weight;
+      }
+      if (node.weight < depthMinDict[depth]) {
+        depthMinDict[depth] = node.weight;
+      }
+    });
+    this.traverseDF((node: TreeNode) => {
+      const depth = this.getDepthOfNode(node);
+      if (node.weight) {
+        node.weight = Math.round(node.weight * (1 / depthMinDict[depth]));
+      }
     });
   }
   /** remove a `fiber` from tree,return the `fiber` */
@@ -152,11 +165,6 @@ const testFiber: Fiber = createFiber(() => {
 });
 
 const priorityTree = new Tree(ROOT, -1);
-
-priorityTree.add("a", 1);
-priorityTree.add("c", 1);
-priorityTree.add("d", 1, "c");
-priorityTree.add("e", 1, "c");
 
 console.log("priorityTree: ", priorityTree);
 

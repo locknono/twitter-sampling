@@ -159,7 +159,7 @@ function LdaScatterCanvasCanvas(props: Props) {
           );
           backgroudCtx.fill();
         }
-      }, 1);
+      }, Math.random() * 10);
       updateQueue.push(fiber);
     });
     updateQueue.flush();
@@ -188,7 +188,7 @@ function LdaScatterCanvasCanvas(props: Props) {
         );
         ctx.fill();
       }
-    }, 1);
+    }, Math.random() * 3);
     updateQueue.push(fiber);
     updateQueue.flush();
   }, [curTopic, backgroudCtx, scales]);
@@ -250,7 +250,7 @@ function LdaScatterCanvasCanvas(props: Props) {
               Math.PI * 2
             );
             ctx.fill();
-          }, 1);
+          }, Math.random() * 2);
           updateQueue.push(fiber);
         });
         updateQueue.flush();
@@ -259,7 +259,7 @@ function LdaScatterCanvasCanvas(props: Props) {
   }, [scatterData, ifDrawScatterCenters, scales]);
 
   //draw selected ids
-  /*  React.useEffect(() => {
+  React.useEffect(() => {
     if (!ctx || !scatterData || !scales || selectedIDs.length === 0) {
       return;
     }
@@ -292,7 +292,7 @@ function LdaScatterCanvasCanvas(props: Props) {
     }, 1);
     updateQueue.push(fiber);
     updateQueue.flush();
-  }, [selectedIDs, scatterData]); */
+  }, [selectedIDs, scatterData]);
 
   function handleClick(e: any) {
     if (e.ctrlKey !== true) return;

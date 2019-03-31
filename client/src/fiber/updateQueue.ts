@@ -11,20 +11,44 @@ interface UpdateQueue extends Array<Fiber> {
   sortByPriority: Function;
   clearSameStream: Function;
   flush: Function;
+  getNextRenderFrame: Function;
   push: any;
 }
 const updateQueue: UpdateQueue = Object.create(Array.prototype);
 
 updateQueue.sortByPriority = function() {
   const topStreams: string[] = [];
+  const streamRender = {};
+  for (let i = 0; i < this.length; i++) {
+    streamRender[this[i].streamID]
+      ? streamRender[this[i].streamID].push(this[i].renderMethod)
+      : (streamRender[this[i].streamID] = []);
+  }
   priorityTree.traverseDF((node: TreeNode) => {
     const depth = priorityTree.getDepthOfNode(node);
     if (depth !== 1) return;
     topStreams.push(node.streamID);
   });
-  console.log("topStreams: ", topStreams);
+
   this.sort((a: Fiber, b: Fiber) => {
     return b.priority - a.priority;
+  });
+};
+
+updateQueue.getNextRenderFrame = function() {
+  const streamWeight: [string, number][] = [];
+  const streamRender = {};
+  for (let i = 0; i < this.length; i++) {
+    streamRender[this[i].streamID]
+      ? streamRender[this[i].streamID].push(this[i].renderMethod)
+      : (streamRender[this[i].streamID] = []);
+  }
+  priorityTree.traverseDF((node: TreeNode) => {
+    if (!node.weight) return;
+    const depth = priorityTree.getDepthOfNode(node);
+    if (depth === 1) {
+      streamWeight.push([node.streamID, node.weight]);
+    }
   });
 };
 
@@ -40,12 +64,12 @@ updateQueue.clearSameStream = function() {
 
 updateQueue.flush = function(this: typeof updateQueue) {
   const draw = () => {
-    this.sortByPriority();
     if (this.length > 0) {
+      this.sortByPriority();
       requestAnimationFrame(this[0].renderMethod as FrameRequestCallback);
       updateQueue.splice(0, 1);
+      requestAnimationFrame(draw as FrameRequestCallback);
     }
-    requestAnimationFrame(draw as FrameRequestCallback);
   };
   draw();
 }.bind(updateQueue);
@@ -54,8 +78,10 @@ let timeoutID: number;
 updateQueue.push = function(this: typeof updateQueue, ...args: Fiber[]) {
   Array.prototype.push.apply(this, args);
   for (let i = 0; i < args.length; i++) {
-    priorityTree.add(args[i].streamID, 1);
+    priorityTree.add(args[i].streamID, args[i].priority);
+
     priorityTree.setWeight();
+
     /* clearTimeout(timeoutID);
     timeoutID = window.setTimeout(() => {
       priorityTree.setWeight();
