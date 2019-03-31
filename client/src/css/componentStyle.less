@@ -92,3 +92,27 @@
 .group-rect {
   pointer-events: none;
 }
+
+.map-class-color-bar {
+  width: 15px;
+  height: 15px;
+  margin-top: 1.5px;
+  margin-right: 5px;
+  border-radius: 50%;
+  float: right;
+  transform-origin: center;
+  box-shadow: 1px 1px 1px;
+}
+
+.map-class-color-bar:hover {
+  transform: scale(1.2);
+}
+
+.map-class-color-bar:active {
+  transition: transform 0.2s;
+  transform: translate(-1px, -1px) scale(1.15);
+}
+
+.map-class-color-bar-active {
+  transform: scale(1.2);
+}

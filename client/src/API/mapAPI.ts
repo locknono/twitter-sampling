@@ -51,7 +51,7 @@ export function getArcDatasByWheelData(
     //{innerRadius:number,outerRadius:number,startAngle:number,endAngle:number}
     let arcData: any = {};
     arcData = { color: color.nineColors[i], opacity: null };
-    for (let j = minTime; j <= maxTime; j += 1) {
+    for (let j = minTime; j <= maxTime + 1; j += 1) {
       const value = singleWheelData[j];
       //const height = value === 0 ? 0 : scale(value);
       let angle =

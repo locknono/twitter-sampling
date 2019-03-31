@@ -7,6 +7,10 @@
   margin: 10px;
   text-align: center;
   display: flex;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .view-div {
   display: flex;

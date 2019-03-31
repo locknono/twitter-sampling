@@ -35,7 +35,8 @@ import {
   setWheelDay,
   SAMPLING_CONDITION,
   setIfShowHeatMap,
-  setHoverID
+  setHoverID,
+  setCurTopic
 } from "../actions/setUIState";
 import Heading from "./Heading";
 import {
@@ -85,7 +86,8 @@ const mapDispatch = {
   setIfShowMapPoints,
   setSelectedMapIDs,
   setWheelDay,
-  setHoverID
+  setHoverID,
+  setCurTopic
 };
 
 interface Props {
@@ -106,6 +108,7 @@ interface Props {
   wheelData: WheelData | null;
   setHoverID: typeof setHoverID;
   hoverID: string | null;
+  setCurTopic: typeof setCurTopic;
 }
 
 interface Map {
@@ -131,7 +134,8 @@ function Map(props: Props) {
     ifShowHeatMap,
     wheelData,
     hoverID,
-    setHoverID
+    setHoverID,
+    setCurTopic
   } = props;
 
   const initialControlLayer = L.control.layers(undefined, undefined, {
@@ -159,6 +163,7 @@ function Map(props: Props) {
   );
   useHeat(map, ifShowHeatMap, samplingFlag, samplingCondition);
   const svgLayer = useSvgLayer(map);
+
   const lastSelectedLayer = useSelectedPoints(
     map,
     mapPoints,
@@ -213,6 +218,10 @@ function Map(props: Props) {
     if (!map) return;
     let lastW: any = null;
     map.removeEventListener("pm:create");
+    map.on("pm:remove", function(e1: any) {
+      setSelectedIDs([]);
+      svgLayer.selectAll("path").remove();
+    });
     map.on("pm:create", function(e1: any) {
       const layer = e1.layer;
       if (!lastW) {
@@ -235,7 +244,6 @@ function Map(props: Props) {
       });
       setSelectedIDs(ids);
       setWheelRadius(radius);
-      setWheelCenter(center);
       (async function drawWheel() {
         const postData = {
           selectedIDs: ids,
@@ -256,19 +264,12 @@ function Map(props: Props) {
           wheelDatas[wheelDay - startDay]
         ];
 
-        const { minTime, maxTime, maxValue } = meta;
-
-        const sliceCount = maxTime - minTime;
-
         const arc = getArcGenerator();
-
         const cx = e1.layer._point.x;
         const cy = e1.layer._point.y;
-
         const curWheelCenter = [cx, cy];
 
         svgLayer.selectAll("path").remove();
-
         for (let i = 0; i < data.length; i++) {
           const layerArc = {
             innerRadius: radius + wheelLayerHeight * i,
@@ -281,7 +282,7 @@ function Map(props: Props) {
             .attr("d", arc(layerArc))
             .attr("opacity", 0.3)
             .attr("stroke", color.nineColors[i])
-            .attr("stroke-width", "0.1psx")
+            .attr("stroke-width", "1px")
             .attr("fill", "none")
             .attr(
               "transform",
@@ -300,7 +301,7 @@ function Map(props: Props) {
             .append("path")
             .attr("class", "wheel-path")
             .attr("d", arc(arcData))
-            .attr("stroke-width", "0.5psx")
+            .attr("stroke-width", "0.5px")
             .attr("fill", arcData.color)
             .attr("stroke", arcData.color)
             .attr("fill-opacity", arcData.opacity)
@@ -309,9 +310,8 @@ function Map(props: Props) {
               `translate(${curWheelCenter[0]},${curWheelCenter[1]})`
             );
         }
-
-        setData(WHEEL_DATA, wheelData);
         setWheelCenter(curWheelCenter);
+        setData(WHEEL_DATA, wheelData);
       })();
     });
   }, [mapPoints]);
@@ -346,7 +346,7 @@ function Map(props: Props) {
         .attr("class", "wheel-path")
         .attr("stroke", (d: any) => d.color)
         .attr("fill", (d: any) => d.color)
-        .attr("stroke-width", "0.5psx")
+        .attr("stroke-width", "0.5px")
         .attr("transform", `translate(${wheelCenter[0]},${wheelCenter[1]})`)
         .attr("d", function(d: any) {
           return arc(d);
@@ -364,20 +364,23 @@ function Map(props: Props) {
   }, [systemName]);
 
   let colorBars = [];
+  const normalClassName = "map-class-color-bar";
+  const activeClassName = "map-class-color-bar-active";
   for (let i = topicNumber - 1; i >= 0; i--) {
     colorBars.push(
       <div
         key={i}
+        className={
+          curTopic === i
+            ? `${normalClassName} ${activeClassName}`
+            : normalClassName
+        }
         style={{
-          width: 15,
-          height: 15,
-          marginTop: 2,
-          marginRight: 5,
-          borderRadius: "50%",
           backgroundColor: color.nineColors[i],
-          float: "right",
-          transform: curTopic === i ? "scale(1.16)" : "scale(1)",
-          transformOrigin: "center"
+          boxShadow: `1px 1px 1px ${color.nineColors[i]}`
+        }}
+        onClick={() => {
+          setCurTopic(i);
         }}
       />
     );

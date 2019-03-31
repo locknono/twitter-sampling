@@ -24,14 +24,15 @@ interface Props {
   samplingCondition: SAMPLING_CONDITION;
   setSelectedIDs: typeof setSelectedIDs;
   selectedIDs: string[];
+  samplingFlag: boolean;
 }
 const mapState = (state: any) => {
-  const { samplingCondition, selectedIDs } = state.uiState;
+  const { samplingCondition, selectedIDs, samplingFlag } = state.uiState;
 
   /* const { scatterData } = state.dataTree;
   const { curTopic, ifDrawScatterCenters, selectedIDs } = state.uiState;
   return { scatterData, curTopic, ifDrawScatterCenters, selectedIDs }; */
-  return { samplingCondition, selectedIDs };
+  return { samplingCondition, selectedIDs, samplingFlag };
 };
 const mapDispatch = {
   setCurSystem,
@@ -47,7 +48,8 @@ function ControlPanel(props: Props) {
     setSamplingCondition,
     samplingCondition,
     setSelectedIDs,
-    selectedIDs
+    selectedIDs,
+    samplingFlag
   } = props;
   const [
     unPatchedSamplingCondition,
@@ -176,11 +178,13 @@ function ControlPanel(props: Props) {
           id="original"
           text="original"
           clickMethod={handleSamplingClick.bind(null, false)}
+          selectFlag={!samplingFlag}
         />
         <SamplingButton
           id="sampling"
           text="sampling"
           clickMethod={handleSamplingClick.bind(null, true)}
+          selectFlag={samplingFlag}
         />
       </div>
 
@@ -233,7 +237,7 @@ function ControlPanel(props: Props) {
           min={1}
           max={20}
           defaultValue={9}
-          color="red"
+          color="blue"
           step={1}
         />
 

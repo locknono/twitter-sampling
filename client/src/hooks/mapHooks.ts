@@ -36,7 +36,6 @@ export function useMapPoints(
     pointsLayerGroup,
     setPointsLayerGroup
   ] = React.useState<null | L.LayerGroup<L.Circle>>(null);
-  console.log("mapPoints: ", mapPoints);
   React.useEffect(() => {
     if (!mapPoints || !map) return;
 
@@ -61,7 +60,7 @@ export function useMapPoints(
     const layerGroup = L.layerGroup(allPointsLayer);
     setPointsLayerGroup(layerGroup);
 
-    if (ifShowMapPoints && curTopic === undefined) {
+    if (ifShowMapPoints && curTopic === undefined && selectedIDs.length === 0) {
       layerGroup.addTo(map);
     }
   }, [mapPoints]);
@@ -75,6 +74,13 @@ export function useMapPoints(
       map.removeLayer(pointsLayerGroup);
     }
   }, [ifShowMapPoints, curTopic]);
+
+  React.useEffect(() => {
+    if (!map || !pointsLayerGroup) return;
+    if (selectedIDs.length > 0) {
+      map.removeLayer(pointsLayerGroup);
+    }
+  }, [selectedIDs]);
 
   return [pointsLayerGroup, setPointsLayerGroup];
 }
@@ -215,7 +221,7 @@ export function useTopicPoints(
 
     const layerGroup = L.layerGroup(allPointsLayer);
     setLastTopicPoints(layerGroup);
-    if (ifShowMapPoints && curTopic !== undefined) {
+    if (ifShowMapPoints && curTopic !== undefined && selectedIDs.length === 0) {
       layerGroup.addTo(map);
     }
   }, [curTopic]);
@@ -224,7 +230,7 @@ export function useTopicPoints(
     if (!lastTopicPoints || !map) return;
     if (selectedIDs.length !== 0) return;
 
-    if (ifShowMapPoints) {
+    if (ifShowMapPoints && selectedIDs.length === 0) {
       lastTopicPoints.addTo(map);
     } else {
       map.removeLayer(lastTopicPoints);

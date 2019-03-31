@@ -80,61 +80,16 @@ if __name__ == '__main__':
         setTimeRadius(p, timeR, timeKDE)
         setRadius(p, spaceR, kde)
 
-    # print('set all radius')
+    print('set all radius')
     maxRatio = 0.7
     originalEstimates = getOriginalEstimates(points, g.topicNumber)
     r2 = getRalationshipList(originalEstimates)
 
-    # blue noise
-    maxBlueRatio = 1
-    blueRatio = 1
-    spaceR = spaceR * 250
-    blueNoisePoints = None
-    print('blue ready')
-    while (blueRatio > maxRatio - 0.1 or spaceR > 500):
-        try:
-            print('start blue noise')
-            spaceR = spaceR / 4
-            blueNoisePoints = []
-            for id in idClassDict:
-                blueNoisePoints.append({"lat": idLocationDict[id][0], "lng": idLocationDict[id][1], "id": id})
-            sampledBlueNoisePoints = blueNoise(blueNoisePoints, spaceR)
-
-            bluePoints = []
-            idSet = set()
-            for p1 in sampledBlueNoisePoints:
-                idSet.add(p1['id'])
-            for p2 in copy.deepcopy(points):
-                if p2.id not in idSet:
-                    continue
-                bluePoints.append(p2)
-            blueIDs = [p.id for p in bluePoints]
-
-            blueEstimates = getOriginalEstimates(bluePoints)
-            blueRelation = getRalationshipList(blueEstimates)
-            blueRatio = compareRelationshipList(r2, blueRelation)
-            # print(len(bluePoints))
-            # print('blue ratio:' + str(blueRatio))
-            if blueRatio >= maxBlueRatio:
-                continue
-            maxBlueRatio = blueRatio
-            path1 = '../client/public/blue/'
-            path2 = g.dataPath + 'blue/'
-            saveAllSamplingData(originalEstimates, blueEstimates, idLocationDict, idClassDict, idScatterData,
-                                idTextDict,
-                                riverIDTimeDict, blueIDs, path1, path2)
-            print(len(blueIDs), blueRatio)
-        except Exception as e:
-            print(e)
-    print(len(blueIDs), blueRatio)
-
-
-
     samplingIDs = None
-    base = 0.03
+    base = 0.3
     for t in range(30):
         c = base + 0.002 * t
-        # print(c)
+        print(c)
         copyPoints = copy.deepcopy(points)
         estimates, sampleGroups = ldbr(copyPoints, g.topicNumber, spaceR, 0.05, c, timeR)
 

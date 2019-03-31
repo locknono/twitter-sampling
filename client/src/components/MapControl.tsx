@@ -104,7 +104,7 @@ function MapControl(props: Props) {
       const wheelData = await res.json();
       setData(WHEEL_DATA, wheelData);
     })();
-  }, [minValue, minInter]);
+  }, [minValue, minInter, selectedIDs]);
 
   const pointsText = ifShowMapPoints ? "Hide Points" : "Show Points";
   const heatText = ifShowHeatMap ? "Hide Heatmap" : "Show Heatmap";
@@ -145,7 +145,7 @@ function MapControl(props: Props) {
       <SliderWithLabel
         name="min interval"
         min={1}
-        max={120}
+        max={180}
         defaultValue={defaultMinWheelInter}
         color="blue"
         step={1}
