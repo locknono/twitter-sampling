@@ -89,3 +89,5 @@ export const wheelLayerHeight = 10;
 export const defaultMinWheelValue = 10;
 
 export const defaultMinWheelInter = 60;
+
+export const findDayRegx = / /g;

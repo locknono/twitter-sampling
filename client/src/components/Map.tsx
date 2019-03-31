@@ -45,7 +45,7 @@ import {
 import { getArcGenerator, getLineGenerator } from "src/shared/renderer";
 import MapControl from "./MapControl";
 import {
-  usePointsOnMap,
+  useMapPoints,
   useHeat,
   useSvgLayer,
   useMap,
@@ -149,7 +149,7 @@ function Map(props: Props) {
 
   const map = useMap();
 
-  usePointsOnMap(
+  useMapPoints(
     mapPoints,
     map,
     ifShowMapPoints,
@@ -196,7 +196,6 @@ function Map(props: Props) {
       const res = await fetch(newURL);
       const mapPoints = await res.json();
       setData(MAP_POINTS, mapPoints);
-      location.href = "localhost:8000";
     })();
   }, [samplingCondition, samplingFlag]);
 
@@ -208,24 +207,6 @@ function Map(props: Props) {
       map.removeLayer(lastSelectedLayer);
     }
   }, [ifShowMapPoints]);
-
-  React.useEffect(() => {
-    if (!map || !svgLayer || !mapPoints) return;
-    map.on("pm:create", function(e1: any) {
-      const radius = e1.layer._radius;
-      const center: [number, number] = [
-        e1.layer._latlng.lat,
-        e1.layer._latlng.lng
-      ];
-      const ids: string[] = [];
-      mapPoints.map(e => {
-        if (ifInside([e.lat, e.lng], center, radius, map)) {
-          ids.push(e.id);
-        }
-      });
-      setSelectedIDs(ids);
-    });
-  }, [mapPoints]);
 
   //create wheel
   React.useEffect(() => {
@@ -245,6 +226,7 @@ function Map(props: Props) {
         e1.layer._latlng.lng
       ];
       const ids: string[] = [];
+
       mapPoints.map(e => {
         if (ifInside([e.lat, e.lng], center, radius, map)) {
           ids.push(e.id);

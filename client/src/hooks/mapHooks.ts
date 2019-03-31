@@ -24,7 +24,7 @@ export function useMap() {
   return map;
 }
 
-export function usePointsOnMap(
+export function useMapPoints(
   mapPoints: MapPoint[],
   map: L.Map | null,
   ifShowMapPoints: boolean,
@@ -37,7 +37,6 @@ export function usePointsOnMap(
     setPointsLayerGroup
   ] = React.useState<null | L.LayerGroup<L.Circle>>(null);
 
-  //add all points to map
   React.useEffect(() => {
     if (!mapPoints || !map) return;
 
@@ -117,6 +116,7 @@ export function useHeat(
 
   return [heatLayerGroup, setHeatLayerGroup];
 }
+
 export function useSvgLayer(map: L.Map | null) {
   const [svgLayer, setSvgLayer] = React.useState<any>(null);
   React.useEffect(() => {

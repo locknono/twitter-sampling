@@ -30,6 +30,8 @@ function DataDescription(props: Props) {
     undefined | number
   >(undefined);
 
+  const inputRef = React.createRef<HTMLInputElement>();
+
   React.useEffect(() => {
     const pointsURL = getURLBySamplingCondition(
       "./samplingMapPoints.json",
@@ -61,6 +63,13 @@ function DataDescription(props: Props) {
   ) : (
     <p>sampled data:</p>
   );
+
+  function handleFocus(e: React.SyntheticEvent) {
+    const node = inputRef.current;
+    if (!node) return;
+  }
+
+  function handleBlur(e: React.SyntheticEvent) {}
   return (
     <div className="panel panel-default data-description-div ">
       <Heading title="Social Media Data" />
@@ -69,7 +78,12 @@ function DataDescription(props: Props) {
           <button id="dataset" className="btn btn-default btn-sm white-button">
             dataset
           </button>
-          <input type="text" />
+          <input
+            type="text"
+            ref={inputRef}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          />
         </div>
         {allTweetsCountDOM}
         {samplingCountDOM}

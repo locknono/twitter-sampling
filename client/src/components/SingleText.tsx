@@ -30,6 +30,7 @@ export default function SingleText(props: Props) {
 
   return (
     <div
+      className="single-text"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -48,8 +49,8 @@ export default function SingleText(props: Props) {
           <img
             src={`./imgs/0 (${index + 1}).jpg`}
             style={{
-              width: 50,
-              height: 50,
+              width: 30,
+              height: 30,
               margin: "auto",
               borderRadius: "50%"
             }}

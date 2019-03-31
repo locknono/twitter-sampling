@@ -8,6 +8,7 @@ app = Flask(__name__)
 import g
 
 clientURL = 'http://localhost:3000'
+
 idTextDict = {}
 with open(g.dataPath + 'finalText.txt', 'r', encoding='utf-8')as f:
     for line in f:

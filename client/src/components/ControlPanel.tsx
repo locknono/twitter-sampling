@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import Heading from "../components/Heading";
 import { connect } from "react-redux";
-import { setData } from "src/actions/setDataAction";
+import { setData, MAP_POINTS } from "src/actions/setDataAction";
 import {
   setIfDrawCenters,
   setSelectedIDs,
@@ -16,11 +16,12 @@ import "../css/awesome-bootstrap-checkbox.css";
 import { url } from "src/constants/constants";
 import Checkbox from "./Checkbox";
 import SamplingButton from "./SamplingButton";
+import { getURLBySamplingCondition } from "src/shared/fetch";
 interface Props {
   setCurSystem: typeof setCurSystem;
   setSamplingFlag: typeof setSamplingFlag;
   setSamplingCondition: typeof setSamplingCondition;
-  samplingCondition: boolean;
+  samplingCondition: SAMPLING_CONDITION;
   setSelectedIDs: typeof setSelectedIDs;
   selectedIDs: string[];
 }
@@ -81,7 +82,11 @@ function ControlPanel(props: Props) {
       if (flag === true) {
         (async () => {
           setOriginalSelectedIDs(selectedIDs);
-          const res = await fetch(url.ldbrPointsURL);
+          const conditionURL = getURLBySamplingCondition(
+            url.ldbrPointsURL,
+            samplingCondition
+          );
+          const res = await fetch(conditionURL);
           const samplingPoints = await res.json();
           const newIDs: string[] = [];
           const selectedIDsSet = new Set(selectedIDs);

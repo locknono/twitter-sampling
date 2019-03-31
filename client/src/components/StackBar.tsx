@@ -131,9 +131,12 @@ function getStackData(riverData: [string, number, any][]) {
     }
     stackData.push(everyDayCount);
   }
+  const findDateRegx = /\d\b/g;
   for (let i = 0; i < riverData.length; i++) {
     const topic = riverData[i][2];
-    const day = parseInt(riverData[i][0].split("/")[2]);
+    const date = riverData[i][0].match(findDateRegx);
+    if (!date) return;
+    const day = parseInt(date[0]);
     const value = riverData[i][1];
     stackData[topic][day - minDay] += value;
   }

@@ -148,10 +148,12 @@ function Texts(props: Props) {
         body: JSON.stringify(ids)
       });
       const texts = await res.json();
+      const findDayRegx = /\d\s/g;
       texts.sort((a: any, b: any) => {
+        //2016-11-12 12:00:00
         return (
-          parseInt(a.time.split(" ")[0].split("-")[2]) -
-          parseInt(b.time.split(" ")[0].split("-")[2])
+          parseInt(a.time.match(findDayRegx)[0].trim()) -
+          parseInt(b.time.match(findDayRegx)[0].trim())
         );
       });
       setData(TEXTS, texts);
