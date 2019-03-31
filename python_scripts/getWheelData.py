@@ -52,7 +52,7 @@ def getTimeNumberDictForOneClassOneDay(classIDs, idTimeDict, minValue, timeInter
     return timeNumberDict
 
 
-def getWheelData(idClassDict, idTimeDict, minValue, minInterval, ids=None):
+def getWheelData(idClassDict, idTimeDict, minValue=30, minInterval=30, ids=None):
     if ids == None:
         ids = idClassDict.keys()
     allClassIDs = []

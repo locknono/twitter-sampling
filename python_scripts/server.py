@@ -22,13 +22,16 @@ originalIDTextDict = readJsonFile(g.dataPath + 'originalTexts.json')
 idTimeDict = readJsonFile(g.dataPath + 'idTimeDict.json')
 riverIDTimeDict = {}
 originalIDTimeDict = {}
-with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8') as f:
-    for line in f:
-        line = line.strip('\t\n').split('\t')
-        time = line[2].split(' ')[0].replace('-', '/')
-        id = line[0]
-        originalIDTimeDict[id] = line[2]
-        riverIDTimeDict[id] = time
+try:
+    with open(g.dataPath + 'extractedData.txt', 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip('\t\n').split('\t')
+            time = line[2].split(' ')[0].replace('-', '/')
+            id = line[0]
+            originalIDTimeDict[id] = line[2]
+            riverIDTimeDict[id] = time
+except Exception as e:
+    riverIDTimeDict = readJsonFile(g.dataPath + 'riverIDTimeDict.json')
 
 
 @app.route("/")
@@ -64,7 +67,8 @@ def getCoorsByIDs():
 @app.route("/getTextByID", methods=['GET', 'POST'])
 def getTextByID():
     id = json.loads(request.data)
-    text = idTextDict[id]
+    print(id)
+    text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
     res = Response(json.dumps(text))
     res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
@@ -92,8 +96,11 @@ def getInitialTexts():
         number += 1
         if number > 200:
             break
-        text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
-        texts.append(text)
+        try:
+            text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
+            texts.append(text)
+        except Exception as e:
+            print(e)
     res = Response(json.dumps(texts))
     res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'

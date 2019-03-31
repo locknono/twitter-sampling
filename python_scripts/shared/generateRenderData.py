@@ -78,7 +78,7 @@ def getWordCloud(idTextDict, idClassDict, topicCount, ids=None):
         sortedKList = sortByWordFrequncy(d)
         allKList.append(sortedKList)
 
-    wordCount = 100
+    wordCount = 150
 
     renderData = []
     for i in range(len(allKList)):

@@ -194,7 +194,7 @@ class Matrix extends React.Component<Props, State> {
             className="color-bar-rect"
             width={width}
             height={width}
-            x={matriXStart}
+            x={matriXStart + 1}
             y={svgHeight * 0.03}
             fill={color.originalBarColor}
             stroke={color.originalBarColor}
@@ -207,6 +207,7 @@ class Matrix extends React.Component<Props, State> {
             y={textY}
             fontFamily="Verdana"
             fontSize="12"
+            style={{ verticalAlign: "top" }}
           >
             uniform
           </text>
@@ -214,7 +215,7 @@ class Matrix extends React.Component<Props, State> {
             className="color-bar-rect"
             width={width}
             height={width}
-            x={matriXStart + width + 50}
+            x={matriXStart + width + 50 + 1}
             y={svgHeight * 0.03}
             fill={color.samplingColor}
             stroke={color.samplingColor}
@@ -227,6 +228,7 @@ class Matrix extends React.Component<Props, State> {
             y={textY}
             fontFamily="Verdana"
             fontSize="12"
+            style={{ verticalAlign: "top" }}
           >
             conflict
           </text>

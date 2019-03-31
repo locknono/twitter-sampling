@@ -78,8 +78,10 @@ function Texts(props: Props) {
   }
 
   React.useEffect(() => {
+    console.log("hoverID: ", hoverID);
     if (hoverID === null) {
       setHoverText(null);
+      return;
     }
     (async () => {
       const res = await fetch(pythonServerURL + "getTextByID", {
@@ -183,6 +185,7 @@ function Texts(props: Props) {
       index={imgIndices[Math.floor(Math.random() * 30)]}
       id={hoverText.id}
       time={hoverText.time}
+      background="rgba(222,222,222,0.5)"
     />
   ) : null;
   return (

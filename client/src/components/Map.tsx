@@ -267,7 +267,6 @@ function Map(props: Props) {
           body: JSON.stringify(postData)
         });
         const wheelData = await res.json();
-        setData(WHEEL_DATA, wheelData);
         const { metas, wheelDatas, startDay } = wheelData;
         const [meta, data] = [
           metas[wheelDay - startDay],
@@ -284,7 +283,7 @@ function Map(props: Props) {
         const cy = e1.layer._point.y;
 
         const curWheelCenter = [cx, cy];
-        setWheelCenter(curWheelCenter);
+
         svgLayer.selectAll("path").remove();
 
         for (let i = 0; i < data.length; i++) {
@@ -327,6 +326,9 @@ function Map(props: Props) {
               `translate(${curWheelCenter[0]},${curWheelCenter[1]})`
             );
         }
+
+        setData(WHEEL_DATA, wheelData);
+        setWheelCenter(curWheelCenter);
       })();
     });
   }, [mapPoints]);

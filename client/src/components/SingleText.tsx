@@ -23,17 +23,18 @@ interface Props {
   index: number;
   id: string;
   time: string;
-  textStyle?: Object;
+  background?: string;
 }
 export default function SingleText(props: Props) {
-  const { text, index, id, time } = props;
+  const { text, index, id, time, background } = props;
 
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        borderBottom: "solid 1px rgb(222,222,222)"
+        borderBottom: "solid 1px rgb(222,222,222)",
+        background: background
       }}
     >
       <div style={{ display: "flex" }}>

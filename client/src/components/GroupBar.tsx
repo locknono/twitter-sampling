@@ -225,6 +225,7 @@ function GroupBar(props: Props) {
           y={textY}
           fontFamily="Verdana"
           fontSize="12"
+          style={{ verticalAlign: "top" }}
         >
           original
         </text>
@@ -245,6 +246,7 @@ function GroupBar(props: Props) {
           y={textY}
           fontFamily="Verdana"
           fontSize="12"
+          style={{ verticalAlign: "top" }}
         >
           sampling
         </text>

@@ -104,7 +104,7 @@ function LdaScatterCanvasCanvas(props: Props) {
         url.samplingScatterPointsURL,
         samplingCondition
       );
-      
+
       fetchAndSetScatterData(samplingURL, setData);
     } else {
       const scatterURL = getURLBySamplingCondition(
@@ -266,7 +266,7 @@ function LdaScatterCanvasCanvas(props: Props) {
     if (!width || !height) return;
     const [xScale, yScale] = scales;
     const selectedPoints: ScatterPoint[] = [];
-    
+
     const idsSet = new Set(selectedIDs);
 
     for (let i = 0; i < scatterData.length; i++) {
@@ -274,7 +274,7 @@ function LdaScatterCanvasCanvas(props: Props) {
         selectedPoints.push(scatterData[i]);
       }
     }
-    
+
     const fiber = createFiber(() => {
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = "black";
@@ -325,7 +325,7 @@ function LdaScatterCanvasCanvas(props: Props) {
       const rectX = xScale(i.toString()) as number;
       if (x > rectX && x < rectX + xScale.bandwidth()) {
         setCurTopic(i);
-        
+
         break;
       }
     }
