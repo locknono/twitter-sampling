@@ -259,7 +259,7 @@ function LdaScatterCanvasCanvas(props: Props) {
   }, [scatterData, ifDrawScatterCenters, scales]);
 
   //draw selected ids
-  React.useEffect(() => {
+  /*  React.useEffect(() => {
     if (!ctx || !scatterData || !scales || selectedIDs.length === 0) {
       return;
     }
@@ -292,7 +292,7 @@ function LdaScatterCanvasCanvas(props: Props) {
     }, 1);
     updateQueue.push(fiber);
     updateQueue.flush();
-  }, [selectedIDs, scatterData]);
+  }, [selectedIDs, scatterData]); */
 
   function handleClick(e: any) {
     if (e.ctrlKey !== true) return;

@@ -85,7 +85,7 @@ if __name__ == '__main__':
     r2 = getRalationshipList(originalEstimates)
 
     samplingIDs = None
-    base = 0.2
+    base = 0.35
     for t in range(30):
         c = base + 0.002 * t
         print(c)

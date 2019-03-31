@@ -93,15 +93,20 @@ def getTextsByID():
 def getInitialTexts():
     texts = []
     number = 0
-    for id in originalIDTextDict:
+    for id in idClassDict:
         number += 1
         if number > 200:
             break
+        keys = list(originalIDTextDict.keys())
+        index = 0
         try:
+            index += 1
             text = {"text": originalIDTextDict[id], "id": id, "time": originalIDTimeDict[id]}
             texts.append(text)
         except Exception as e:
-            print(e)
+            text = {"text": originalIDTextDict[keys[index]], "id": id, "time": originalIDTimeDict[id]}
+            texts.append(text)
+        print(texts)
     res = Response(json.dumps(texts))
     res.headers['Access-Control-Allow-Origin'] = clientURL
     res.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'

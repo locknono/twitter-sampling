@@ -1,10 +1,19 @@
+/**
+ * 
+ * 优先级是使用树结构还是链表？
+   用户交互在上一层，背景渲染在下一层
+ */
+
 import { Fiber } from "./fiber";
 import priorityTree from "./priorityTree";
-const updateQueue = Object.create(Array.prototype);
-console.log("updateQueue: ", updateQueue);
 
-//优先级必须使用树结构
-//用户交互在上一层，背景渲染在下一层
+interface UpdateQueue extends Array<Fiber> {
+  sortByPriority: Function;
+  clearSameStream: Function;
+  flush: Function;
+}
+const updateQueue: UpdateQueue = Object.create(Array.prototype);
+
 updateQueue.sortByPriority = function() {
   this.sort((a: Fiber, b: Fiber) => {
     return b.priority - a.priority;
@@ -15,7 +24,7 @@ updateQueue.clearSameStream = function() {
   const streamSet = new Set();
   for (let i = updateQueue.length; i >= 0; i--) {
     if (streamSet.has(updateQueue[i].streamID)) {
-      updateQueue.pop(i);
+      updateQueue.splice(i);
     }
     streamSet.add(updateQueue[i].streamID);
   }
@@ -24,10 +33,10 @@ updateQueue.clearSameStream = function() {
 updateQueue.flush = function(this: typeof updateQueue) {
   this.sortByPriority();
   if (this.length > 0) {
-    requestAnimationFrame(this[0].renderMethod);
+    requestAnimationFrame(this[0].renderMethod as FrameRequestCallback);
     updateQueue.splice(0, 1);
   }
-  requestAnimationFrame(this.flush);
+  requestAnimationFrame(this.flush as FrameRequestCallback);
 }.bind(updateQueue);
 
 Object.defineProperty(updateQueue, "sortByPriority", {

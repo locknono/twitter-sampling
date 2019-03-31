@@ -240,6 +240,6 @@ if __name__ == '__main__':
     idClassDict = readJsonFile(g.dataPath + 'idClassDict.json')
     points = []
     for id in idClassDict:
-        p = {"id": id, "lat": idLocationDict[id][0], "lng": idLocationDict[id][1], }
+        p = {"id": id, "lat": idLocationDict[id][0], "lng": idLocationDict[id][1]}
         points.append(p)
     samplePoints = blueNoise(points, 300)

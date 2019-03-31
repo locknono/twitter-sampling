@@ -387,7 +387,12 @@ function Map(props: Props) {
   }
   return (
     <div className="map-view panel panel-default">
-      <div className="panel-heading heading map-heading">
+      <div
+        className="panel-heading heading map-heading"
+        style={{
+          paddingRight: 5
+        }}
+      >
         Map View{colorBars}
         <span style={{ float: "right", marginRight: 7 }}>9 topics</span>
       </div>

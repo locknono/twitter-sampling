@@ -5,6 +5,8 @@ const zoom = 11.5;
 const preferCanvas = true;
 const zoomControl = false;
 const attributionControl = false;
+const zoomDelta = 0.1;
+const zoomSnap = 0.1;
 export const tileLayerURL =
   "https://api.mapbox.com/styles/v1/lockyes/cjiva3omz8hrq2so4mfdaurmw/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg";
 
@@ -13,7 +15,9 @@ export const options: object = {
   zoom,
   zoomControl,
   attributionControl,
-  preferCanvas
+  preferCanvas,
+  zoomDelta,
+  zoomSnap
 };
 export const pmOptions = {
   position: "topleft", // toolbar position, options are 'topleft', 'topright', 'bottomleft', 'bottomright'

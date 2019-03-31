@@ -4,7 +4,7 @@ export const topicNumber = 9;
 /**nine categorical colors */
 export const colorScale = d3.scaleOrdinal(d3.schemeSet1);
 
-export const mapCircleRadius = 3;
+export const mapCircleRadius = 1;
 export namespace padding {
   export const barChartPadding = 0.1;
   export const scatterPadding = 0.05;
@@ -78,7 +78,7 @@ export namespace url {
   export const samplingHeatURL = "./samplingHeatData.json";
 }
 
-export const scatterRadius = 1.5;
+export const scatterRadius = 1;
 
 export const maxCloudWordSize = 70;
 
