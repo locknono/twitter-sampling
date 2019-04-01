@@ -6,4 +6,4 @@
 
 ## License
 
-under [MIT license](https://github.com/locknono/twitter-sampling/blob/master/LICENSE)
+under [LGPL-3.0 license](https://github.com/locknono/twitter-sampling/blob/master/LICENSE)
